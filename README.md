@@ -1,0 +1,72 @@
+# gcl_personnel
+
+A flutter web app for managing GCL staff and events.
+
+## Tasks
+- [ ] admin information
+  - [ ] GCL hour schedule
+  - [ ] Staff information
+  - [ ] holidays input (to pull from internet yearly and ask for user confirmation)
+  - [ ] platform management logging
+    - [ ] instagram
+    - [ ] website
+    - [ ] Twitter
+    - [ ] Line
+    - [ ] Email
+    - [ ] Youtube
+    - [ ] Moodle
+- [ ] scheduling platform
+  - [ ] date and time handler (within GCL hour schedule limit, holidays and events)
+  - [ ] type of availability
+    - [ ] in person
+    - [ ] online only
+  - [ ] attendance confirmation
+- [ ] Event handler
+  - [ ] before event
+    - [ ] date and time
+    - [ ] title
+    - [ ] location
+    - [ ] type of event
+  - [ ] post event
+    - [ ] inmediately after event
+      - [ ] customer satisfaction questionare
+    - [ ] post event
+      - [ ] photos
+      - [ ] summary 
+      - [ ] SNS publication
+- [ ] Meeting reservation forms integrations
+  - [ ] date and time (30 minute limit per session)
+  - [ ] japanese compatibility
+  - [ ] place
+    - [ ] online
+    - [ ] in person
+  - [ ] department
+  - [ ] grade
+  - [ ] purpose
+  - [ ] name
+    - [ ] organizer
+    - [ ] participant
+  - [ ] purpose
+    - [ ] assignment
+    - [ ] conversation
+      - [ ] English
+      - [ ] Chinese
+      - [ ] Japanese
+    - [ ] Presentation practice
+      - [ ] English
+      - [ ] Japanese
+## capabilities
+- photos submission
+- email and calendar integration (google and outlook)
+- export logging
+  - events
+  - attendance
+  - meeting agenda
+- Login capability 
+- Multi-language support
+  - English
+  - Japanese
+  - Chinese
+- dashboard visualization
+- local storage?
+- sharepoint storage
