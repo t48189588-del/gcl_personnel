@@ -8,12 +8,15 @@ class AppProvider with ChangeNotifier {
   List<StaffMember> _staff = [];
   List<AvailabilityBlock> _blocks = [];
   OperatingHours _operatingHours = OperatingHours(
-    weeklySchedule: List.generate(7, (index) => DaySchedule(weekday: index + 1))
+    weeklySchedule: List.generate(
+      7,
+      (index) => DaySchedule(weekday: index + 1),
+    ),
   );
   List<EventProposal> _eventProposals = [];
-  
+
   StaffMember? _currentJuniorStaff;
-  
+
   Locale _locale = const Locale('en');
   ThemeMode _themeMode = ThemeMode.light;
 
@@ -31,7 +34,9 @@ class AppProvider with ChangeNotifier {
     _operatingHours = HiveService.getOperatingHours();
     // Load event proposals if stored, otherwise empty for now
     if (_staff.isNotEmpty) {
-      _currentJuniorStaff = _staff.where((s) => s.isSetupComplete && !s.isSenior).firstOrNull;
+      _currentJuniorStaff = _staff
+          .where((s) => s.isSetupComplete && !s.isSenior)
+          .firstOrNull;
       if (_currentJuniorStaff == null && _staff.isNotEmpty) {
         _currentJuniorStaff = _staff.first;
       }
@@ -93,29 +98,45 @@ class AppProvider with ChangeNotifier {
   }
 
   void updateDaySchedule(int weekday, String start, String end, bool isClosed) {
-    var day = _operatingHours.weeklySchedule.firstWhere((d) => d.weekday == weekday);
+    var day = _operatingHours.weeklySchedule.firstWhere(
+      (d) => d.weekday == weekday,
+    );
     day.startHour = start;
     day.endHour = end;
     day.isClosed = isClosed;
     HiveService.saveOperatingHours(_operatingHours);
-    LoggerService.log('Action', 'Updated DaySchedule for $weekday: $start-$end closed:$isClosed');
+    LoggerService.log(
+      'Action',
+      'Updated DaySchedule for $weekday: $start-$end closed:$isClosed',
+    );
     notifyListeners();
   }
 
-  void addHoliday(DateTime date, String message, {bool isAllDay = true, String start = '09:00', String end = '17:00'}) {
+  void addHoliday(
+    DateTime date,
+    String message, {
+    bool isAllDay = true,
+    String start = '09:00',
+    String end = '17:00',
+  }) {
     final dateOnly = DateTime(date.year, date.month, date.day);
-    _operatingHours.holidays.add(Holiday(
-      date: dateOnly, 
-      message: message,
-      isAllDay: isAllDay,
-      startTime: start,
-      endTime: end,
-    ));
+    _operatingHours.holidays.add(
+      Holiday(
+        date: dateOnly,
+        message: message,
+        isAllDay: isAllDay,
+        startTime: start,
+        endTime: end,
+      ),
+    );
     HiveService.saveOperatingHours(_operatingHours);
-    LoggerService.log('Action', 'Added holiday on $dateOnly with msg: $message');
+    LoggerService.log(
+      'Action',
+      'Added holiday on $dateOnly with msg: $message',
+    );
     notifyListeners();
   }
-  
+
   void removeHoliday(DateTime date) {
     final dateOnly = DateTime(date.year, date.month, date.day);
     _operatingHours.holidays.removeWhere((h) => h.date == dateOnly);
@@ -135,7 +156,10 @@ class AppProvider with ChangeNotifier {
       proposedDate: date,
     );
     _eventProposals.add(proposal);
-    LoggerService.log('Action', 'Event Proposal: $title by ${_currentJuniorStaff?.name}');
+    LoggerService.log(
+      'Action',
+      'Event Proposal: $title by ${_currentJuniorStaff?.name}',
+    );
     notifyListeners();
   }
 
@@ -143,7 +167,10 @@ class AppProvider with ChangeNotifier {
     updatedStaff.isSetupComplete = true;
     _currentJuniorStaff = updatedStaff;
     updateJuniorProfile(updatedStaff);
-    LoggerService.log('Action', 'Completed applicant setup for ${updatedStaff.name}');
+    LoggerService.log(
+      'Action',
+      'Completed applicant setup for ${updatedStaff.name}',
+    );
   }
 
   void updateJuniorProfile(StaffMember updatedStaff) {
@@ -160,7 +187,10 @@ class AppProvider with ChangeNotifier {
   void addBlock(AvailabilityBlock block) {
     _blocks.add(block);
     HiveService.saveBlock(block);
-    LoggerService.log('Action', 'Added block for ${block.staffId} at ${block.startTime}');
+    LoggerService.log(
+      'Action',
+      'Added block for ${block.staffId} at ${block.startTime}',
+    );
     notifyListeners();
   }
 
@@ -176,7 +206,20 @@ class AppProvider with ChangeNotifier {
     if (index != -1) {
       _blocks[index].needsReplacement = true;
       HiveService.saveBlock(_blocks[index]);
-      LoggerService.log('Action', 'Emergency Reschedule invoked for block $blockId');
+      LoggerService.log(
+        'Action',
+        'Emergency Reschedule invoked for block $blockId',
+      );
+      notifyListeners();
+    }
+  }
+
+  void updateBlockModality(String blockId, String newModality) {
+    final index = _blocks.indexWhere((b) => b.id == blockId);
+    if (index != -1) {
+      _blocks[index].modality = newModality;
+      HiveService.saveBlock(_blocks[index]);
+      LoggerService.log('Action', 'Updated block modality for $blockId to $newModality');
       notifyListeners();
     }
   }

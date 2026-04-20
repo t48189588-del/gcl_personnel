@@ -2,9 +2,19 @@
 
 A flutter web app for managing GCL staff and events.
 
+Base information pulled from 
+Online contact 
+
+- Instragram: https://www.instagram.com/gclkyutech/  
+- Website: https://sites.google.com/view/gclkyutech/about-us  
+- Line ID: kyutechgcl  
+- Email: gcl@lai.kyutech.ac.jp  
+- Youtube: https://www.youtube.com/channel/UCXeW6dvL52EJgPPNJMlVt0A  
+- Moodle reservation: https://horyu.el.kyutech.ac.jp/course/view.php?id=767 
+
 ## Tasks
 - [ ] admin information
-  - [ ] GCL hour schedule
+  - [x] GCL hour schedule
   - [ ] Staff information
   - [ ] holidays input (to pull from internet yearly and ask for user confirmation)
   - [ ] platform management logging
@@ -16,12 +26,13 @@ A flutter web app for managing GCL staff and events.
     - [ ] Youtube
     - [ ] Moodle
 - [ ] scheduling platform
-  - [ ] date and time handler (within GCL hour schedule limit, holidays and events)
-  - [ ] type of availability
+  - [x] date and time handler (within GCL hour schedule limit, holidays and events)
+  - [x] type of availability
     - [ ] in person
     - [ ] online only
   - [ ] attendance confirmation
 - [ ] Event handler
+  - [ ] event proposal 
   - [ ] before event
     - [ ] date and time
     - [ ] title
@@ -34,7 +45,7 @@ A flutter web app for managing GCL staff and events.
       - [ ] photos
       - [ ] summary 
       - [ ] SNS publication
-- [ ] Meeting reservation forms integrations
+- [ ] Meeting reservation forms integrations (for external people of GCL)
   - [ ] date and time (30 minute limit per session)
   - [ ] japanese compatibility
   - [ ] place
@@ -57,7 +68,7 @@ A flutter web app for managing GCL staff and events.
       - [ ] Japanese
 ## capabilities
 - photos submission
-- email and calendar integration (google and outlook)
+- [x] email and calendar integration (google and outlook)
 - export logging
   - events
   - attendance
@@ -68,8 +79,15 @@ A flutter web app for managing GCL staff and events.
   - Japanese
   - Chinese
 - dashboard visualization
+  - public information from the SNS 
+    - instagram: views, followers, likes?
+    - youtube: subscriber, video views
+- hability to configure - generate content to all platforms from dashboard
 - local storage?
-- sharepoint storage
+- sharepoint storage in teams
+- automatic backup generation 
+  - locally 
+  - online
 
 # Prompts
 ## First day

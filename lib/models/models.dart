@@ -88,7 +88,9 @@ class StaffMember {
       name: 'Staff $index',
       email: 'staff$index@example.com',
       nativeLanguage: index % 2 == 0 ? 'English' : 'Japanese',
-      fluentLanguages: index % 2 == 0 ? ['Japanese', 'French'] : ['English', 'Spanish'],
+      fluentLanguages: index % 2 == 0
+          ? ['Japanese', 'French']
+          : ['English', 'Spanish'],
       otherLanguages: ['German'],
       degree: degrees[index % 3],
       modalityPreference: modality[index % 3],
@@ -96,7 +98,8 @@ class StaffMember {
       eventsParticipation: index * 2,
       providedAssistance: index * 3,
       profilePicturePath: 'https://i.pravatar.cc/150?u=$index',
-      personalDescription: 'Hello! I am a passionate staff member ready to assist.',
+      personalDescription:
+          'Hello! I am a passionate staff member ready to assist.',
       commPreference: index % 2 == 0 ? 'Email' : 'SNS',
       isSetupComplete: true,
       isSenior: index == 1, // Make first staff senior for testing
@@ -212,18 +215,17 @@ class OperatingHours {
   List<DaySchedule> weeklySchedule;
   List<Holiday> holidays;
 
-  OperatingHours({
-    required this.weeklySchedule,
-    this.holidays = const [],
-  });
+  OperatingHours({required this.weeklySchedule, this.holidays = const []});
 
   factory OperatingHours.fromJson(Map<String, dynamic> json) {
     return OperatingHours(
-      weeklySchedule: (json['weeklySchedule'] as List<dynamic>?)
+      weeklySchedule:
+          (json['weeklySchedule'] as List<dynamic>?)
               ?.map((e) => DaySchedule.fromJson(e))
               .toList() ??
           List.generate(7, (index) => DaySchedule(weekday: index + 1)),
-      holidays: (json['holidays'] as List<dynamic>?)
+      holidays:
+          (json['holidays'] as List<dynamic>?)
               ?.map((e) => Holiday.fromJson(e))
               .toList() ??
           [],
@@ -243,7 +245,11 @@ class LogEntry {
   final String eventType;
   final String description;
 
-  LogEntry({required this.timestamp, required this.eventType, required this.description});
+  LogEntry({
+    required this.timestamp,
+    required this.eventType,
+    required this.description,
+  });
 
   factory LogEntry.fromJson(Map<String, dynamic> json) {
     return LogEntry(
