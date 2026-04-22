@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:uuid/uuid.dart';
 
 class StaffMember {
@@ -7,17 +6,20 @@ class StaffMember {
   String email;
   String nativeLanguage;
   List<String> fluentLanguages;
-  List<String> otherLanguages; // New for Phase 3
+  List<String> otherLanguages;
   String degree;
-  String modalityPreference; // In-Person, Online, Both
+  String modalityPreference;
   double availabilityRate;
   int eventsParticipation;
   int providedAssistance;
-  String profilePicturePath; // Base64 or URL
+  String profilePicturePath;
   String personalDescription;
-  String commPreference; // Email, SNS, Both
+  String commPreference;
   bool isSetupComplete;
-  bool isSenior; // New for Phase 3
+  bool isSenior;
+  String originCountry;
+  DateTime? employmentEndDate;
+  bool isActive;
 
   StaffMember({
     required this.id,
@@ -36,6 +38,9 @@ class StaffMember {
     this.commPreference = 'Email',
     this.isSetupComplete = true,
     this.isSenior = false,
+    this.originCountry = '',
+    this.employmentEndDate,
+    this.isActive = true,
   });
 
   factory StaffMember.fromJson(Map<String, dynamic> json) {
@@ -56,6 +61,11 @@ class StaffMember {
       commPreference: json['commPreference'] ?? 'Email',
       isSetupComplete: json['isSetupComplete'] ?? true,
       isSenior: json['isSenior'] ?? false,
+      originCountry: json['originCountry'] ?? '',
+      employmentEndDate: json['employmentEndDate'] != null
+          ? DateTime.parse(json['employmentEndDate'])
+          : null,
+      isActive: json['isActive'] ?? true,
     );
   }
 
@@ -77,6 +87,9 @@ class StaffMember {
       'commPreference': commPreference,
       'isSetupComplete': isSetupComplete,
       'isSenior': isSenior,
+      'originCountry': originCountry,
+      'employmentEndDate': employmentEndDate?.toIso8601String(),
+      'isActive': isActive,
     };
   }
 
@@ -102,7 +115,7 @@ class StaffMember {
           'Hello! I am a passionate staff member ready to assist.',
       commPreference: index % 2 == 0 ? 'Email' : 'SNS',
       isSetupComplete: true,
-      isSenior: index == 1, // Make first staff senior for testing
+      isSenior: index == 1,
     );
   }
 }

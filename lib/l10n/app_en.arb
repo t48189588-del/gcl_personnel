@@ -55,5 +55,51 @@
   "proposedDate": "Proposed Date",
   "masterCalendarExport": "Master Calendar Export (Monthly)",
   "attendanceWarning": "Remember to check your attendance regularly!",
-  "exportICS": "Export to ICS"
+  "exportICS": "Export to ICS",
+  "toggleTheme": "Toggle Theme",
+  "role": "Role",
+  "day": "Day",
+  "closed": "Closed",
+  "currentlyStudying": "Currently Studying",
+  "originCountry": "Origin Country",
+  "cancel": "Cancel",
+  "selectDate": "Select Date",
+  "openInviteLink": "Open Invite Link",
+  "senior": "Senior",
+  "junior": "Junior",
+  "online": "Online",
+  "inPerson": "In Person",
+  "both": "Both",
+  "none": "None",
+  "mockEmailTitle": "Mock Email Received!",
+  "mockEmailContent": "Verification sent to {email}\n\nClick link to test setup profile.",
+  "@mockEmailContent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "selectJuniorProfileTitle": "Select Junior Profile",
+  "proposalSubmitted": "Proposal Submitted!",
+  "noAnnouncements": "No announcements yet.",
+  "developerDashboardTitle": "Developer Dashboard - System Logs",
+  "logEntryTypeAction": "Action",
+  "logEntryTypeInteraction": "Interaction",
+  "clearLogsTooltip": "Clear Logs",
+  "currentlyStudyingHint": "What are you studying?",
+  "originCountryHint": "Where are you from?",
+  "finishEmployment": "Finish Employment",
+  "finishImmediately": "Immediately",
+  "finishFutureDate": "Future Last Date",
+  "employmentEndDialogTitle": "Finish Employment",
+  "employmentEndDialogContent": "Select your last day of employment. This will disable your scheduling calendar after that date.",
+  "selectModality": "Select Modality",
+  "loading": "Loading...",
+  "noStaffLoggedIn": "No Staff logged in.",
+  "welcomeCompleteProfile": "Welcome! Please complete your profile to access the portal.",
+  "completeYourProfile": "Complete Your Profile",
+  "fullName": "Full Name",
+  "completeSetupAndLogin": "Complete Setup & Login",
+  "personalDescription": "Personal Description"
 }

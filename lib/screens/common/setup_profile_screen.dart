@@ -5,6 +5,7 @@ import '../../models/models.dart';
 import '../junior/junior_dashboard.dart';
 import '../../theme/app_theme.dart';
 import '../common/app_actions.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -20,16 +21,44 @@ class SetupProfileScreen extends StatefulWidget {
 class _SetupProfileScreenState extends State<SetupProfileScreen> {
   late TextEditingController _nameController;
   late TextEditingController _descController;
+  late TextEditingController _originController;
   String _nativeLanguage = 'English';
   final List<String> _selectedOtherLanguages = [];
-  String _degree = 'Bachelors';
+  String _currentlyStudying = 'Computer Science';
   Uint8List? _profileImageData;
+
+  final Map<String, String> _languagesWithFlags = {
+    'English': '🇺🇸',
+    'Japanese': '🇯🇵',
+    'Chinese': '🇨🇳',
+    'Korean': '🇰🇷',
+    'French': '🇫🇷',
+    'German': '🇩🇪',
+    'Spanish': '🇪🇸',
+    'Italian': '🇮🇹',
+    'Portuguese': '🇵🇹',
+    'Russian': '🇷🇺',
+    'Vietnamese': '🇻🇳',
+    'Hindi': '🇮🇳',
+    'Arabic': '🇸🇦',
+    'Bengali': '🇧🇩',
+    'Turkish': '🇹🇷',
+  };
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.applicant.name);
     _descController = TextEditingController(text: "Hello! I am a new applicant.");
+    _originController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descController.dispose();
+    _originController.dispose();
+    super.dispose();
   }
 
   Future<void> _pickImage() async {
@@ -46,28 +75,35 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.read<AppProvider>();
+    final loc = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Complete Your Profile'),
+        title: Text(loc.completeYourProfile),
         actions: buildGlobalAppActions(context),
       ),
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 500),
+          constraints: const BoxConstraints(maxWidth: 600),
           child: ListView(
             padding: const EdgeInsets.all(24),
             children: [
-              const Text('Welcome! Please complete your profile to access the portal.', style: TextStyle(fontSize: 18)),
-              const SizedBox(height: 24),
+              Text(
+                loc.welcomeCompleteProfile,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(height: 32),
               Center(
                 child: Stack(
                   children: [
                     CircleAvatar(
                       radius: 60,
-                      backgroundImage: _profileImageData != null 
-                        ? MemoryImage(_profileImageData!) 
-                        : null,
-                      child: _profileImageData == null ? const Icon(Icons.person, size: 60) : null,
+                      backgroundImage: _profileImageData != null
+                          ? MemoryImage(_profileImageData!)
+                          : null,
+                      child: _profileImageData == null
+                          ? const Icon(Icons.person, size: 60)
+                          : null,
                     ),
                     Positioned(
                       bottom: 0,
@@ -75,77 +111,114 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
                       child: CircleAvatar(
                         backgroundColor: Theme.of(context).primaryColor,
                         child: IconButton(
-                          icon: const Icon(Icons.camera_alt, color: Colors.white),
+                          icon:
+                              const Icon(Icons.camera_alt, color: Colors.white),
                           onPressed: _pickImage,
+                          tooltip: loc.uploadPhoto,
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               TextField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Full Name', border: OutlineInputBorder()),
+                decoration: InputDecoration(
+                  labelText: loc.fullName,
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _originController,
+                decoration: InputDecoration(
+                  labelText: loc.originCountry,
+                  hintText: loc.originCountryHint,
+                  border: const OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: _nativeLanguage,
-                decoration: const InputDecoration(labelText: 'Native Language', border: OutlineInputBorder()),
-                items: ['English', 'Japanese', 'Spanish', 'French'].map((l) => DropdownMenuItem(value: l, child: Text(l))).toList(),
+                decoration: InputDecoration(
+                  labelText: loc.nativeLang,
+                  border: const OutlineInputBorder(),
+                ),
+                items: _languagesWithFlags.entries.map((entry) {
+                  return DropdownMenuItem(
+                    value: entry.key,
+                    child: Text('${entry.value} ${entry.key}'),
+                  );
+                }).toList(),
                 onChanged: (val) {
                   if (val != null) setState(() => _nativeLanguage = val);
                 },
               ),
-              const SizedBox(height: 16),
-              const Text('Other Speaking Languages', style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
+              const SizedBox(height: 24),
+              Text(loc.otherLanguages,
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
-                children: ['German', 'Chinese', 'Korean', 'Italian', 'Portuguese'].map((lang) {
-                  final isSelected = _selectedOtherLanguages.contains(lang);
+                runSpacing: 8,
+                children: _languagesWithFlags.entries.map((entry) {
+                  final isSelected = _selectedOtherLanguages.contains(entry.key);
                   return FilterChip(
-                    label: Text(lang),
+                    label: Text('${entry.value} ${entry.key}'),
                     selected: isSelected,
                     onSelected: (val) {
                       setState(() {
-                        if (val) _selectedOtherLanguages.add(lang);
-                        else _selectedOtherLanguages.remove(lang);
+                        if (val) {
+                          _selectedOtherLanguages.add(entry.key);
+                        } else {
+                          _selectedOtherLanguages.remove(entry.key);
+                        }
                       });
                     },
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: _degree,
-                decoration: const InputDecoration(labelText: 'Highest Degree', border: OutlineInputBorder()),
-                items: ['Bachelors', 'Masters', 'PhD'].map((l) => DropdownMenuItem(value: l, child: Text(l))).toList(),
-                onChanged: (val) {
-                  if (val != null) setState(() => _degree = val);
-                },
+              const SizedBox(height: 24),
+              TextField(
+                controller: TextEditingController(text: _currentlyStudying),
+                onChanged: (val) => _currentlyStudying = val,
+                decoration: InputDecoration(
+                  labelText: loc.currentlyStudying,
+                  hintText: loc.currentlyStudyingHint,
+                  border: const OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _descController,
-                decoration: const InputDecoration(labelText: 'Personal Description (Visitor Facing)', border: OutlineInputBorder()),
+                decoration: InputDecoration(
+                  labelText: loc.personalDescription,
+                  border: const OutlineInputBorder(),
+                ),
                 maxLines: 3,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 40),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 50)),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 56),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
                 onPressed: () {
                   widget.applicant.name = _nameController.text;
                   widget.applicant.nativeLanguage = _nativeLanguage;
                   widget.applicant.otherLanguages = _selectedOtherLanguages;
-                  widget.applicant.degree = _degree;
+                  widget.applicant.degree = _currentlyStudying;
+                  widget.applicant.originCountry = _originController.text;
                   widget.applicant.personalDescription = _descController.text;
                   if (_profileImageData != null) {
-                    widget.applicant.profilePicturePath = base64Encode(_profileImageData!);
+                    widget.applicant.profilePicturePath =
+                        base64Encode(_profileImageData!);
                   }
-                  
+
                   provider.completeSetup(widget.applicant);
-                  
+
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
@@ -156,8 +229,9 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
                     ),
                   );
                 },
-                child: const Text('Complete Setup & Login'),
+                child: Text(loc.completeSetupAndLogin),
               ),
+              const SizedBox(height: 20),
             ],
           ),
         ),

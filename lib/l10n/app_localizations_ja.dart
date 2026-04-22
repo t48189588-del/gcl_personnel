@@ -175,4 +175,124 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get exportICS => 'ICSへエクスポート';
+
+  @override
+  String get toggleTheme => 'テーマ切替';
+
+  @override
+  String get role => '役職';
+
+  @override
+  String get day => '日';
+
+  @override
+  String get closed => '休業';
+
+  @override
+  String get currentlyStudying => '現在の専攻';
+
+  @override
+  String get originCountry => '出身国';
+
+  @override
+  String get cancel => 'キャンセル';
+
+  @override
+  String get selectDate => '日付を選択';
+
+  @override
+  String get openInviteLink => '招待リンクを開く';
+
+  @override
+  String get senior => 'シニア';
+
+  @override
+  String get junior => 'ジュニア';
+
+  @override
+  String get online => 'オンライン';
+
+  @override
+  String get inPerson => '対面';
+
+  @override
+  String get both => '両方';
+
+  @override
+  String get none => 'なし';
+
+  @override
+  String get mockEmailTitle => '模擬メールを受信しました！';
+
+  @override
+  String mockEmailContent(String email) {
+    return '$email に確認メールを送信しました。\n\nリンクをクリックしてプロファイル設定をテストしてください。';
+  }
+
+  @override
+  String get selectJuniorProfileTitle => 'ジュニアプロファイルを選択';
+
+  @override
+  String get proposalSubmitted => '提案が送信されました！';
+
+  @override
+  String get noAnnouncements => 'お知らせはありません。';
+
+  @override
+  String get developerDashboardTitle => '開発者ダッシュボード - システムログ';
+
+  @override
+  String get logEntryTypeAction => 'アクション';
+
+  @override
+  String get logEntryTypeInteraction => 'インタラクション';
+
+  @override
+  String get clearLogsTooltip => 'ログをクリア';
+
+  @override
+  String get currentlyStudyingHint => '何を学んでいますか？';
+
+  @override
+  String get originCountryHint => '出身はどこですか？';
+
+  @override
+  String get finishEmployment => '退職手続き';
+
+  @override
+  String get finishImmediately => '今すぐ';
+
+  @override
+  String get finishFutureDate => '退職予定日';
+
+  @override
+  String get employmentEndDialogTitle => '退職手続き';
+
+  @override
+  String get employmentEndDialogContent =>
+      '最終出勤日を選択してください。その日付以降のスケジュールは無効になります。';
+
+  @override
+  String get selectModality => '勤務形態を選択';
+
+  @override
+  String get loading => '読み込み中...';
+
+  @override
+  String get noStaffLoggedIn => 'スタッフがログインしていません。';
+
+  @override
+  String get welcomeCompleteProfile => 'ようこそ！ポータルにアクセスするためにプロフィールを完成させてください。';
+
+  @override
+  String get completeYourProfile => 'プロフィールの完成';
+
+  @override
+  String get fullName => '氏名';
+
+  @override
+  String get completeSetupAndLogin => '設定を完了してログイン';
+
+  @override
+  String get personalDescription => '個人説明';
 }

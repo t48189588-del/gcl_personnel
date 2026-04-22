@@ -97,6 +97,19 @@ class AppProvider with ChangeNotifier {
     }
   }
 
+  void finishEmployment(String staffId, {DateTime? endDate}) {
+    var index = _staff.indexWhere((s) => s.id == staffId);
+    if (index != -1) {
+      _staff[index].employmentEndDate = endDate;
+      if (endDate == null || endDate.isBefore(DateTime.now())) {
+        _staff[index].isActive = false;
+      }
+      HiveService.saveStaff(_staff[index]);
+      LoggerService.log('Action', 'Finished employment for ${_staff[index].name} (End Date: ${endDate ?? "Immediately"})');
+      notifyListeners();
+    }
+  }
+
   void updateDaySchedule(int weekday, String start, String end, bool isClosed) {
     var day = _operatingHours.weeklySchedule.firstWhere(
       (d) => d.weekday == weekday,

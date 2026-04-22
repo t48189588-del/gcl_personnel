@@ -55,5 +55,51 @@
   "proposedDate": "提案日",
   "masterCalendarExport": "マスターカレンダーエクスポート (月次)",
   "attendanceWarning": "こまめに勤怠を確認してください！",
-  "exportICS": "ICSへエクスポート"
+  "exportICS": "ICSへエクスポート",
+  "toggleTheme": "テーマ切替",
+  "role": "役職",
+  "day": "日",
+  "closed": "休業",
+  "currentlyStudying": "現在の専攻",
+  "originCountry": "出身国",
+  "cancel": "キャンセル",
+  "selectDate": "日付を選択",
+  "openInviteLink": "招待リンクを開く",
+  "senior": "シニア",
+  "junior": "ジュニア",
+  "online": "オンライン",
+  "inPerson": "対面",
+  "both": "両方",
+  "none": "なし",
+  "mockEmailTitle": "模擬メールを受信しました！",
+  "mockEmailContent": "{email} に確認メールを送信しました。\n\nリンクをクリックしてプロファイル設定をテストしてください。",
+  "@mockEmailContent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "selectJuniorProfileTitle": "ジュニアプロファイルを選択",
+  "proposalSubmitted": "提案が送信されました！",
+  "noAnnouncements": "お知らせはありません。",
+  "developerDashboardTitle": "開発者ダッシュボード - システムログ",
+  "logEntryTypeAction": "アクション",
+  "logEntryTypeInteraction": "インタラクション",
+  "clearLogsTooltip": "ログをクリア",
+  "currentlyStudyingHint": "何を学んでいますか？",
+  "originCountryHint": "出身はどこですか？",
+  "finishEmployment": "退職手続き",
+  "finishImmediately": "今すぐ",
+  "finishFutureDate": "退職予定日",
+  "employmentEndDialogTitle": "退職手続き",
+  "employmentEndDialogContent": "最終出勤日を選択してください。その日付以降のスケジュールは無効になります。",
+  "selectModality": "勤務形態を選択",
+  "loading": "読み込み中...",
+  "noStaffLoggedIn": "スタッフがログインしていません。",
+  "welcomeCompleteProfile": "ようこそ！ポータルにアクセスするためにプロフィールを完成させてください。",
+  "completeYourProfile": "プロフィールの完成",
+  "fullName": "氏名",
+  "completeSetupAndLogin": "設定を完了してログイン",
+  "personalDescription": "個人説明"
 }

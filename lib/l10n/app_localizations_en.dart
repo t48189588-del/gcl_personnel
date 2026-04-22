@@ -176,4 +176,125 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportICS => 'Export to ICS';
+
+  @override
+  String get toggleTheme => 'Toggle Theme';
+
+  @override
+  String get role => 'Role';
+
+  @override
+  String get day => 'Day';
+
+  @override
+  String get closed => 'Closed';
+
+  @override
+  String get currentlyStudying => 'Currently Studying';
+
+  @override
+  String get originCountry => 'Origin Country';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get selectDate => 'Select Date';
+
+  @override
+  String get openInviteLink => 'Open Invite Link';
+
+  @override
+  String get senior => 'Senior';
+
+  @override
+  String get junior => 'Junior';
+
+  @override
+  String get online => 'Online';
+
+  @override
+  String get inPerson => 'In Person';
+
+  @override
+  String get both => 'Both';
+
+  @override
+  String get none => 'None';
+
+  @override
+  String get mockEmailTitle => 'Mock Email Received!';
+
+  @override
+  String mockEmailContent(String email) {
+    return 'Verification sent to $email\n\nClick link to test setup profile.';
+  }
+
+  @override
+  String get selectJuniorProfileTitle => 'Select Junior Profile';
+
+  @override
+  String get proposalSubmitted => 'Proposal Submitted!';
+
+  @override
+  String get noAnnouncements => 'No announcements yet.';
+
+  @override
+  String get developerDashboardTitle => 'Developer Dashboard - System Logs';
+
+  @override
+  String get logEntryTypeAction => 'Action';
+
+  @override
+  String get logEntryTypeInteraction => 'Interaction';
+
+  @override
+  String get clearLogsTooltip => 'Clear Logs';
+
+  @override
+  String get currentlyStudyingHint => 'What are you studying?';
+
+  @override
+  String get originCountryHint => 'Where are you from?';
+
+  @override
+  String get finishEmployment => 'Finish Employment';
+
+  @override
+  String get finishImmediately => 'Immediately';
+
+  @override
+  String get finishFutureDate => 'Future Last Date';
+
+  @override
+  String get employmentEndDialogTitle => 'Finish Employment';
+
+  @override
+  String get employmentEndDialogContent =>
+      'Select your last day of employment. This will disable your scheduling calendar after that date.';
+
+  @override
+  String get selectModality => 'Select Modality';
+
+  @override
+  String get loading => 'Loading...';
+
+  @override
+  String get noStaffLoggedIn => 'No Staff logged in.';
+
+  @override
+  String get welcomeCompleteProfile =>
+      'Welcome! Please complete your profile to access the portal.';
+
+  @override
+  String get completeYourProfile => 'Complete Your Profile';
+
+  @override
+  String get fullName => 'Full Name';
+
+  @override
+  String get completeSetupAndLogin => 'Complete Setup & Login';
+
+  @override
+  String get personalDescription => 'Personal Description';
 }

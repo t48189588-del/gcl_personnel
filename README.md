@@ -1,20 +1,37 @@
 # gcl_personnel
 
-A flutter web app for managing GCL staff and events.
+Presentation to other student staff **May 6,2026**
+Presentation date to senior staff **May 13, 2026**
+
+A flutter web app for managing GCL staff and events (self hosted)
+A office/sharepoint mirror (cloud hosted)
 
 Base information pulled from 
 Online contact 
 
 - Instragram: https://www.instagram.com/gclkyutech/  
-- Website: https://sites.google.com/view/gclkyutech/about-us  
+- Website (hosted in google sites): https://sites.google.com/view/gclkyutech/about-us  
 - Line ID: kyutechgcl  
 - Email: gcl@lai.kyutech.ac.jp  
 - Youtube: https://www.youtube.com/channel/UCXeW6dvL52EJgPPNJMlVt0A  
 - Moodle reservation: https://horyu.el.kyutech.ac.jp/course/view.php?id=767 
+- Teams group
+
+Currently all information is hosted in excel files in teams groups
 
 ## Tasks
 - [ ] admin information
+  - [ ] seniour staff (3 people)
+    - [ ] Hatsuda Hisanori
+    - [ ] Shiraishi Shinya
+    - [ ] Kiruma Tomoko
+  - [ ] student staff (25 people)
+    - [ ] admin / owner
+    - [ ] users
   - [x] GCL hour schedule
+    - [ ] export (auto generated)
+      - [ ] Excel 
+      - [ ] generate PDF naming=japanese year.month_GCL_Schedule.pdf
   - [ ] Staff information
   - [ ] holidays input (to pull from internet yearly and ask for user confirmation)
   - [ ] platform management logging
@@ -26,11 +43,11 @@ Online contact
     - [ ] Youtube
     - [ ] Moodle
 - [ ] scheduling platform
-  - [x] date and time handler (within GCL hour schedule limit, holidays and events)
-  - [x] type of availability
+  - [x] ~~date and time handler (within GCL hour schedule limit, holidays and events)~~
+  - [x] ~~type of availability~~
     - [ ] in person
     - [ ] online only
-  - [ ] attendance confirmation
+  - [ ] attendance confirmation 
 - [ ] Event handler
   - [ ] event proposal 
   - [ ] before event
@@ -48,32 +65,39 @@ Online contact
 - [ ] Meeting reservation forms integrations (for external people of GCL)
   - [ ] date and time (30 minute limit per session)
   - [ ] japanese compatibility
-  - [ ] place
-    - [ ] online
-    - [ ] in person
-  - [ ] department
-  - [ ] grade
-  - [ ] purpose
-  - [ ] name
-    - [ ] organizer
-    - [ ] participant
-  - [ ] purpose
-    - [ ] assignment
-    - [ ] conversation
-      - [ ] English
-      - [ ] Chinese
-      - [ ] Japanese
-    - [ ] Presentation practice
-      - [ ] English
-      - [ ] Japanese
+  - [ ] forms
+    - [ ] place
+      - [ ] online
+      - [ ] in person
+    - [ ] department
+    - [ ] grade
+    - [ ] purpose
+    - [ ] name
+      - [ ] organizer
+      - [ ] participant
+    - [ ] purpose
+      - [ ] assignment
+      - [ ] conversation
+        - [ ] English
+        - [ ] Chinese
+        - [ ] Japanese
+      - [ ] Presentation practice
+        - [ ] English
+        - [ ] Japanese
+    - [ ] export
+      - [ ] create menu and log to register previously exported information
+      - [ ] Excel (1 tab per month - 1 book per year)
 ## capabilities
-- photos submission
+- photos & video submission
+  - events
+  - profile 
 - [x] email and calendar integration (google and outlook)
 - export logging
   - events
   - attendance
   - meeting agenda
-- Login capability 
+- Login capability
+  - cojoin with office 365 (kyutech credentials) 
 - Multi-language support
   - English
   - Japanese
@@ -88,48 +112,27 @@ Online contact
 - automatic backup generation 
   - locally 
   - online
+- power automate integration?
 
-# Prompts
-## First day
-```
-# PROJECT: International Dept. Multi-Role Admin Ledger (PoC)
-# ROLE: Senior Flutter Architect & UI/UX Specialist
+## Pendings
+- [ ] Working reports (information and standards)
+- [ ] Meeting Agenda & Minutes
+- [ ] SNS scrapper (only public information)
+- [ ] Media generator - integration with LLM
 
-## 1. ACCESS CONTROL LOGIC (The "Role Gate")
-On launch, the app presents a simple Role Selection (Senior Staff vs. Junior Staff) to demonstrate the two distinct workflows.
+# option 1
+Office 365 only tools
+- power apps
+- power automate
+- sharepoint
+- teams
+- word 
+- excel 
 
-## 2. SENIOR STAFF MODULE (The Commander View)
-### A. Departmental Guardrails
-- **Operating Hours:** Global Start/End time setter.
-- **Calendar Management:** Tool to mark Holidays and Location status.
-- **Staff Metrics Dashboard:** A filterable table/view to analyze the 20 staff members by:
-    - Language (Native/Fluent)
-    - Degree/Academic level
-    - Modality (In-Person vs. Online)
-    - Assistance/Availability rate
-- **Data Export:** Button to generate a formatted .xlsx file containing all filtered metrics and schedules.
+# option 2
+"Open" tools
+- flutter 
+- python 
+- n8n (power automate functions)
+- google apps script
 
-## 3. JUNIOR STAFF MODULE (The Self-Service Portal)
-### B. Scheduling & Availability
-- **30-Min Block Painter:** A calendar grid allowing staff to select availability in 30-minute increments within Admin-defined hours.
-- **Modality Toggle:** For each block or shift, mark as "In-Person," "Online," or "Both."
-- **Event Feed:** A "Notice Board" section showing upcoming department events.
-
-### C. Personal Profile & Communication
-- **Multi-Language Support:** Input for "Native Language" and a list for "Fluent Service Languages."
-- **Communication Preferences:** Toggle for Email, SNS, or Both.
-- **Emergency Protocol:** A prominent "Emergency Reschedule" button that:
-    1. Allows the user to select the shift to vacate.
-    2. Flags the shift as "Needs Replacement" for Senior Staff.
-    3. Triggers a notification simulation (Snackbar/Toast) to the replacement (if logic is set).
-
-## 4. UI/UX REQUIREMENTS
-- **Color Coding:** Use distinct themes for Senior (e.g., Professional Slate) and Junior (e.g., Energetic Blue) portals.
-- **Clarity:** 30-minute blocks must be large enough for "fat-finger" selection on mobile devices.
-- **Accessibility:** Ensure high-contrast text and icons for senior staff members.
-
-## 5. TECHNICAL SPECIFICATIONS
-- **Framework:** Flutter Web.
-- **Storage:** Local Hive/IndexedDB for persistent data across sessions.
-- **Validation:** Junior staff CANNOT select times outside the Admin's "Operating Hours" or on "Holidays."
-```

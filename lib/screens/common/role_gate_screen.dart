@@ -97,7 +97,7 @@ class RoleGateScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Select Junior Profile'),
+        title: Text(loc.selectJuniorProfileTitle),
         content: SizedBox(
           width: 300,
           child: ListView.builder(

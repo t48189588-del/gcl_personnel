@@ -433,6 +433,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Export to ICS'**
   String get exportICS;
+
+  /// No description provided for @toggleTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle Theme'**
+  String get toggleTheme;
+
+  /// No description provided for @role.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get role;
+
+  /// No description provided for @day.
+  ///
+  /// In en, this message translates to:
+  /// **'Day'**
+  String get day;
+
+  /// No description provided for @closed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get closed;
+
+  /// No description provided for @currentlyStudying.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently Studying'**
+  String get currentlyStudying;
+
+  /// No description provided for @originCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Origin Country'**
+  String get originCountry;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @selectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Date'**
+  String get selectDate;
+
+  /// No description provided for @openInviteLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Invite Link'**
+  String get openInviteLink;
+
+  /// No description provided for @senior.
+  ///
+  /// In en, this message translates to:
+  /// **'Senior'**
+  String get senior;
+
+  /// No description provided for @junior.
+  ///
+  /// In en, this message translates to:
+  /// **'Junior'**
+  String get junior;
+
+  /// No description provided for @online.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get online;
+
+  /// No description provided for @inPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'In Person'**
+  String get inPerson;
+
+  /// No description provided for @both.
+  ///
+  /// In en, this message translates to:
+  /// **'Both'**
+  String get both;
+
+  /// No description provided for @none.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get none;
+
+  /// No description provided for @mockEmailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mock Email Received!'**
+  String get mockEmailTitle;
+
+  /// No description provided for @mockEmailContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification sent to {email}\n\nClick link to test setup profile.'**
+  String mockEmailContent(String email);
+
+  /// No description provided for @selectJuniorProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Junior Profile'**
+  String get selectJuniorProfileTitle;
+
+  /// No description provided for @proposalSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Proposal Submitted!'**
+  String get proposalSubmitted;
+
+  /// No description provided for @noAnnouncements.
+  ///
+  /// In en, this message translates to:
+  /// **'No announcements yet.'**
+  String get noAnnouncements;
+
+  /// No description provided for @developerDashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Developer Dashboard - System Logs'**
+  String get developerDashboardTitle;
+
+  /// No description provided for @logEntryTypeAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Action'**
+  String get logEntryTypeAction;
+
+  /// No description provided for @logEntryTypeInteraction.
+  ///
+  /// In en, this message translates to:
+  /// **'Interaction'**
+  String get logEntryTypeInteraction;
+
+  /// No description provided for @clearLogsTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Logs'**
+  String get clearLogsTooltip;
+
+  /// No description provided for @currentlyStudyingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What are you studying?'**
+  String get currentlyStudyingHint;
+
+  /// No description provided for @originCountryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Where are you from?'**
+  String get originCountryHint;
+
+  /// No description provided for @finishEmployment.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish Employment'**
+  String get finishEmployment;
+
+  /// No description provided for @finishImmediately.
+  ///
+  /// In en, this message translates to:
+  /// **'Immediately'**
+  String get finishImmediately;
+
+  /// No description provided for @finishFutureDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Future Last Date'**
+  String get finishFutureDate;
+
+  /// No description provided for @employmentEndDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish Employment'**
+  String get employmentEndDialogTitle;
+
+  /// No description provided for @employmentEndDialogContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your last day of employment. This will disable your scheduling calendar after that date.'**
+  String get employmentEndDialogContent;
+
+  /// No description provided for @selectModality.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Modality'**
+  String get selectModality;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
+  /// No description provided for @noStaffLoggedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'No Staff logged in.'**
+  String get noStaffLoggedIn;
+
+  /// No description provided for @welcomeCompleteProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome! Please complete your profile to access the portal.'**
+  String get welcomeCompleteProfile;
+
+  /// No description provided for @completeYourProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Your Profile'**
+  String get completeYourProfile;
+
+  /// No description provided for @fullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Name'**
+  String get fullName;
+
+  /// No description provided for @completeSetupAndLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Setup & Login'**
+  String get completeSetupAndLogin;
+
+  /// No description provided for @personalDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Description'**
+  String get personalDescription;
 }
 
 class _AppLocalizationsDelegate

@@ -30,7 +30,7 @@ class _SeniorDashboardState extends State<SeniorDashboard> {
             icon: const Icon(Icons.calendar_month),
             tooltip: loc.masterCalendarExport,
             onPressed: () async {
-              final DateTime? month = await _selectMonth(context);
+              final DateTime? month = await _selectMonth(context, loc);
               if (month != null) {
                 final juniors = provider.staff.where((s) => !s.isSenior && s.isSetupComplete).toList();
                 ExcelService.exportMasterCalendarMonthly(month, juniors, provider.blocks);
@@ -81,7 +81,7 @@ class _SeniorDashboardState extends State<SeniorDashboard> {
     );
   }
 
-  Future<DateTime?> _selectMonth(BuildContext context) async {
+  Future<DateTime?> _selectMonth(BuildContext context, AppLocalizations loc) async {
     DateTime now = DateTime.now();
     return await showDatePicker(
       context: context,
@@ -89,7 +89,7 @@ class _SeniorDashboardState extends State<SeniorDashboard> {
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
       initialDatePickerMode: DatePickerMode.year,
-      helpText: 'Select Month for Master Export',
+      helpText: loc.masterCalendarExport,
     );
   }
 }
@@ -133,11 +133,9 @@ class _MetricsViewState extends State<_MetricsView> {
       if (_sortColumnIndex == 0) cmp = s1.name.compareTo(s2.name);
       if (_sortColumnIndex == 1) cmp = s1.nativeLanguage.compareTo(s2.nativeLanguage);
       if (_sortColumnIndex == 2) cmp = s1.degree.compareTo(s2.degree);
-      if (_sortColumnIndex == 3) cmp = s1.modalityPreference.compareTo(s2.modalityPreference);
       if (_sortColumnIndex == 4) cmp = s1.availabilityRate.compareTo(s2.availabilityRate);
       if (_sortColumnIndex == 5) cmp = s1.eventsParticipation.compareTo(s2.eventsParticipation);
       if (_sortColumnIndex == 6) cmp = s1.providedAssistance.compareTo(s2.providedAssistance);
-      
       return _isAscending ? cmp : -cmp;
     });
 
@@ -157,11 +155,7 @@ class _MetricsViewState extends State<_MetricsView> {
                     prefixIcon: const Icon(Icons.search),
                     border: const OutlineInputBorder(),
                   ),
-                  onChanged: (val) {
-                    setState(() {
-                      _searchQuery = val;
-                    });
-                  },
+                  onChanged: (val) => setState(() => _searchQuery = val),
                 ),
               ),
               const SizedBox(width: 16),
@@ -188,18 +182,15 @@ class _MetricsViewState extends State<_MetricsView> {
                           showDialog(
                             context: context,
                             builder: (ctx) => AlertDialog(
-                              title: const Text('Mock Email Received!'),
-                              content: Text('Verification sent to ${emailController.text}\n\nClick link to test setup profile.'),
+                              title: Text(loc.mockEmailTitle),
+                              content: Text(loc.mockEmailContent(emailController.text)),
                               actions: [
                                 ElevatedButton(
                                   onPressed: () {
                                     Navigator.pop(ctx);
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (_) => SetupProfileScreen(applicant: mockApplicant)),
-                                    );
+                                    Navigator.push(context, MaterialPageRoute(builder: (_) => SetupProfileScreen(applicant: mockApplicant)));
                                   },
-                                  child: const Text('Open Invite Link'),
+                                  child: Text(loc.openInviteLink),
                                 )
                               ],
                             ),
@@ -216,6 +207,7 @@ class _MetricsViewState extends State<_MetricsView> {
           const SizedBox(height: 16),
           Expanded(
             child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: DataTable(
@@ -224,45 +216,26 @@ class _MetricsViewState extends State<_MetricsView> {
                   columns: [
                     DataColumn(label: _sortableHeader(loc.name), onSort: (index, asc) => setState(() { _sortColumnIndex = index; _isAscending = asc; })),
                     DataColumn(label: _sortableHeader(loc.nativeLang), onSort: (index, asc) => setState(() { _sortColumnIndex = index; _isAscending = asc; })),
-                    DataColumn(label: _sortableHeader(loc.degree), onSort: (index, asc) => setState(() { _sortColumnIndex = index; _isAscending = asc; })),
+                    DataColumn(label: _sortableHeader(loc.currentlyStudying), onSort: (index, asc) => setState(() { _sortColumnIndex = index; _isAscending = asc; })),
                     DataColumn(label: _sortableHeader(loc.availRate), onSort: (index, asc) => setState(() { _sortColumnIndex = index; _isAscending = asc; })),
                     DataColumn(label: _sortableHeader(loc.eventsPart), onSort: (index, asc) => setState(() { _sortColumnIndex = index; _isAscending = asc; })),
                     DataColumn(label: _sortableHeader(loc.assistance), onSort: (index, asc) => setState(() { _sortColumnIndex = index; _isAscending = asc; })),
                     DataColumn(label: Text(loc.alerts)),
-                    const DataColumn(label: Text('Role')),
+                    DataColumn(label: Text(loc.role)),
                   ],
                   rows: filteredStaff.map((s) {
                     final needsReplaceBlocks = blocks.where((b) => b.staffId == s.id && b.needsReplacement).length;
                     return DataRow(cells: [
-                      DataCell(
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              child: Text(s.name[0]),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(s.name),
-                          ],
-                        ),
-                      ),
+                      DataCell(Row(children: [CircleAvatar(child: Text(s.name[0])), const SizedBox(width: 8), Text(s.name)])),
                       DataCell(Text(s.nativeLanguage)),
                       DataCell(Text(s.degree)),
                       DataCell(Text('${(s.availabilityRate * 100).toStringAsFixed(1)}%')),
                       DataCell(Text(s.eventsParticipation.toString())),
                       DataCell(Text(s.providedAssistance.toString())),
-                      DataCell(
-                        needsReplaceBlocks > 0
-                            ? Text('$needsReplaceBlocks Alerts', style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold))
-                            : const Text('None'),
-                      ),
-                      DataCell(
-                        s.isSenior 
-                        ? const Text('Senior')
-                        : ElevatedButton(
-                            onPressed: () => provider.upgradeToSenior(s.id),
-                            child: Text(loc.upgradeToSenior),
-                          ),
-                      ),
+                      DataCell(needsReplaceBlocks > 0 
+                        ? Text('$needsReplaceBlocks ${loc.alerts}', style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)) 
+                        : Text(loc.none)),
+                      DataCell(s.isSenior ? Text(loc.senior) : ElevatedButton(onPressed: () => provider.upgradeToSenior(s.id), child: Text(loc.upgradeToSenior))),
                     ]);
                   }).toList(),
                 ),
@@ -294,70 +267,35 @@ class _GuardrailsView extends StatelessWidget {
             Text(loc.operatingHours, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 16),
             DataTable(
-              columns: const [
-                DataColumn(label: Text('Day')),
-                DataColumn(label: Text('Start Time')),
-                DataColumn(label: Text('End Time')),
-                DataColumn(label: Text('Closed?')),
+              columns: [
+                DataColumn(label: Text(loc.day)),
+                DataColumn(label: Text(loc.startTime)),
+                DataColumn(label: Text(loc.endTime)),
+                DataColumn(label: Text(loc.closed)),
               ],
               rows: config.weeklySchedule.map((ds) {
                 return DataRow(cells: [
                   DataCell(Text(weekdays[ds.weekday - 1])),
-                  DataCell(
-                    DropdownButton<String>(
-                      value: ds.startHour,
-                      items: List.generate(24, (index) {
-                        final hour = index.toString().padLeft(2, '0');
-                        return DropdownMenuItem(value: '$hour:00', child: Text('$hour:00'));
-                      }),
-                      onChanged: ds.isClosed ? null : (val) {
-                        if (val != null) provider.updateDaySchedule(ds.weekday, val, ds.endHour, ds.isClosed);
-                      },
-                    ),
-                  ),
-                  DataCell(
-                    DropdownButton<String>(
-                      value: ds.endHour,
-                      items: List.generate(24, (index) {
-                        final hour = index.toString().padLeft(2, '0');
-                        return DropdownMenuItem(value: '$hour:00', child: Text('$hour:00'));
-                      }),
-                      onChanged: ds.isClosed ? null : (val) {
-                        if (val != null) provider.updateDaySchedule(ds.weekday, ds.startHour, val, ds.isClosed);
-                      },
-                    ),
-                  ),
-                  DataCell(
-                    Switch(
-                      value: ds.isClosed,
-                      onChanged: (val) {
-                        provider.updateDaySchedule(ds.weekday, ds.startHour, ds.endHour, val);
-                      },
-                    )
-                  )
+                  DataCell(DropdownButton<String>(
+                    value: ds.startHour,
+                    items: List.generate(24, (index) => '${index.toString().padLeft(2, '0')}:00').map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
+                    onChanged: ds.isClosed ? null : (val) { if (val != null) provider.updateDaySchedule(ds.weekday, val, ds.endHour, ds.isClosed); },
+                  )),
+                  DataCell(DropdownButton<String>(
+                    value: ds.endHour,
+                    items: List.generate(24, (index) => '${index.toString().padLeft(2, '0')}:00').map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
+                    onChanged: ds.isClosed ? null : (val) { if (val != null) provider.updateDaySchedule(ds.weekday, ds.startHour, val, ds.isClosed); },
+                  )),
+                  DataCell(Switch(value: ds.isClosed, onChanged: (val) => provider.updateDaySchedule(ds.weekday, ds.startHour, ds.endHour, val)))
                 ]);
               }).toList(),
             ),
             const SizedBox(height: 48),
             Text(loc.holidays, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 16),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.calendar_month),
-              label: Text(loc.addHoliday),
-              onPressed: () {
-                _showAddHolidayDialog(context, provider, loc);
-              },
-            ),
+            ElevatedButton.icon(icon: const Icon(Icons.calendar_month), label: Text(loc.addHoliday), onPressed: () => _showAddHolidayDialog(context, provider, loc)),
             const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: config.holidays
-                  .map((h) => Chip(
-                        label: Text('${DateFormat('yyyy-MM-dd').format(h.date)}: ${h.message}'),
-                        onDeleted: () => provider.removeHoliday(h.date),
-                      ))
-                  .toList(),
-            ),
+            Wrap(spacing: 8, children: config.holidays.map((h) => Chip(label: Text('${DateFormat('yyyy-MM-dd').format(h.date)}: ${h.message}'), onDeleted: () => provider.removeHoliday(h.date))).toList()),
           ],
         ),
       ),
@@ -373,96 +311,35 @@ class _GuardrailsView extends StatelessWidget {
 
     showDialog(
       context: context,
-      builder: (dContext) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text(loc.addHoliday),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      width: 250,
-                      height: 250,
-                      child: CalendarDatePicker(
-                        initialDate: selectedDate,
-                        firstDate: DateTime(2020),
-                        lastDate: DateTime(2030),
-                        onDateChanged: (val) => selectedDate = val,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: msgController,
-                      decoration: InputDecoration(
-                        labelText: loc.holidayMessagePrompt,
-                        border: const OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Text(loc.allDay),
-                        const Spacer(),
-                        Switch(
-                          value: isAllDay,
-                          onChanged: (val) => setState(() => isAllDay = val),
-                        ),
-                      ],
-                    ),
-                    if (!isAllDay) ...[
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: DropdownButton<String>(
-                              value: start,
-                              isExpanded: true,
-                              items: List.generate(24, (i) => '${i.toString().padLeft(2, '0')}:00')
-                                  .map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
-                              onChanged: (v) => setState(() => start = v!),
-                            ),
-                          ),
-                          const Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: Text('-')),
-                          Expanded(
-                            child: DropdownButton<String>(
-                              value: end,
-                              isExpanded: true,
-                              items: List.generate(24, (i) => '${i.toString().padLeft(2, '0')}:00')
-                                  .map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
-                              onChanged: (v) => setState(() => end = v!),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ]
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(dContext),
-                  child: const Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    provider.addHoliday(
-                      selectedDate, 
-                      msgController.text,
-                      isAllDay: isAllDay,
-                      start: start,
-                      end: end,
-                    );
-                    Navigator.pop(dContext);
-                  },
-                  child: Text(loc.saveHoliday),
-                )
+      builder: (dContext) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Text(loc.addHoliday),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(width: 250, height: 250, child: CalendarDatePicker(initialDate: selectedDate, firstDate: DateTime(2020), lastDate: DateTime(2030), onDateChanged: (val) => selectedDate = val)),
+                const SizedBox(height: 16),
+                TextField(controller: msgController, decoration: InputDecoration(labelText: loc.holidayMessagePrompt, border: const OutlineInputBorder())),
+                const SizedBox(height: 16),
+                Row(children: [Text(loc.allDay), const Spacer(), Switch(value: isAllDay, onChanged: (val) => setState(() => isAllDay = val))]),
+                if (!isAllDay) ...[
+                  const SizedBox(height: 8),
+                  Row(children: [
+                    Expanded(child: DropdownButton<String>(value: start, isExpanded: true, items: List.generate(24, (i) => '${i.toString().padLeft(2, '0')}:00').map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(), onChanged: (v) => setState(() => start = v!))),
+                    const Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: Text('-')),
+                    Expanded(child: DropdownButton<String>(value: end, isExpanded: true, items: List.generate(24, (i) => '${i.toString().padLeft(2, '0')}:00').map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(), onChanged: (v) => setState(() => end = v!))),
+                  ]),
+                ]
               ],
-            );
-          }
-        );
-      }
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(dContext), child: Text(loc.cancel)),
+            ElevatedButton(onPressed: () { provider.addHoliday(selectedDate, msgController.text, isAllDay: isAllDay, start: start, end: end); Navigator.pop(dContext); }, child: Text(loc.saveHoliday)),
+          ],
+        ),
+      ),
     );
   }
 }
