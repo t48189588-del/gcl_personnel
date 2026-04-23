@@ -45,3 +45,5 @@ app.*.map.json
 /android/app/release
 
 GCL_information.md
+.env
+/venv/
