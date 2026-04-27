@@ -295,4 +295,109 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get personalDescription => '個人説明';
+
+  @override
+  String get workingReports => '業務報告';
+
+  @override
+  String get submitReport => '報告書を提出';
+
+  @override
+  String get reportPending => '報告待ち';
+
+  @override
+  String get pendingReportsNotice => '未提出の業務報告書があります。';
+
+  @override
+  String get confirmedStartTime => '確定開始時刻';
+
+  @override
+  String get confirmedEndTime => '確定終了時刻';
+
+  @override
+  String get workDoneLabel => '業務内容';
+
+  @override
+  String get workDoneHint => 'このシフト中の業務内容を記入してください';
+
+  @override
+  String get reportDate => '報告日';
+
+  @override
+  String get scheduledTime => '予定時刻';
+
+  @override
+  String get workedHours => '実働時間';
+
+  @override
+  String get missingReport => '未提出';
+
+  @override
+  String get filledReport => '提出済み';
+
+  @override
+  String get affiliation => '所属';
+
+  @override
+  String get helpConfirmedTime => '実際の勤務時間に合わせて開始・終了時刻を調整してください。';
+
+  @override
+  String get helpWorkDone => 'このシフト中に行った業務や成果を簡潔に記入してください。';
+
+  @override
+  String get socialMetrics => 'ソーシャルメディア指標';
+
+  @override
+  String get refreshMetrics => '指標を更新';
+
+  @override
+  String get kanaName => 'フリガナ (かな)';
+
+  @override
+  String get mon => '月';
+
+  @override
+  String get tue => '火';
+
+  @override
+  String get wed => '水';
+
+  @override
+  String get thu => '木';
+
+  @override
+  String get fri => '金';
+
+  @override
+  String get sat => '土';
+
+  @override
+  String get sun => '日';
+
+  @override
+  String get status => 'ステータス';
+
+  @override
+  String get approve => '承認';
+
+  @override
+  String get reject => '却下';
+
+  @override
+  String get totalHours => '合計時間';
+
+  @override
+  String get proposed => '申請中';
+
+  @override
+  String get approved => '承認済み';
+
+  @override
+  String get rejected => '却下済み';
+
+  @override
+  String get nextMonthSchedule => '来月のシフト申請';
+
+  @override
+  String get approveAll => 'すべて承認';
 }

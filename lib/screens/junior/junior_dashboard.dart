@@ -77,18 +77,18 @@ class _JuniorDashboardState extends State<JuniorDashboard> {
   }
 }
 
-enum CalendarViewType { Day, Week, Month }
+enum CalendarViewType { day, week, month }
 
 class _SchedulePainterView extends StatefulWidget {
-  const _SchedulePainterView({super.key});
+  const _SchedulePainterView();
 
   @override
   State<_SchedulePainterView> createState() => _SchedulePainterViewState();
 }
 
 class _SchedulePainterViewState extends State<_SchedulePainterView> {
-  DateTime _selectedDate = DateTime.now();
-  CalendarViewType _viewType = CalendarViewType.Day;
+  DateTime _selectedDate = DateTime(DateTime.now().year, DateTime.now().month + 1, 1);
+  CalendarViewType _viewType = CalendarViewType.day;
 
   @override
   Widget build(BuildContext context) {
@@ -110,11 +110,12 @@ class _SchedulePainterViewState extends State<_SchedulePainterView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildAttendanceBanner(loc),
+          const _PendingReportsBanner(),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(loc.schedule, style: Theme.of(context).textTheme.headlineSmall),
+              Text(loc.nextMonthSchedule, style: Theme.of(context).textTheme.headlineSmall),
               Row(
                 children: [
                   OutlinedButton.icon(
@@ -134,19 +135,18 @@ class _SchedulePainterViewState extends State<_SchedulePainterView> {
                   const SizedBox(width: 8),
                   SegmentedButton<CalendarViewType>(
                     segments: const [
-                      ButtonSegment(value: CalendarViewType.Month, label: Text('M')),
-                      ButtonSegment(value: CalendarViewType.Week, label: Text('W')),
-                      ButtonSegment(value: CalendarViewType.Day, label: Text('D')),
+                      ButtonSegment(value: CalendarViewType.month, label: Text('M')),
+                      ButtonSegment(value: CalendarViewType.week, label: Text('W')),
+                      ButtonSegment(value: CalendarViewType.day, label: Text('D')),
                     ],
                     selected: {_viewType},
                     onSelectionChanged: (val) => setState(() => _viewType = val.first),
                   ),
-                  const SizedBox(width: 16),
-                  if (_viewType != CalendarViewType.Month) ...[
+                  if (_viewType != CalendarViewType.month) ...[
                     IconButton(
                       icon: const Icon(Icons.arrow_back_ios, size: 16),
                       onPressed: () => setState(() {
-                        _selectedDate = _selectedDate.subtract(Duration(days: _viewType == CalendarViewType.Week ? 7 : 1));
+                        _selectedDate = _selectedDate.subtract(Duration(days: _viewType == CalendarViewType.week ? 7 : 1));
                       }),
                     ),
                   ],
@@ -160,14 +160,14 @@ class _SchedulePainterViewState extends State<_SchedulePainterView> {
                         firstDate: DateTime.now().subtract(const Duration(days: 365)),
                         lastDate: DateTime.now().add(const Duration(days: 365)),
                       );
-                      if (date != null) setState(() => _selectedDate = date);
+                      if (date != null && mounted) setState(() => _selectedDate = date);
                     },
                   ),
-                  if (_viewType != CalendarViewType.Month) ...[
+                  if (_viewType != CalendarViewType.month) ...[
                     IconButton(
                       icon: const Icon(Icons.arrow_forward_ios, size: 16),
                       onPressed: () => setState(() {
-                        _selectedDate = _selectedDate.add(Duration(days: _viewType == CalendarViewType.Week ? 7 : 1));
+                        _selectedDate = _selectedDate.add(Duration(days: _viewType == CalendarViewType.week ? 7 : 1));
                       }),
                     ),
                   ],
@@ -176,7 +176,7 @@ class _SchedulePainterViewState extends State<_SchedulePainterView> {
             ],
           ),
           const SizedBox(height: 24),
-          if (isHoliday && _viewType == CalendarViewType.Day)
+          if (isHoliday && _viewType == CalendarViewType.day)
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(32.0),
@@ -223,7 +223,7 @@ class _SchedulePainterViewState extends State<_SchedulePainterView> {
 
   Widget _buildDynamicCalendar(BuildContext context, AppProvider provider, OperatingHours config, StaffMember staff) {
     final loc = AppLocalizations.of(context)!;
-    if (_viewType == CalendarViewType.Month) {
+    if (_viewType == CalendarViewType.month) {
       return CalendarDatePicker(
         initialDate: _selectedDate,
         firstDate: DateTime(2020),
@@ -231,11 +231,11 @@ class _SchedulePainterViewState extends State<_SchedulePainterView> {
         onDateChanged: (val) {
           setState(() {
             _selectedDate = val;
-            _viewType = CalendarViewType.Day;
+            _viewType = CalendarViewType.day;
           });
         },
       );
-    } else if (_viewType == CalendarViewType.Week) {
+    } else if (_viewType == CalendarViewType.week) {
       int offset = _selectedDate.weekday - 1;
       DateTime startOfWeek = _selectedDate.subtract(Duration(days: offset));
       return ListView.builder(
@@ -251,7 +251,7 @@ class _SchedulePainterViewState extends State<_SchedulePainterView> {
             child: Column(
               children: [
                 Container(
-                  color: targetHoliday ? Colors.red.withOpacity(0.1) : Colors.blue.withOpacity(0.05),
+                  color: targetHoliday ? Colors.red.withValues(alpha: 0.1) : Colors.blue.withValues(alpha: 0.05),
                   padding: const EdgeInsets.all(8),
                   width: double.infinity,
                   child: Text(DateFormat('E, MMM d').format(targetDay), textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: targetHoliday ? Colors.red : null)),
@@ -320,8 +320,33 @@ class _TimeBlock extends StatelessWidget {
     final loc = AppLocalizations.of(context)!;
     final existingBlocks = provider.blocks.where((b) => b.staffId == staff.id && b.startTime == slot);
     final hasBlock = existingBlocks.isNotEmpty;
-    final isAlert = hasBlock && existingBlocks.first.needsReplacement;
+    final block = hasBlock ? existingBlocks.first : null;
+    final isAlert = hasBlock && block!.needsReplacement;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    Color bgColor = isDark ? Colors.grey.shade900 : Colors.grey.shade100;
+    Color borderColor = isDark ? Colors.grey.shade800 : Colors.grey.shade300;
+    String statusLabel = '';
+
+    if (hasBlock) {
+      if (block!.status == 'approved') {
+        bgColor = Colors.green.withValues(alpha: isDark ? 0.2 : 0.1);
+        borderColor = Colors.green;
+        statusLabel = loc.approved;
+      } else if (block.status == 'rejected') {
+        bgColor = Colors.red.withValues(alpha: isDark ? 0.2 : 0.1);
+        borderColor = Colors.red;
+        statusLabel = loc.rejected;
+      } else {
+        bgColor = Theme.of(context).primaryColor.withValues(alpha: isDark ? 0.2 : 0.1);
+        borderColor = Theme.of(context).primaryColor;
+        statusLabel = loc.proposed;
+      }
+      if (isAlert) {
+        bgColor = Colors.orange.withValues(alpha: 0.2);
+        borderColor = Colors.orange;
+      }
+    }
 
     return InkWell(
       onTap: () {
@@ -333,18 +358,21 @@ class _TimeBlock extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: isAlert ? Colors.red.shade900.withOpacity(0.2) : (hasBlock ? Theme.of(context).primaryColor.withOpacity(isDark ? 0.3 : 0.1) : (isDark ? Colors.grey.shade900 : Colors.grey.shade100)),
+          color: bgColor,
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: isAlert ? Colors.red : (hasBlock ? Theme.of(context).primaryColor : (isDark ? Colors.grey.shade800 : Colors.grey.shade300))),
+          border: Border.all(color: borderColor),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(DateFormat('HH:mm').format(slot), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: isDark ? Colors.white : Colors.black87)),
-            if (hasBlock) Tooltip(
-              message: existingBlocks.first.modality,
-              child: Text(isAlert ? '!' : _localizeModality(existingBlocks.first.modality, loc), style: TextStyle(fontSize: 10, color: isAlert ? Colors.red : (isDark ? Colors.white70 : Colors.blueGrey.shade700))),
-            ),
+            if (hasBlock) ...[
+              Text(statusLabel, style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold)),
+              Tooltip(
+                message: block!.modality,
+                child: Text(isAlert ? '!' : _localizeModality(block.modality, loc), style: TextStyle(fontSize: 10, color: isAlert ? Colors.red : (isDark ? Colors.white70 : Colors.blueGrey.shade700))),
+              ),
+            ],
           ],
         ),
       ),
@@ -372,7 +400,9 @@ class _TimeBlock extends StatelessWidget {
             ...['Online', 'In Person', 'Both'].map((m) => RadioListTile<String>(
               title: Text(_localizeModality(m, loc)),
               value: m,
+              // ignore: deprecated_member_use
               groupValue: block.modality,
+              // ignore: deprecated_member_use
               onChanged: (val) { if (val != null) { provider.updateBlockModality(block.id, val); Navigator.pop(context); } },
               contentPadding: EdgeInsets.zero,
             )),
@@ -421,7 +451,7 @@ class _EventProposalViewState extends State<_EventProposalView> {
               ElevatedButton(
                 onPressed: () async {
                   final d = await showDatePicker(context: context, initialDate: _selectedDate, firstDate: DateTime.now(), lastDate: DateTime(2030));
-                  if (d != null) setState(() => _selectedDate = d);
+                  if (d != null && mounted) setState(() => _selectedDate = d);
                 },
                 child: Text(loc.selectDate),
               ),
@@ -433,7 +463,7 @@ class _EventProposalViewState extends State<_EventProposalView> {
             onPressed: () {
               provider.proposeEvent(_titleController.text, _descController.text, _selectedDate);
               _titleController.clear(); _descController.clear();
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.proposalSubmitted)));
+              if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.proposalSubmitted)));
             },
             child: Text(loc.proposeEvent),
           ),
@@ -452,6 +482,7 @@ class _ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<_ProfileView> {
   late TextEditingController _nameController;
   late TextEditingController _originController;
+  late TextEditingController _kanaController;
   late TextEditingController _studyController;
   late TextEditingController _descController;
   bool _hasChanges = false;
@@ -462,6 +493,7 @@ class _ProfileViewState extends State<_ProfileView> {
     final staff = context.read<AppProvider>().currentJuniorStaff!;
     _nameController = TextEditingController(text: staff.name)..addListener(_checkForChanges);
     _originController = TextEditingController(text: staff.originCountry)..addListener(_checkForChanges);
+    _kanaController = TextEditingController(text: staff.kanaName)..addListener(_checkForChanges);
     _studyController = TextEditingController(text: staff.degree)..addListener(_checkForChanges);
     _descController = TextEditingController(text: staff.personalDescription)..addListener(_checkForChanges);
   }
@@ -470,6 +502,7 @@ class _ProfileViewState extends State<_ProfileView> {
     final staff = context.read<AppProvider>().currentJuniorStaff!;
     final changed = _nameController.text != staff.name ||
                     _originController.text != staff.originCountry ||
+                    _kanaController.text != staff.kanaName ||
                     _studyController.text != staff.degree ||
                     _descController.text != staff.personalDescription;
     if (changed != _hasChanges) setState(() => _hasChanges = changed);
@@ -501,6 +534,8 @@ class _ProfileViewState extends State<_ProfileView> {
         const SizedBox(height: 24),
         TextField(controller: _nameController, decoration: InputDecoration(labelText: loc.name, prefixIcon: const Icon(Icons.person))),
         const SizedBox(height: 16),
+        TextField(controller: _kanaController, decoration: InputDecoration(labelText: loc.kanaName, prefixIcon: const Icon(Icons.abc))),
+        const SizedBox(height: 16),
         TextField(controller: _originController, decoration: InputDecoration(labelText: loc.originCountry, prefixIcon: const Icon(Icons.location_on))),
         const SizedBox(height: 16),
         TextField(controller: _studyController, decoration: InputDecoration(labelText: loc.currentlyStudying, prefixIcon: const Icon(Icons.school))),
@@ -511,6 +546,7 @@ class _ProfileViewState extends State<_ProfileView> {
           onPressed: _hasChanges ? () {
             staff.name = _nameController.text;
             staff.originCountry = _originController.text;
+            staff.kanaName = _kanaController.text;
             staff.degree = _studyController.text;
             staff.personalDescription = _descController.text;
             provider.updateJuniorProfile(staff);
@@ -557,11 +593,167 @@ void _showFinishEmploymentDialog(BuildContext context, AppProvider provider, Sta
         ElevatedButton(
           onPressed: () async {
             final d = await showDatePicker(context: context, initialDate: DateTime.now().add(const Duration(days: 1)), firstDate: DateTime.now(), lastDate: DateTime(2030));
-            if (d != null) { provider.finishEmployment(staff.id, endDate: d); Navigator.pop(context); }
+            if (d != null && context.mounted) { provider.finishEmployment(staff.id, endDate: d); Navigator.pop(context); }
           },
           child: Text(loc.finishFutureDate),
         ),
       ],
     ),
   );
+}
+
+class _PendingReportsBanner extends StatelessWidget {
+  const _PendingReportsBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+    final provider = context.watch<AppProvider>();
+    final pending = provider.getPendingReports();
+
+    if (pending.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade50,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.blue.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.info_outline, color: Colors.blue),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  loc.pendingReportsNotice,
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: pending.map((report) => ActionChip(
+              avatar: const Icon(Icons.edit_document, size: 16),
+              label: Text('${DateFormat('MMM d').format(report.reportDate)} (${DateFormat('HH:mm').format(report.scheduledStart)}-${DateFormat('HH:mm').format(report.scheduledEnd)})'),
+              onPressed: () => _showWorkingReportDialog(context, provider, report, loc),
+            )).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showWorkingReportDialog(BuildContext context, AppProvider provider, WorkingReport report, AppLocalizations loc) {
+    final titleController = TextEditingController(text: report.workDone);
+    DateTime confirmedStart = report.confirmedStart;
+    DateTime confirmedEnd = report.confirmedEnd;
+
+    showDialog(
+      context: context,
+      builder: (dContext) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Row(
+            children: [
+              const Icon(Icons.assignment),
+              const SizedBox(width: 8),
+              Text(loc.workingReports),
+              const Spacer(),
+              IconButton(
+                icon: const Icon(Icons.help_outline),
+                tooltip: loc.helpWorkDone,
+                onPressed: () {},
+              )
+            ],
+          ),
+          content: SizedBox(
+            width: 400,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('${loc.reportDate}: ${DateFormat('yyyy-MM-dd').format(report.reportDate)}'),
+                  const SizedBox(height: 8),
+                  Text('${loc.scheduledTime}: ${DateFormat('HH:mm').format(report.scheduledStart)} - ${DateFormat('HH:mm').format(report.scheduledEnd)}'),
+                  const Divider(height: 32),
+                  
+                  Row(
+                    children: [
+                      Text(loc.confirmedStartTime, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(width: 8),
+                      Tooltip(message: loc.helpConfirmedTime, child: const Icon(Icons.info_outline, size: 16, color: Colors.grey)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () async {
+                            final time = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(confirmedStart));
+                            if (time != null) {
+                              setState(() => confirmedStart = DateTime(report.reportDate.year, report.reportDate.month, report.reportDate.day, time.hour, time.minute));
+                            }
+                          },
+                          child: Text(DateFormat('HH:mm').format(confirmedStart)),
+                        ),
+                      ),
+                      const Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: Text('-')),
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () async {
+                            final time = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(confirmedEnd));
+                            if (time != null) {
+                              setState(() => confirmedEnd = DateTime(report.reportDate.year, report.reportDate.month, report.reportDate.day, time.hour, time.minute));
+                            }
+                          },
+                          child: Text(DateFormat('HH:mm').format(confirmedEnd)),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  
+                  Text(loc.workDoneLabel, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: titleController,
+                    maxLines: 4,
+                    decoration: InputDecoration(
+                      hintText: loc.workDoneHint,
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text('${loc.workedHours}: ${ (confirmedEnd.difference(confirmedStart).inMinutes / 60.0).toStringAsFixed(2) }', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(dContext), child: Text(loc.cancel)),
+            ElevatedButton(
+              onPressed: () {
+                report.confirmedStart = confirmedStart;
+                report.confirmedEnd = confirmedEnd;
+                report.workDone = titleController.text;
+                provider.submitWorkingReport(report);
+                Navigator.pop(dContext);
+              },
+              child: Text(loc.submitReport),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

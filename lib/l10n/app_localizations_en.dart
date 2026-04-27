@@ -297,4 +297,112 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get personalDescription => 'Personal Description';
+
+  @override
+  String get workingReports => 'Working Reports';
+
+  @override
+  String get submitReport => 'Submit Report';
+
+  @override
+  String get reportPending => 'Report Pending';
+
+  @override
+  String get pendingReportsNotice =>
+      'You have pending working reports to complete.';
+
+  @override
+  String get confirmedStartTime => 'Confirmed Start';
+
+  @override
+  String get confirmedEndTime => 'Confirmed End';
+
+  @override
+  String get workDoneLabel => 'What did you do?';
+
+  @override
+  String get workDoneHint => 'Describe your tasks during this shift';
+
+  @override
+  String get reportDate => 'Report Date';
+
+  @override
+  String get scheduledTime => 'Scheduled Time';
+
+  @override
+  String get workedHours => 'Worked Hours';
+
+  @override
+  String get missingReport => 'Missing Report';
+
+  @override
+  String get filledReport => 'Filled Report';
+
+  @override
+  String get affiliation => 'Affiliation';
+
+  @override
+  String get helpConfirmedTime =>
+      'Please adjust the start and end times to reflect your actual working hours.';
+
+  @override
+  String get helpWorkDone =>
+      'Briefly describe the tasks and accomplishments during this shift.';
+
+  @override
+  String get socialMetrics => 'Social Metrics';
+
+  @override
+  String get refreshMetrics => 'Refresh Metrics';
+
+  @override
+  String get kanaName => 'Kana Name (かな)';
+
+  @override
+  String get mon => 'Mon';
+
+  @override
+  String get tue => 'Tue';
+
+  @override
+  String get wed => 'Wed';
+
+  @override
+  String get thu => 'Thu';
+
+  @override
+  String get fri => 'Fri';
+
+  @override
+  String get sat => 'Sat';
+
+  @override
+  String get sun => 'Sun';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get approve => 'Approve';
+
+  @override
+  String get reject => 'Reject';
+
+  @override
+  String get totalHours => 'Total Hours';
+
+  @override
+  String get proposed => 'Proposed';
+
+  @override
+  String get approved => 'Approved';
+
+  @override
+  String get rejected => 'Rejected';
+
+  @override
+  String get nextMonthSchedule => 'Next Month Availability';
+
+  @override
+  String get approveAll => 'Approve All';
 }

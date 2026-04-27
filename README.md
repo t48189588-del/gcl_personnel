@@ -48,6 +48,17 @@ Currently all information is hosted in excel files in teams groups
     - [ ] in person
     - [ ] online only
   - [ ] attendance confirmation 
+  - [ ] working report (only activated AFTER the shift)
+    - [ ] confirm time (start time - finish time)
+    - [ ] number of hours (floating data type)
+    - [ ] what did you do?
+    - [ ] when exporting 
+      - [ ] header
+        - [ ] name
+        - [ ] affiliation
+      - [ ] 1 book per year
+      - [ ] 1 month per tab
+      - [ ] 1 day per row
 - [ ] Event handler
   - [ ] event proposal 
   - [ ] before event
@@ -115,10 +126,23 @@ Currently all information is hosted in excel files in teams groups
 - power automate integration?
 
 ## Pendings
-- [ ] Working reports (information and standards)
+- [x] Working reports (information and standards)
 - [ ] Meeting Agenda & Minutes
 - [ ] SNS scrapper (only public information)
 - [ ] Media generator - integration with LLM
+- [ ] user uploading media
+  - [ ] image
+  - [ ] video
+  - [ ] audio
+- [ ] saving settings and data
+  - [ ] locally
+  - [ ] sharepoint
+  - [ ] syncing between sources
+- [ ] Data collecting
+  - [ ] staff web information
+  - [ ] event information
+  - [ ] staff schedule information 
+  - [ ] fix information formatting for online/local storage and dashboard reading or excel pivoting
 
 # option 1
 Office 365 only tools

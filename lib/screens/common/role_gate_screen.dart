@@ -154,7 +154,7 @@ class _RoleCard extends StatelessWidget {
         width: 250,
         height: 250,
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: color, width: 2),
         ),

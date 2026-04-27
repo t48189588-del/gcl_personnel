@@ -3,6 +3,7 @@ import 'package:web/web.dart' as web;
 import 'dart:convert';
 import '../models/models.dart';
 import 'package:intl/intl.dart';
+import '../../l10n/app_localizations.dart';
 
 class ExcelService {
   static void exportStaffData(List<StaffMember> staff) {
@@ -46,7 +47,7 @@ class ExcelService {
     }
   }
 
-  static void exportMasterCalendarMonthly(DateTime month, List<StaffMember> juniorStaff, List<AvailabilityBlock> allBlocks) {
+  static void exportMasterCalendarMonthly(DateTime month, List<StaffMember> juniorStaff, List<AvailabilityBlock> allBlocks, AppLocalizations loc) {
     var excel = Excel.createExcel();
     String sheetName = DateFormat('MMMM yyyy').format(month);
     Sheet sheetObject = excel[sheetName];
@@ -54,11 +55,11 @@ class ExcelService {
 
     // Headers: Column 1: Date, Column 2: Time, C3 onwards: Junior Staff Names
     List<CellValue> headers = [
-      TextCellValue('Date'),
-      TextCellValue('Time'),
+      TextCellValue(loc.day),
+      TextCellValue(loc.startTime),
     ];
     for (var staff in juniorStaff) {
-      headers.add(TextCellValue(staff.name));
+      headers.add(TextCellValue('${staff.name} (${staff.kanaName})'));
     }
     sheetObject.appendRow(headers);
 
@@ -96,9 +97,13 @@ class ExcelService {
           if (blocks.isNotEmpty) {
             var block = blocks.first;
             String symbol = '';
-            if (block.modality == 'Online') symbol = '○';
-            else if (block.modality == 'Both') symbol = '○ (In-Person)';
-            else symbol = '(In-Person)';
+            if (block.modality == 'Online') {
+              symbol = '○';
+            } else if (block.modality == 'Both') {
+              symbol = '○ (In-Person)';
+            } else {
+              symbol = '(In-Person)';
+            }
             
             row.add(TextCellValue(symbol));
             // Excel styling is complex in raw library without a cell reference, 
@@ -114,6 +119,79 @@ class ExcelService {
     var fileBytes = excel.save();
     if (fileBytes != null) {
       _downloadExcelWeb(fileBytes, "Master_Calendar_${sheetName.replaceAll(' ', '_')}.xlsx");
+    }
+  }
+
+  static void exportWorkingReports(StaffMember staff, List<WorkingReport> reports, AppLocalizations loc) {
+    var excel = Excel.createExcel();
+    Sheet sheetObject = excel[loc.workingReports];
+    excel.delete('Sheet1');
+
+    // Header: Name, Kana and Affiliation
+    sheetObject.appendRow([
+      TextCellValue('${loc.name}: ${staff.name} (${staff.kanaName})'),
+      TextCellValue('${loc.affiliation}: ${staff.affiliation}'),
+    ]);
+    sheetObject.appendRow([]); // Spacer
+
+    // Table Headers
+    List<String> headers = [
+      loc.day,
+      loc.reportDate,
+      loc.scheduledTime,
+      loc.confirmedStartTime,
+      loc.workedHours,
+      loc.workDoneLabel
+    ];
+    sheetObject.appendRow(headers.map((e) => TextCellValue(e)).toList());
+
+    final timeFormat = DateFormat('HH:mm');
+    final dateFormat = DateFormat('yyyy-MM-dd');
+    double totalHours = 0;
+
+    for (var r in reports.where((r) => r.isSubmitted)) {
+      String sched = '${timeFormat.format(r.scheduledStart)} - ${timeFormat.format(r.scheduledEnd)}';
+      String conf = '${timeFormat.format(r.confirmedStart)} - ${timeFormat.format(r.confirmedEnd)}';
+      double hours = r.workedHours;
+      totalHours += hours;
+
+      List<CellValue> row = [
+        TextCellValue(_getLocalizedDay(r.reportDate.weekday, loc)),
+        TextCellValue(dateFormat.format(r.reportDate)),
+        TextCellValue(sched),
+        TextCellValue(conf),
+        DoubleCellValue(double.parse(hours.toStringAsFixed(2))),
+        TextCellValue(r.workDone),
+      ];
+      sheetObject.appendRow(row);
+    }
+
+    // Total row
+    sheetObject.appendRow([]);
+    sheetObject.appendRow([
+      TextCellValue(''),
+      TextCellValue(''),
+      TextCellValue(''),
+      TextCellValue(loc.totalHours),
+      DoubleCellValue(double.parse(totalHours.toStringAsFixed(2))),
+    ]);
+
+    var fileBytes = excel.save();
+    if (fileBytes != null) {
+      _downloadExcelWeb(fileBytes, "Working_Reports_${staff.name.replaceAll(' ', '_')}.xlsx");
+    }
+  }
+
+  static String _getLocalizedDay(int weekday, AppLocalizations loc) {
+    switch (weekday) {
+      case DateTime.monday: return loc.mon;
+      case DateTime.tuesday: return loc.tue;
+      case DateTime.wednesday: return loc.wed;
+      case DateTime.thursday: return loc.thu;
+      case DateTime.friday: return loc.fri;
+      case DateTime.saturday: return loc.sat;
+      case DateTime.sunday: return loc.sun;
+      default: return '';
     }
   }
 

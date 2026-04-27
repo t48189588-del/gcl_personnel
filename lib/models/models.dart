@@ -18,6 +18,8 @@ class StaffMember {
   bool isSetupComplete;
   bool isSenior;
   String originCountry;
+  String affiliation;
+  String kanaName;
   DateTime? employmentEndDate;
   bool isActive;
 
@@ -39,6 +41,8 @@ class StaffMember {
     this.isSetupComplete = true,
     this.isSenior = false,
     this.originCountry = '',
+    this.affiliation = '',
+    this.kanaName = '',
     this.employmentEndDate,
     this.isActive = true,
   });
@@ -62,6 +66,8 @@ class StaffMember {
       isSetupComplete: json['isSetupComplete'] ?? true,
       isSenior: json['isSenior'] ?? false,
       originCountry: json['originCountry'] ?? '',
+      affiliation: json['affiliation'] ?? '',
+      kanaName: json['kanaName'] ?? '',
       employmentEndDate: json['employmentEndDate'] != null
           ? DateTime.parse(json['employmentEndDate'])
           : null,
@@ -88,6 +94,8 @@ class StaffMember {
       'isSetupComplete': isSetupComplete,
       'isSenior': isSenior,
       'originCountry': originCountry,
+      'affiliation': affiliation,
+      'kanaName': kanaName,
       'employmentEndDate': employmentEndDate?.toIso8601String(),
       'isActive': isActive,
     };
@@ -125,6 +133,7 @@ class AvailabilityBlock {
   final DateTime startTime; // 30 min block
   final String staffId;
   String modality; // In-Person, Online, Both
+  String status; // proposed, approved, rejected
   bool needsReplacement;
 
   AvailabilityBlock({
@@ -132,6 +141,7 @@ class AvailabilityBlock {
     required this.startTime,
     required this.staffId,
     required this.modality,
+    this.status = 'proposed',
     this.needsReplacement = false,
   });
 
@@ -141,6 +151,7 @@ class AvailabilityBlock {
       startTime: DateTime.parse(json['startTime']),
       staffId: json['staffId'],
       modality: json['modality'],
+      status: json['status'] ?? 'proposed',
       needsReplacement: json['needsReplacement'] ?? false,
     );
   }
@@ -151,6 +162,7 @@ class AvailabilityBlock {
       'startTime': startTime.toIso8601String(),
       'staffId': staffId,
       'modality': modality,
+      'status': status,
       'needsReplacement': needsReplacement,
     };
   }
@@ -313,6 +325,63 @@ class EventProposal {
       'title': title,
       'description': description,
       'proposedDate': proposedDate.toIso8601String(),
+    };
+  }
+}
+
+class WorkingReport {
+  final String id;
+  final String staffId;
+  final DateTime reportDate;
+  final DateTime scheduledStart;
+  final DateTime scheduledEnd;
+  DateTime confirmedStart;
+  DateTime confirmedEnd;
+  String workDone;
+  bool isSubmitted;
+
+  WorkingReport({
+    required this.id,
+    required this.staffId,
+    required this.reportDate,
+    required this.scheduledStart,
+    required this.scheduledEnd,
+    required this.confirmedStart,
+    required this.confirmedEnd,
+    required this.workDone,
+    this.isSubmitted = false,
+  });
+
+  double get workedHours {
+    final diff = confirmedEnd.difference(confirmedStart);
+    return diff.inMinutes / 60.0;
+  }
+
+  factory WorkingReport.fromJson(Map<String, dynamic> json) {
+    return WorkingReport(
+      id: json['id'],
+      staffId: json['staffId'],
+      reportDate: DateTime.parse(json['reportDate']),
+      scheduledStart: DateTime.parse(json['scheduledStart']),
+      scheduledEnd: DateTime.parse(json['scheduledEnd']),
+      confirmedStart: DateTime.parse(json['confirmedStart']),
+      confirmedEnd: DateTime.parse(json['confirmedEnd']),
+      workDone: json['workDone'],
+      isSubmitted: json['isSubmitted'] ?? false,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'staffId': staffId,
+      'reportDate': reportDate.toIso8601String(),
+      'scheduledStart': scheduledStart.toIso8601String(),
+      'scheduledEnd': scheduledEnd.toIso8601String(),
+      'confirmedStart': confirmedStart.toIso8601String(),
+      'confirmedEnd': confirmedEnd.toIso8601String(),
+      'workDone': workDone,
+      'isSubmitted': isSubmitted,
     };
   }
 }

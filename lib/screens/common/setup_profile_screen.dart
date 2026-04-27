@@ -22,6 +22,7 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
   late TextEditingController _nameController;
   late TextEditingController _descController;
   late TextEditingController _originController;
+  late TextEditingController _kanaController;
   String _nativeLanguage = 'English';
   final List<String> _selectedOtherLanguages = [];
   String _currentlyStudying = 'Computer Science';
@@ -51,6 +52,7 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
     _nameController = TextEditingController(text: widget.applicant.name);
     _descController = TextEditingController(text: "Hello! I am a new applicant.");
     _originController = TextEditingController();
+    _kanaController = TextEditingController();
   }
 
   @override
@@ -58,6 +60,7 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
     _nameController.dispose();
     _descController.dispose();
     _originController.dispose();
+    _kanaController.dispose();
     super.dispose();
   }
 
@@ -66,9 +69,11 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       final bytes = await image.readAsBytes();
-      setState(() {
-        _profileImageData = bytes;
-      });
+      if (mounted) {
+        setState(() {
+          _profileImageData = bytes;
+        });
+      }
     }
   }
 
@@ -139,8 +144,16 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
                 ),
               ),
               const SizedBox(height: 16),
+              TextField(
+                controller: _kanaController,
+                decoration: InputDecoration(
+                  labelText: loc.kanaName,
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _nativeLanguage,
+                initialValue: _nativeLanguage,
                 decoration: InputDecoration(
                   labelText: loc.nativeLang,
                   border: const OutlineInputBorder(),
@@ -211,6 +224,7 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
                   widget.applicant.otherLanguages = _selectedOtherLanguages;
                   widget.applicant.degree = _currentlyStudying;
                   widget.applicant.originCountry = _originController.text;
+                  widget.applicant.kanaName = _kanaController.text;
                   widget.applicant.personalDescription = _descController.text;
                   if (_profileImageData != null) {
                     widget.applicant.profilePicturePath =

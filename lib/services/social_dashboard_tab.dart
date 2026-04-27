@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../services/social_service.dart';
 import '../models/social_metrics.dart';
@@ -19,6 +18,7 @@ class _SocialDashboardTabState extends State<SocialDashboardTab> {
 
   late Future<SocialMetrics> _youtubeFuture;
   late Future<SocialMetrics> _instagramFuture;
+  late Future<SocialMetrics> _xFuture;
 
   @override
   void initState() {
@@ -30,6 +30,7 @@ class _SocialDashboardTabState extends State<SocialDashboardTab> {
     setState(() {
       _youtubeFuture = _socialService.fetchYouTubeMetrics(youtubeChannelId);
       _instagramFuture = _socialService.fetchInstagramMetrics(instagramHandle);
+      _xFuture = _socialService.fetchXMetrics("gclkyutech"); // Mock handle
     });
   }
 
@@ -53,6 +54,14 @@ class _SocialDashboardTabState extends State<SocialDashboardTab> {
             icon: Icons.camera_alt,
             iconColor: Colors.purple,
             future: _instagramFuture,
+            metricLabel: "Followers",
+          ),
+          const SizedBox(height: 16),
+          _buildMetricCard(
+            title: "X (Twitter) Stats",
+            icon: Icons.alternate_email,
+            iconColor: Colors.black,
+            future: _xFuture,
             metricLabel: "Followers",
           ),
         ],

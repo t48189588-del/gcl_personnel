@@ -5,15 +5,16 @@ import '../services/logger_service.dart';
 import 'package:uuid/uuid.dart';
 
 class AppProvider with ChangeNotifier {
-  List<StaffMember> _staff = [];
-  List<AvailabilityBlock> _blocks = [];
+  final List<StaffMember> _staff = [];
+  final List<AvailabilityBlock> _blocks = [];
   OperatingHours _operatingHours = OperatingHours(
     weeklySchedule: List.generate(
       7,
       (index) => DaySchedule(weekday: index + 1),
     ),
   );
-  List<EventProposal> _eventProposals = [];
+  final List<EventProposal> _eventProposals = [];
+  final List<WorkingReport> _reports = [];
 
   StaffMember? _currentJuniorStaff;
 
@@ -24,14 +25,19 @@ class AppProvider with ChangeNotifier {
   List<AvailabilityBlock> get blocks => _blocks;
   OperatingHours get operatingHours => _operatingHours;
   List<EventProposal> get eventProposals => _eventProposals;
+  List<WorkingReport> get reports => _reports;
   StaffMember? get currentJuniorStaff => _currentJuniorStaff;
   Locale get locale => _locale;
   ThemeMode get themeMode => _themeMode;
 
   void loadData() {
-    _staff = HiveService.getStaff();
-    _blocks = HiveService.getBlocks();
+    _staff.clear();
+    _staff.addAll(HiveService.getStaff());
+    _blocks.clear();
+    _blocks.addAll(HiveService.getBlocks());
     _operatingHours = HiveService.getOperatingHours();
+    _reports.clear();
+    _reports.addAll(HiveService.getReports());
     // Load event proposals if stored, otherwise empty for now
     if (_staff.isNotEmpty) {
       _currentJuniorStaff = _staff
@@ -231,9 +237,126 @@ class AppProvider with ChangeNotifier {
     final index = _blocks.indexWhere((b) => b.id == blockId);
     if (index != -1) {
       _blocks[index].modality = newModality;
+      // Reset status to proposed if modality changes? Maybe safer.
+      _blocks[index].status = 'proposed';
       HiveService.saveBlock(_blocks[index]);
       LoggerService.log('Action', 'Updated block modality for $blockId to $newModality');
       notifyListeners();
     }
+  }
+
+  void approveBlock(String blockId) {
+    final index = _blocks.indexWhere((b) => b.id == blockId);
+    if (index != -1) {
+      _blocks[index].status = 'approved';
+      HiveService.saveBlock(_blocks[index]);
+      LoggerService.log('Action', 'Approved block $blockId');
+      notifyListeners();
+    }
+  }
+
+  void rejectBlock(String blockId) {
+    final index = _blocks.indexWhere((b) => b.id == blockId);
+    if (index != -1) {
+      _blocks[index].status = 'rejected';
+      HiveService.saveBlock(_blocks[index]);
+      LoggerService.log('Action', 'Rejected block $blockId');
+      notifyListeners();
+    }
+  }
+
+  void approveAllProposedBlocks(String staffId, DateTime month) {
+    bool changed = false;
+    for (var b in _blocks) {
+      if (b.staffId == staffId && 
+          b.startTime.year == month.year && 
+          b.startTime.month == month.month && 
+          b.status == 'proposed') {
+        b.status = 'approved';
+        HiveService.saveBlock(b);
+        changed = true;
+      }
+    }
+    if (changed) {
+      LoggerService.log('Action', 'Approved all proposed blocks for $staffId in ${month.year}-${month.month}');
+      notifyListeners();
+    }
+  }
+
+  // --- Working Reports Logic ---
+
+  List<WorkingReport> getPendingReports() {
+    if (_currentJuniorStaff == null) return [];
+    
+    // 1. Get all blocks for current staff in the past
+    final now = DateTime.now();
+    final myPastBlocks = _blocks.where((b) => 
+      b.staffId == _currentJuniorStaff!.id && 
+      b.status == 'approved' &&
+      b.startTime.add(const Duration(minutes: 30)).isBefore(now)
+    ).toList();
+    
+    if (myPastBlocks.isEmpty) return [];
+    
+    // Sort by time
+    myPastBlocks.sort((a, b) => a.startTime.compareTo(b.startTime));
+    
+    // 2. Group into contiguous shifts
+    List<List<AvailabilityBlock>> shifts = [];
+    if (myPastBlocks.isNotEmpty) {
+      List<AvailabilityBlock> currentShift = [myPastBlocks.first];
+      for (int i = 1; i < myPastBlocks.length; i++) {
+        final prev = myPastBlocks[i-1];
+        final curr = myPastBlocks[i];
+        
+        // Contiguous if same day and curr.start == prev.start + 30m
+        if (curr.startTime.difference(prev.startTime).inMinutes == 30 && 
+            curr.startTime.day == prev.startTime.day) {
+          currentShift.add(curr);
+        } else {
+          shifts.add(currentShift);
+          currentShift = [curr];
+        }
+      }
+      shifts.add(currentShift);
+    }
+    
+    // 3. Filter out shifts that already have a submitted report
+    List<WorkingReport> pending = [];
+    for (var shiftBlocks in shifts) {
+      final start = shiftBlocks.first.startTime;
+      final end = shiftBlocks.last.startTime.add(const Duration(minutes: 30));
+      final date = DateTime(start.year, start.month, start.day);
+      
+      final alreadyReported = _reports.any((r) => 
+        r.staffId == _currentJuniorStaff!.id && 
+        r.reportDate == date && 
+        r.scheduledStart == start && 
+        r.isSubmitted
+      );
+      
+      if (!alreadyReported) {
+        pending.add(WorkingReport(
+          id: const Uuid().v4(),
+          staffId: _currentJuniorStaff!.id,
+          reportDate: date,
+          scheduledStart: start,
+          scheduledEnd: end,
+          confirmedStart: start,
+          confirmedEnd: end,
+          workDone: '',
+        ));
+      }
+    }
+    
+    return pending;
+  }
+
+  void submitWorkingReport(WorkingReport report) {
+    report.isSubmitted = true;
+    _reports.add(report);
+    HiveService.saveReport(report);
+    LoggerService.log('Action', 'Submitted Working Report for ${report.reportDate}');
+    notifyListeners();
   }
 }

@@ -86,6 +86,18 @@ class SocialService {
     );
   }
 
+  /// Placeholder for X (Twitter) metrics
+  Future<SocialMetrics> fetchXMetrics(String handle) async {
+    // Current script logic: to be implemented later
+    // Returning a mock/fallback for now to visualize the UI
+    return SocialMetrics(
+      name: "X (@$handle)",
+      count: "---",
+      secondaryCount: "Awaiting implementation",
+      source: "X API (Pending)",
+    );
+  }
+
   /// Scraper fallback to ensure data availability
   Future<SocialMetrics> _getPublicInfoFallback(
     String url,

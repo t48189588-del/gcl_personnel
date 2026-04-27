@@ -6,12 +6,14 @@ class HiveService {
   static const String staffBoxName = 'staff_box';
   static const String blocksBoxName = 'blocks_box';
   static const String configBoxName = 'config_box';
+  static const String reportsBoxName = 'reports_box';
 
   static Future<void> init() async {
     await Hive.initFlutter();
     await Hive.openBox(staffBoxName);
     await Hive.openBox(blocksBoxName);
     await Hive.openBox(configBoxName);
+    await Hive.openBox(reportsBoxName);
     await LoggerService.init();
 
     // Seed mock data if empty
@@ -62,14 +64,27 @@ class HiveService {
   static OperatingHours getOperatingHours() {
     var box = Hive.box(configBoxName);
     var data = box.get('hours');
-    if (data == null) return OperatingHours(
-      weeklySchedule: List.generate(7, (index) => DaySchedule(weekday: index + 1))
-    );
+    if (data == null) {
+      return OperatingHours(
+        weeklySchedule: List.generate(7, (index) => DaySchedule(weekday: index + 1))
+      );
+    }
     return OperatingHours.fromJson(Map<String, dynamic>.from(data as Map));
   }
 
   static void saveOperatingHours(OperatingHours hours) {
     var box = Hive.box(configBoxName);
     box.put('hours', hours.toJson());
+  }
+
+  // Reports
+  static List<WorkingReport> getReports() {
+    var box = Hive.box(reportsBoxName);
+    return box.values.map((e) => WorkingReport.fromJson(Map<String, dynamic>.from(e as Map))).toList();
+  }
+
+  static void saveReport(WorkingReport report) {
+    var box = Hive.box(reportsBoxName);
+    box.put(report.id, report.toJson());
   }
 }

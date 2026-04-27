@@ -667,6 +667,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Personal Description'**
   String get personalDescription;
+
+  /// No description provided for @workingReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Working Reports'**
+  String get workingReports;
+
+  /// No description provided for @submitReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Report'**
+  String get submitReport;
+
+  /// No description provided for @reportPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Pending'**
+  String get reportPending;
+
+  /// No description provided for @pendingReportsNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'You have pending working reports to complete.'**
+  String get pendingReportsNotice;
+
+  /// No description provided for @confirmedStartTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed Start'**
+  String get confirmedStartTime;
+
+  /// No description provided for @confirmedEndTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed End'**
+  String get confirmedEndTime;
+
+  /// No description provided for @workDoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What did you do?'**
+  String get workDoneLabel;
+
+  /// No description provided for @workDoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe your tasks during this shift'**
+  String get workDoneHint;
+
+  /// No description provided for @reportDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Date'**
+  String get reportDate;
+
+  /// No description provided for @scheduledTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled Time'**
+  String get scheduledTime;
+
+  /// No description provided for @workedHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Worked Hours'**
+  String get workedHours;
+
+  /// No description provided for @missingReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing Report'**
+  String get missingReport;
+
+  /// No description provided for @filledReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Filled Report'**
+  String get filledReport;
+
+  /// No description provided for @affiliation.
+  ///
+  /// In en, this message translates to:
+  /// **'Affiliation'**
+  String get affiliation;
+
+  /// No description provided for @helpConfirmedTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Please adjust the start and end times to reflect your actual working hours.'**
+  String get helpConfirmedTime;
+
+  /// No description provided for @helpWorkDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Briefly describe the tasks and accomplishments during this shift.'**
+  String get helpWorkDone;
+
+  /// No description provided for @socialMetrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Social Metrics'**
+  String get socialMetrics;
+
+  /// No description provided for @refreshMetrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh Metrics'**
+  String get refreshMetrics;
+
+  /// No description provided for @kanaName.
+  ///
+  /// In en, this message translates to:
+  /// **'Kana Name (かな)'**
+  String get kanaName;
+
+  /// No description provided for @mon.
+  ///
+  /// In en, this message translates to:
+  /// **'Mon'**
+  String get mon;
+
+  /// No description provided for @tue.
+  ///
+  /// In en, this message translates to:
+  /// **'Tue'**
+  String get tue;
+
+  /// No description provided for @wed.
+  ///
+  /// In en, this message translates to:
+  /// **'Wed'**
+  String get wed;
+
+  /// No description provided for @thu.
+  ///
+  /// In en, this message translates to:
+  /// **'Thu'**
+  String get thu;
+
+  /// No description provided for @fri.
+  ///
+  /// In en, this message translates to:
+  /// **'Fri'**
+  String get fri;
+
+  /// No description provided for @sat.
+  ///
+  /// In en, this message translates to:
+  /// **'Sat'**
+  String get sat;
+
+  /// No description provided for @sun.
+  ///
+  /// In en, this message translates to:
+  /// **'Sun'**
+  String get sun;
+
+  /// No description provided for @status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get status;
+
+  /// No description provided for @approve.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get approve;
+
+  /// No description provided for @reject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get reject;
+
+  /// No description provided for @totalHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Hours'**
+  String get totalHours;
+
+  /// No description provided for @proposed.
+  ///
+  /// In en, this message translates to:
+  /// **'Proposed'**
+  String get proposed;
+
+  /// No description provided for @approved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get approved;
+
+  /// No description provided for @rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get rejected;
+
+  /// No description provided for @nextMonthSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Month Availability'**
+  String get nextMonthSchedule;
+
+  /// No description provided for @approveAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve All'**
+  String get approveAll;
 }
 
 class _AppLocalizationsDelegate
