@@ -877,6 +877,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Approve All'**
   String get approveAll;
+
+  /// No description provided for @proposerName.
+  ///
+  /// In en, this message translates to:
+  /// **'Proposer'**
+  String get proposerName;
+
+  /// No description provided for @bulkApprove.
+  ///
+  /// In en, this message translates to:
+  /// **'Bulk Approve'**
+  String get bulkApprove;
+
+  /// No description provided for @bulkReject.
+  ///
+  /// In en, this message translates to:
+  /// **'Bulk Reject'**
+  String get bulkReject;
+
+  /// No description provided for @phoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get phoneNumber;
+
+  /// No description provided for @employment.
+  ///
+  /// In en, this message translates to:
+  /// **'Employment'**
+  String get employment;
+
+  /// No description provided for @youtubeStats.
+  ///
+  /// In en, this message translates to:
+  /// **'YouTube Stats'**
+  String get youtubeStats;
+
+  /// No description provided for @instagramStats.
+  ///
+  /// In en, this message translates to:
+  /// **'Instagram Stats'**
+  String get instagramStats;
+
+  /// No description provided for @xStats.
+  ///
+  /// In en, this message translates to:
+  /// **'X (Twitter) Stats'**
+  String get xStats;
 }
 
 class _AppLocalizationsDelegate

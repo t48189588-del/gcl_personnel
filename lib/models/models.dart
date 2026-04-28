@@ -20,6 +20,7 @@ class StaffMember {
   String originCountry;
   String affiliation;
   String kanaName;
+  String phoneNumber;
   DateTime? employmentEndDate;
   bool isActive;
 
@@ -43,6 +44,7 @@ class StaffMember {
     this.originCountry = '',
     this.affiliation = '',
     this.kanaName = '',
+    this.phoneNumber = '',
     this.employmentEndDate,
     this.isActive = true,
   });
@@ -68,6 +70,7 @@ class StaffMember {
       originCountry: json['originCountry'] ?? '',
       affiliation: json['affiliation'] ?? '',
       kanaName: json['kanaName'] ?? '',
+      phoneNumber: json['phoneNumber'] ?? '',
       employmentEndDate: json['employmentEndDate'] != null
           ? DateTime.parse(json['employmentEndDate'])
           : null,
@@ -96,6 +99,7 @@ class StaffMember {
       'originCountry': originCountry,
       'affiliation': affiliation,
       'kanaName': kanaName,
+      'phoneNumber': phoneNumber,
       'employmentEndDate': employmentEndDate?.toIso8601String(),
       'isActive': isActive,
     };
@@ -299,6 +303,8 @@ class EventProposal {
   String title;
   String description;
   DateTime proposedDate;
+  String status; // proposed, approved, rejected
+  String proposerName;
 
   EventProposal({
     required this.id,
@@ -306,6 +312,8 @@ class EventProposal {
     required this.title,
     required this.description,
     required this.proposedDate,
+    this.status = 'proposed',
+    this.proposerName = '',
   });
 
   factory EventProposal.fromJson(Map<String, dynamic> json) {
@@ -315,6 +323,8 @@ class EventProposal {
       title: json['title'],
       description: json['description'],
       proposedDate: DateTime.parse(json['proposedDate']),
+      status: json['status'] ?? 'proposed',
+      proposerName: json['proposerName'] ?? '',
     );
   }
 
@@ -325,6 +335,8 @@ class EventProposal {
       'title': title,
       'description': description,
       'proposedDate': proposedDate.toIso8601String(),
+      'status': status,
+      'proposerName': proposerName,
     };
   }
 }

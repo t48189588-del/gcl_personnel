@@ -365,7 +365,7 @@ class _TimeBlock extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(DateFormat('HH:mm').format(slot), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: isDark ? Colors.white : Colors.black87)),
+            Text('${DateFormat('HH:mm').format(slot)} - ${DateFormat('HH:mm').format(slot.add(const Duration(minutes: 30)))}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: isDark ? Colors.white : Colors.black87)),
             if (hasBlock) ...[
               Text(statusLabel, style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold)),
               Tooltip(
@@ -485,6 +485,8 @@ class _ProfileViewState extends State<_ProfileView> {
   late TextEditingController _kanaController;
   late TextEditingController _studyController;
   late TextEditingController _descController;
+  late TextEditingController _emailController;
+  late TextEditingController _phoneController;
   bool _hasChanges = false;
 
   @override
@@ -496,6 +498,8 @@ class _ProfileViewState extends State<_ProfileView> {
     _kanaController = TextEditingController(text: staff.kanaName)..addListener(_checkForChanges);
     _studyController = TextEditingController(text: staff.degree)..addListener(_checkForChanges);
     _descController = TextEditingController(text: staff.personalDescription)..addListener(_checkForChanges);
+    _emailController = TextEditingController(text: staff.email)..addListener(_checkForChanges);
+    _phoneController = TextEditingController(text: staff.phoneNumber)..addListener(_checkForChanges);
   }
 
   void _checkForChanges() {
@@ -504,7 +508,9 @@ class _ProfileViewState extends State<_ProfileView> {
                     _originController.text != staff.originCountry ||
                     _kanaController.text != staff.kanaName ||
                     _studyController.text != staff.degree ||
-                    _descController.text != staff.personalDescription;
+                    _descController.text != staff.personalDescription ||
+                    _emailController.text != staff.email ||
+                    _phoneController.text != staff.phoneNumber;
     if (changed != _hasChanges) setState(() => _hasChanges = changed);
   }
 
@@ -540,6 +546,10 @@ class _ProfileViewState extends State<_ProfileView> {
         const SizedBox(height: 16),
         TextField(controller: _studyController, decoration: InputDecoration(labelText: loc.currentlyStudying, prefixIcon: const Icon(Icons.school))),
         const SizedBox(height: 16),
+        TextField(controller: _emailController, decoration: InputDecoration(labelText: loc.emailLabel, prefixIcon: const Icon(Icons.email))),
+        const SizedBox(height: 16),
+        TextField(controller: _phoneController, decoration: InputDecoration(labelText: "Phone Number", prefixIcon: const Icon(Icons.phone))),
+        const SizedBox(height: 16),
         TextField(controller: _descController, maxLines: 3, decoration: InputDecoration(labelText: loc.personalDescription, prefixIcon: const Icon(Icons.description))),
         const SizedBox(height: 32),
         ElevatedButton(
@@ -548,6 +558,8 @@ class _ProfileViewState extends State<_ProfileView> {
             staff.originCountry = _originController.text;
             staff.kanaName = _kanaController.text;
             staff.degree = _studyController.text;
+            staff.email = _emailController.text;
+            staff.phoneNumber = _phoneController.text;
             staff.personalDescription = _descController.text;
             provider.updateJuniorProfile(staff);
             setState(() => _hasChanges = false);
@@ -613,40 +625,70 @@ class _PendingReportsBanner extends StatelessWidget {
 
     if (pending.isEmpty) return const SizedBox.shrink();
 
+    final isTable = pending.length > 3;
+
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(top: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.blue.shade50,
+        color: isTable ? Colors.red.shade50 : Colors.blue.shade50,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.blue.shade200),
+        border: Border.all(color: isTable ? Colors.red.shade200 : Colors.blue.shade200),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.info_outline, color: Colors.blue),
+              Icon(isTable ? Icons.error_outline : Icons.info_outline, color: isTable ? Colors.red : Colors.blue),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  loc.pendingReportsNotice,
-                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                  isTable ? "Action Required: Please complete your missing working reports" : loc.pendingReportsNotice,
+                  style: TextStyle(fontWeight: FontWeight.bold, color: isTable ? Colors.red.shade900 : Colors.blue.shade900),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: pending.map((report) => ActionChip(
-              avatar: const Icon(Icons.edit_document, size: 16),
-              label: Text('${DateFormat('MMM d').format(report.reportDate)} (${DateFormat('HH:mm').format(report.scheduledStart)}-${DateFormat('HH:mm').format(report.scheduledEnd)})'),
-              onPressed: () => _showWorkingReportDialog(context, provider, report, loc),
-            )).toList(),
-          ),
+          if (isTable)
+            Table(
+              border: TableBorder.all(color: Colors.red.shade100),
+              children: [
+                TableRow(
+                  decoration: BoxDecoration(color: Colors.red.shade100),
+                  children: const [
+                    Padding(padding: EdgeInsets.all(8), child: Text("Date", style: TextStyle(fontWeight: FontWeight.bold))),
+                    Padding(padding: EdgeInsets.all(8), child: Text("Scheduled Time", style: TextStyle(fontWeight: FontWeight.bold))),
+                    Padding(padding: EdgeInsets.all(8), child: Text("Action", style: TextStyle(fontWeight: FontWeight.bold))),
+                  ]
+                ),
+                ...pending.map((r) => TableRow(
+                  children: [
+                    Padding(padding: EdgeInsets.all(8), child: Text(DateFormat('MMM d, yyyy').format(r.reportDate))),
+                    Padding(padding: EdgeInsets.all(8), child: Text('${DateFormat('HH:mm').format(r.scheduledStart)} - ${DateFormat('HH:mm').format(r.scheduledEnd)}')),
+                    Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: TextButton(
+                        onPressed: () => _showWorkingReportDialog(context, provider, r, loc),
+                        child: const Text("Fill Report"),
+                      ),
+                    ),
+                  ]
+                )),
+              ],
+            )
+          else
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: pending.map((report) => ActionChip(
+                avatar: const Icon(Icons.edit_document, size: 16),
+                label: Text('${DateFormat('MMM d').format(report.reportDate)} (${DateFormat('HH:mm').format(report.scheduledStart)}-${DateFormat('HH:mm').format(report.scheduledEnd)})'),
+                onPressed: () => _showWorkingReportDialog(context, provider, report, loc),
+              )).toList(),
+            ),
         ],
       ),
     );

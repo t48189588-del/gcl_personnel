@@ -38,7 +38,8 @@ class AppProvider with ChangeNotifier {
     _operatingHours = HiveService.getOperatingHours();
     _reports.clear();
     _reports.addAll(HiveService.getReports());
-    // Load event proposals if stored, otherwise empty for now
+    _eventProposals.clear();
+    _eventProposals.addAll(HiveService.getProposals());
     if (_staff.isNotEmpty) {
       _currentJuniorStaff = _staff
           .where((s) => s.isSetupComplete && !s.isSenior)
@@ -138,21 +139,30 @@ class AppProvider with ChangeNotifier {
     String start = '09:00',
     String end = '17:00',
   }) {
-    final dateOnly = DateTime(date.year, date.month, date.day);
-    _operatingHours.holidays.add(
-      Holiday(
-        date: dateOnly,
-        message: message,
-        isAllDay: isAllDay,
-        startTime: start,
-        endTime: end,
-      ),
-    );
+    addHolidays([date], message, isAllDay: isAllDay, start: start, end: end);
+  }
+
+  void addHolidays(
+    List<DateTime> dates,
+    String message, {
+    bool isAllDay = true,
+    String start = '09:00',
+    String end = '17:00',
+  }) {
+    for (var date in dates) {
+      final dateOnly = DateTime(date.year, date.month, date.day);
+      _operatingHours.holidays.add(
+        Holiday(
+          date: dateOnly,
+          message: message,
+          isAllDay: isAllDay,
+          startTime: start,
+          endTime: end,
+        ),
+      );
+    }
     HiveService.saveOperatingHours(_operatingHours);
-    LoggerService.log(
-      'Action',
-      'Added holiday on $dateOnly with msg: $message',
-    );
+    LoggerService.log('Action', 'Added holidays for ${dates.length} days');
     notifyListeners();
   }
 
@@ -173,8 +183,10 @@ class AppProvider with ChangeNotifier {
       title: title,
       description: description,
       proposedDate: date,
+      proposerName: _currentJuniorStaff!.name,
     );
     _eventProposals.add(proposal);
+    HiveService.saveProposal(proposal);
     LoggerService.log(
       'Action',
       'Event Proposal: $title by ${_currentJuniorStaff?.name}',
@@ -255,12 +267,36 @@ class AppProvider with ChangeNotifier {
     }
   }
 
-  void rejectBlock(String blockId) {
-    final index = _blocks.indexWhere((b) => b.id == blockId);
+  void approveBlocks(List<String> ids) {
+    for (var id in ids) {
+      final index = _blocks.indexWhere((b) => b.id == id);
+      if (index != -1) {
+        _blocks[index].status = 'approved';
+        HiveService.saveBlock(_blocks[index]);
+      }
+    }
+    LoggerService.log('Action', 'Approved ${ids.length} blocks');
+    notifyListeners();
+  }
+
+  void rejectBlocks(List<String> ids) {
+    for (var id in ids) {
+      final index = _blocks.indexWhere((b) => b.id == id);
+      if (index != -1) {
+        _blocks[index].status = 'rejected';
+        HiveService.saveBlock(_blocks[index]);
+      }
+    }
+    LoggerService.log('Action', 'Rejected ${ids.length} blocks');
+    notifyListeners();
+  }
+
+  void updateEventProposalStatus(String id, String status) {
+    final index = _eventProposals.indexWhere((p) => p.id == id);
     if (index != -1) {
-      _blocks[index].status = 'rejected';
-      HiveService.saveBlock(_blocks[index]);
-      LoggerService.log('Action', 'Rejected block $blockId');
+      _eventProposals[index].status = status;
+      HiveService.saveProposal(_eventProposals[index]);
+      LoggerService.log('Action', 'Updated proposal $id to $status');
       notifyListeners();
     }
   }
@@ -357,6 +393,11 @@ class AppProvider with ChangeNotifier {
     _reports.add(report);
     HiveService.saveReport(report);
     LoggerService.log('Action', 'Submitted Working Report for ${report.reportDate}');
+    notifyListeners();
+  }
+
+  void addLog(String type, String message) {
+    LoggerService.log(type, message);
     notifyListeners();
   }
 }

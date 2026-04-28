@@ -136,5 +136,13 @@
   "approved": "承認済み",
   "rejected": "却下済み",
   "nextMonthSchedule": "来月のシフト申請",
-  "approveAll": "すべて承認"
+  "approveAll": "すべて承認",
+  "proposerName": "提案者",
+  "bulkApprove": "一括承認",
+  "bulkReject": "一括却下",
+  "phoneNumber": "電話番号",
+  "employment": "雇用管理",
+  "youtubeStats": "YouTube 統計",
+  "instagramStats": "Instagram 統計",
+  "xStats": "X (Twitter) 統計"
 }

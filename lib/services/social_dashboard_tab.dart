@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/social_service.dart';
 import '../models/social_metrics.dart';
+import '../l10n/app_localizations.dart';
 
 class SocialDashboardTab extends StatefulWidget {
   const SocialDashboardTab({super.key});
@@ -36,13 +37,14 @@ class _SocialDashboardTabState extends State<SocialDashboardTab> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return RefreshIndicator(
       onRefresh: () async => _refreshData(),
       child: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
           _buildMetricCard(
-            title: "YouTube Stats",
+            title: loc.youtubeStats,
             icon: Icons.play_circle_filled,
             iconColor: Colors.red,
             future: _youtubeFuture,
@@ -50,7 +52,7 @@ class _SocialDashboardTabState extends State<SocialDashboardTab> {
           ),
           const SizedBox(height: 16),
           _buildMetricCard(
-            title: "Instagram Stats",
+            title: loc.instagramStats,
             icon: Icons.camera_alt,
             iconColor: Colors.purple,
             future: _instagramFuture,
@@ -58,7 +60,7 @@ class _SocialDashboardTabState extends State<SocialDashboardTab> {
           ),
           const SizedBox(height: 16),
           _buildMetricCard(
-            title: "X (Twitter) Stats",
+            title: loc.xStats,
             icon: Icons.alternate_email,
             iconColor: Colors.black,
             future: _xFuture,

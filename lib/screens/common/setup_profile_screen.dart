@@ -23,6 +23,8 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
   late TextEditingController _descController;
   late TextEditingController _originController;
   late TextEditingController _kanaController;
+  late TextEditingController _emailController;
+  late TextEditingController _phoneController;
   String _nativeLanguage = 'English';
   final List<String> _selectedOtherLanguages = [];
   String _currentlyStudying = 'Computer Science';
@@ -30,20 +32,30 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
 
   final Map<String, String> _languagesWithFlags = {
     'English': '🇺🇸',
-    'Japanese': '🇯🇵',
-    'Chinese': '🇨🇳',
-    'Korean': '🇰🇷',
-    'French': '🇫🇷',
-    'German': '🇩🇪',
+    'Mandarin': '🇨🇳',
     'Spanish': '🇪🇸',
+    'French': '🇫🇷',
+    'Arabic': '🇸🇦',
+    'Japanese': '🇯🇵',
+    'Korean': '🇰🇷',
+    'Vietnamese': '🇻🇳',
+    'Thai': '🇹🇭',
+    'Hindi': '🇮🇳',
+    'Bengali': '🇧🇩',
+    'Indonesian': '🇮🇩',
+    'Malay': '🇲🇾',
+    'Filipino': '🇵🇭',
+    'Burmese': '🇲🇲',
+    'Khmer': '🇰🇭',
+    'Lao': '🇱🇦',
+    'German': '🇩🇪',
     'Italian': '🇮🇹',
     'Portuguese': '🇵🇹',
     'Russian': '🇷🇺',
-    'Vietnamese': '🇻🇳',
-    'Hindi': '🇮🇳',
-    'Arabic': '🇸🇦',
-    'Bengali': '🇧🇩',
     'Turkish': '🇹🇷',
+    'Urdu': '🇵🇰',
+    'Tamil': '🇮🇳',
+    'Cantonese': '🇭🇰',
   };
 
   @override
@@ -53,6 +65,8 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
     _descController = TextEditingController(text: "Hello! I am a new applicant.");
     _originController = TextEditingController();
     _kanaController = TextEditingController();
+    _emailController = TextEditingController(text: widget.applicant.email);
+    _phoneController = TextEditingController();
   }
 
   @override
@@ -61,6 +75,8 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
     _descController.dispose();
     _originController.dispose();
     _kanaController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -152,6 +168,22 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
                 ),
               ),
               const SizedBox(height: 16),
+              TextField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: loc.emailLabel,
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _phoneController,
+                decoration: InputDecoration(
+                  labelText: "Phone Number",
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 initialValue: _nativeLanguage,
                 decoration: InputDecoration(
@@ -193,14 +225,14 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
                 }).toList(),
               ),
               const SizedBox(height: 24),
-              TextField(
-                controller: TextEditingController(text: _currentlyStudying),
-                onChanged: (val) => _currentlyStudying = val,
+              DropdownButtonFormField<String>(
+                initialValue: ['Bachelors', 'Masters', 'PhD', 'Research'].contains(_currentlyStudying) ? _currentlyStudying : 'Bachelors',
                 decoration: InputDecoration(
                   labelText: loc.currentlyStudying,
-                  hintText: loc.currentlyStudyingHint,
                   border: const OutlineInputBorder(),
                 ),
+                items: ['Bachelors', 'Masters', 'PhD', 'Research'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+                onChanged: (val) => setState(() => _currentlyStudying = val!),
               ),
               const SizedBox(height: 16),
               TextField(
@@ -225,6 +257,8 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
                   widget.applicant.degree = _currentlyStudying;
                   widget.applicant.originCountry = _originController.text;
                   widget.applicant.kanaName = _kanaController.text;
+                  widget.applicant.email = _emailController.text;
+                  widget.applicant.phoneNumber = _phoneController.text;
                   widget.applicant.personalDescription = _descController.text;
                   if (_profileImageData != null) {
                     widget.applicant.profilePicturePath =

@@ -182,6 +182,17 @@ class ExcelService {
     }
   }
 
+  static Future<void> exportAllStaffWorkingReports(List<StaffMember> staffList, List<WorkingReport> allReports, AppLocalizations loc) async {
+    for (var staff in staffList) {
+      final reports = allReports.where((r) => r.staffId == staff.id).toList();
+      if (reports.isNotEmpty) {
+        exportWorkingReports(staff, reports, loc);
+        // Add a small delay to avoid browser download blocking
+        await Future.delayed(const Duration(milliseconds: 500));
+      }
+    }
+  }
+
   static String _getLocalizedDay(int weekday, AppLocalizations loc) {
     switch (weekday) {
       case DateTime.monday: return loc.mon;

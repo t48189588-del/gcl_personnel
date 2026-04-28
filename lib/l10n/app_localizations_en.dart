@@ -405,4 +405,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get approveAll => 'Approve All';
+
+  @override
+  String get proposerName => 'Proposer';
+
+  @override
+  String get bulkApprove => 'Bulk Approve';
+
+  @override
+  String get bulkReject => 'Bulk Reject';
+
+  @override
+  String get phoneNumber => 'Phone Number';
+
+  @override
+  String get employment => 'Employment';
+
+  @override
+  String get youtubeStats => 'YouTube Stats';
+
+  @override
+  String get instagramStats => 'Instagram Stats';
+
+  @override
+  String get xStats => 'X (Twitter) Stats';
 }

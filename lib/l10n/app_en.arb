@@ -136,5 +136,13 @@
   "approved": "Approved",
   "rejected": "Rejected",
   "nextMonthSchedule": "Next Month Availability",
-  "approveAll": "Approve All"
+  "approveAll": "Approve All",
+  "proposerName": "Proposer",
+  "bulkApprove": "Bulk Approve",
+  "bulkReject": "Bulk Reject",
+  "phoneNumber": "Phone Number",
+  "employment": "Employment",
+  "youtubeStats": "YouTube Stats",
+  "instagramStats": "Instagram Stats",
+  "xStats": "X (Twitter) Stats"
 }

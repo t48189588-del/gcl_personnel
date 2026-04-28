@@ -7,6 +7,7 @@ class HiveService {
   static const String blocksBoxName = 'blocks_box';
   static const String configBoxName = 'config_box';
   static const String reportsBoxName = 'reports_box';
+  static const String proposalsBoxName = 'proposals_box';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -14,6 +15,7 @@ class HiveService {
     await Hive.openBox(blocksBoxName);
     await Hive.openBox(configBoxName);
     await Hive.openBox(reportsBoxName);
+    await Hive.openBox(proposalsBoxName);
     await LoggerService.init();
 
     // Seed mock data if empty
@@ -86,5 +88,16 @@ class HiveService {
   static void saveReport(WorkingReport report) {
     var box = Hive.box(reportsBoxName);
     box.put(report.id, report.toJson());
+  }
+
+  // Proposals
+  static List<EventProposal> getProposals() {
+    var box = Hive.box(proposalsBoxName);
+    return box.values.map((e) => EventProposal.fromJson(Map<String, dynamic>.from(e as Map))).toList();
+  }
+
+  static void saveProposal(EventProposal proposal) {
+    var box = Hive.box(proposalsBoxName);
+    box.put(proposal.id, proposal.toJson());
   }
 }

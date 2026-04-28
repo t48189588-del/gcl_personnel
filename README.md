@@ -160,3 +160,22 @@ Office 365 only tools
 - n8n (power automate functions)
 - google apps script
 
+## Testing comments
+
+enable a tab if multiple working reports are pending (>3), display all missing in table layout, each day per row 
+
+for senior staff, allow export per group/all junior staff (multiple excel books 1 per staff member)
+
+Social media stats must be able to be shown in japanese
+
+senior metrics
+add "finish employment" button for ever row 
+
+add event proposals tab
+After the initial event proposal is approved, the proposer shall be able to add:
+  - event date & time
+  - event summary 
+  - event photos for SNS publication
+
+junior profile
+add languages (native and speaking)

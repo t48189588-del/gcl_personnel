@@ -400,4 +400,28 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get approveAll => 'すべて承認';
+
+  @override
+  String get proposerName => '提案者';
+
+  @override
+  String get bulkApprove => '一括承認';
+
+  @override
+  String get bulkReject => '一括却下';
+
+  @override
+  String get phoneNumber => '電話番号';
+
+  @override
+  String get employment => '雇用管理';
+
+  @override
+  String get youtubeStats => 'YouTube 統計';
+
+  @override
+  String get instagramStats => 'Instagram 統計';
+
+  @override
+  String get xStats => 'X (Twitter) 統計';
 }
