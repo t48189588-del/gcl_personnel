@@ -46,12 +46,12 @@ class _SeniorDashboardState extends State<SeniorDashboard> {
             tooltip: loc.exportExcel,
             onPressed: () {
               final staff = provider.staff;
-              ExcelService.exportStaffData(staff);
+              ExcelService.exportStaffData(staff, loc);
             },
           ),
           IconButton(
             icon: const Icon(Icons.folder_zip_outlined),
-            tooltip: "Export All Working Reports (Multiple Files)",
+            tooltip: loc.exportAllReportsTooltip,
             onPressed: () {
               final juniors = provider.staff.where((s) => !s.isSenior && s.isSetupComplete).toList();
               ExcelService.exportAllStaffWorkingReports(juniors, provider.reports, loc);
@@ -163,10 +163,27 @@ class _MetricsViewState extends State<_MetricsView> {
   int _sortColumnIndex = 0;
   bool _isAscending = true;
 
-  Widget _sortableHeader(String title) {
+  String _translateModelValue(String value, AppLocalizations loc) {
+    switch (value) {
+      case 'English': return 'English';
+      case 'Japanese': return 'Japanese';
+      case 'Bachelors': return loc.bachelors;
+      case 'Masters': return loc.masters;
+      case 'PhD': return loc.phd;
+      case 'Research': return loc.research;
+      case 'Online': return loc.online;
+      case 'In-Person': return loc.inPerson;
+      case 'Both': return loc.both;
+      case 'Senior': return loc.senior;
+      case 'Junior': return loc.junior;
+      default: return value;
+    }
+  }
+
+  Widget _sortableHeader(String label) {
     return Row(
       children: [
-        Text(title),
+        Text(label),
         const SizedBox(width: 4),
         const Icon(Icons.swap_vert, size: 16, color: Colors.grey),
       ],
@@ -287,17 +304,19 @@ class _MetricsViewState extends State<_MetricsView> {
                       DataCell(Row(children: [
                         CircleAvatar(child: Text(s.name[0])), 
                         const SizedBox(width: 8), 
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(s.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                            if (s.kanaName.isNotEmpty) Text(s.kanaName, style: const TextStyle(fontSize: 10, color: Colors.grey)),
-                          ],
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(s.name, style: const TextStyle(fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
+                              if (s.kanaName.isNotEmpty) Text(s.kanaName, style: const TextStyle(fontSize: 10, color: Colors.grey), overflow: TextOverflow.ellipsis),
+                            ],
+                          ),
                         )
                       ])),
-                      DataCell(Text(s.nativeLanguage)),
-                      DataCell(Text(s.degree)),
+                      DataCell(Text(_translateModelValue(s.nativeLanguage, loc))),
+                      DataCell(Text(_translateModelValue(s.degree, loc))),
                       DataCell(Text('${(s.availabilityRate * 100).toStringAsFixed(1)}%')),
                       DataCell(Text(s.eventsParticipation.toString())),
                       DataCell(Text(s.providedAssistance.toString())),
@@ -371,7 +390,7 @@ class _GuardrailsView extends StatelessWidget {
             const SizedBox(height: 16),
             ElevatedButton.icon(icon: const Icon(Icons.calendar_month), label: Text(loc.addHoliday), onPressed: () => _showAddHolidayDialog(context, provider, loc)),
             const SizedBox(height: 16),
-            Wrap(spacing: 8, children: config.holidays.map((h) => Chip(label: Text('${DateFormat('yyyy-MM-dd').format(h.date)}: ${h.message}'), onDeleted: () => provider.removeHoliday(h.date))).toList()),
+            Wrap(spacing: 8, children: config.holidays.map((h) => Chip(label: Text('${DateFormat.yMd(Localizations.localeOf(context).toString()).format(h.date)}: ${h.message}'), onDeleted: () => provider.removeHoliday(h.date))).toList()),
           ],
         ),
       ),
@@ -394,7 +413,7 @@ class _GuardrailsView extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text("Select days (tap to toggle):", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(loc.selectDaysPrompt, style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 SizedBox(
                   width: 300,
@@ -499,7 +518,7 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
               const SizedBox(width: 16),
               OutlinedButton.icon(
                 icon: const Icon(Icons.calendar_month),
-                label: Text(DateFormat('MMMM yyyy').format(_viewMonth)),
+                label: Text(DateFormat.yMMMM(Localizations.localeOf(context).toString()).format(_viewMonth)),
                 onPressed: () async {
                   // Simplified month picker via year picker
                   final d = await showDatePicker(
@@ -516,7 +535,7 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
           ),
           const SizedBox(height: 32),
           if (_selectedStaff == null)
-            const Expanded(child: Center(child: Text("Please select a staff member to view reports.")))
+            Expanded(child: Center(child: Text(loc.selectStaffPrompt)))
           else
             Expanded(child: _buildReportCalendar(context, provider)),
         ],
@@ -602,7 +621,7 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('${loc.workingReports} - ${DateFormat('yyyy-MM-dd').format(report.reportDate)}'),
+        title: Text('${loc.workingReports} - ${DateFormat.yMd(Localizations.localeOf(context).toString()).format(report.reportDate)}'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -674,10 +693,10 @@ class _ApprovalTabState extends State<_ApprovalTab> {
               Text(loc.nextMonthSchedule, style: Theme.of(context).textTheme.headlineSmall),
               const Spacer(),
               SegmentedButton<CalendarViewType>(
-                segments: const [
-                  ButtonSegment(value: CalendarViewType.day, label: Text("Day")),
-                  ButtonSegment(value: CalendarViewType.week, label: Text("Week")),
-                  ButtonSegment(value: CalendarViewType.month, label: Text("Month")),
+                segments: [
+                  ButtonSegment(value: CalendarViewType.day, label: Text(loc.day)),
+                  ButtonSegment(value: CalendarViewType.week, label: Text(loc.week)),
+                  ButtonSegment(value: CalendarViewType.month, label: Text(loc.month)),
                 ],
                 selected: {_viewType},
                 onSelectionChanged: (val) => setState(() => _viewType = val.first),
@@ -749,14 +768,15 @@ class _ApprovalTabState extends State<_ApprovalTab> {
   }
 
   String _getFormattedDateRange() {
+    final locale = Localizations.localeOf(context).toString();
     if (_viewType == CalendarViewType.day) {
-      return DateFormat('EEEE, MMM d, yyyy').format(_currentDate);
+      return DateFormat.yMMMMEEEEd(locale).format(_currentDate);
     } else if (_viewType == CalendarViewType.week) {
       final start = _currentDate.subtract(Duration(days: _currentDate.weekday - 1));
       final end = start.add(const Duration(days: 6));
-      return '${DateFormat('MMM d').format(start)} - ${DateFormat('MMM d, yyyy').format(end)}';
+      return '${DateFormat.yMMMd(locale).format(start)} - ${DateFormat.yMMMd(locale).format(end)}';
     } else {
-      return DateFormat('MMMM yyyy').format(_currentDate);
+      return DateFormat.yMMMM(locale).format(_currentDate);
     }
   }
 
@@ -776,7 +796,7 @@ class _ApprovalTabState extends State<_ApprovalTab> {
       }
     }).toList();
 
-    if (blocks.isEmpty) return const Center(child: Text('No pending shifts for this period'));
+    if (blocks.isEmpty) return Center(child: Text(loc.noPendingShifts));
 
     Map<String, List<Shift>> staffShifts = {};
     final activeJuniors = provider.staff.where((s) => !s.isSenior && s.isSetupComplete).toList();
@@ -942,7 +962,7 @@ class _EventProposalsTab extends StatelessWidget {
           Text(loc.eventProposal, style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 24),
           if (proposals.isEmpty)
-            const Expanded(child: Center(child: Text("No event proposals yet.")))
+            Expanded(child: Center(child: Text(loc.noEventProposals)))
           else
             Expanded(
               child: ListView.builder(
@@ -953,7 +973,7 @@ class _EventProposalsTab extends StatelessWidget {
                   return Card(
                     child: ListTile(
                       title: Text(p.title),
-                      subtitle: Text("By ${p.proposerName} on ${DateFormat('yyyy-MM-dd').format(p.proposedDate)}\n${p.description}"),
+                      subtitle: Text("${loc.byAuthorOnDate(p.proposerName, DateFormat.yMd(Localizations.localeOf(context).toString()).format(p.proposedDate))}\n${p.description}"),
                       trailing: isPending
                           ? Row(
                               mainAxisSize: MainAxisSize.min,
@@ -968,7 +988,13 @@ class _EventProposalsTab extends StatelessWidget {
                                 ),
                               ],
                             )
-                          : Text(p.status.toUpperCase(), style: TextStyle(fontWeight: FontWeight.bold, color: p.status == 'approved' ? Colors.green : Colors.red)),
+                          : Text(
+                                _localizeStatus(p.status, loc).toUpperCase(),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: p.status == 'approved' ? Colors.green : Colors.red,
+                                ),
+                              ),
                     ),
                   );
                 },
@@ -977,6 +1003,13 @@ class _EventProposalsTab extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _localizeStatus(String status, AppLocalizations loc) {
+    if (status == 'approved') return loc.approved;
+    if (status == 'rejected') return loc.rejected;
+    if (status == 'proposed') return loc.proposed;
+    return status;
   }
 }
 
@@ -1003,6 +1036,7 @@ class _LogView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     context.watch<AppProvider>(); // Rebuild on changes
     final logs = LoggerService.getLogs();
 
@@ -1013,20 +1047,20 @@ class _LogView extends StatelessWidget {
         children: [
           Row(
             children: [
-              Text("System Logs", style: Theme.of(context).textTheme.headlineSmall),
+              Text(loc.logs, style: Theme.of(context).textTheme.headlineSmall),
               const Spacer(),
               ElevatedButton.icon(
                 icon: const Icon(Icons.download),
-                label: const Text("Export CSV"),
+                label: Text(loc.exportCsv),
                 onPressed: () => _exportCSV(logs),
               ),
               const SizedBox(width: 16),
               OutlinedButton.icon(
                 icon: const Icon(Icons.delete_outline),
-                label: const Text("Clear"),
+                label: Text(loc.clearLogs),
                 onPressed: () {
                   LoggerService.clearLogs();
-                  Provider.of<AppProvider>(context, listen: false).addLog('Action', 'Cleared Logs');
+                  Provider.of<AppProvider>(context, listen: false).addLog('Action', 'logClearedLogs');
                 },
               ),
             ],
@@ -1039,7 +1073,7 @@ class _LogView extends StatelessWidget {
                 final l = logs[index];
                 return ListTile(
                   leading: Icon(l.eventType == 'Action' ? Icons.settings : Icons.info_outline),
-                  title: Text(l.description),
+                  title: Text(_translateLog(l.description, loc)),
                   subtitle: Text(DateFormat('yyyy-MM-dd HH:mm:ss').format(l.timestamp)),
                 );
               },
@@ -1048,5 +1082,45 @@ class _LogView extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _translateLog(String description, AppLocalizations loc) {
+    if (!description.contains('|')) {
+      if (description == 'logClearedLogs') return loc.logClearedLogs;
+      return description;
+    }
+    final parts = description.split('|');
+    final key = parts[0];
+    final params = <String, String>{};
+    for (int i = 1; i < parts.length; i++) {
+      final p = parts[i].split('=');
+      if (p.length == 2) params[p[0]] = p[1];
+    }
+
+    switch (key) {
+      case 'logLocaleSwitched': return loc.logLocaleSwitched(params['locale'] ?? '');
+      case 'logThemeSwitched': return loc.logThemeSwitched(params['mode'] ?? '');
+      case 'logJuniorLogin': return loc.logJuniorLogin(params['name'] ?? '');
+      case 'logInvitedStaff': return loc.logInvitedStaff(params['email'] ?? '');
+      case 'logUpgradedSenior': return loc.logUpgradedSenior(params['name'] ?? '');
+      case 'logFinishedEmployment': return loc.logFinishedEmployment(params['name'] ?? '', params['date'] ?? '');
+      case 'logUpdatedDaySchedule': return loc.logUpdatedDaySchedule(params['day'] ?? '', params['range'] ?? '', params['closed'] == 'true');
+      case 'logAddedHolidays': return loc.logAddedHolidays(int.tryParse(params['count'] ?? '0') ?? 0);
+      case 'logRemovedHoliday': return loc.logRemovedHoliday(params['date'] ?? '');
+      case 'logEventProposal': return loc.logEventProposal(params['title'] ?? '', params['name'] ?? '');
+      case 'logCompletedSetup': return loc.logCompletedSetup(params['name'] ?? '');
+      case 'logUpdatedProfile': return loc.logUpdatedProfile(params['name'] ?? '');
+      case 'logAddedBlock': return loc.logAddedBlock(params['staffId'] ?? '', params['time'] ?? '');
+      case 'logRemovedBlock': return loc.logRemovedBlock(params['id'] ?? '');
+      case 'logEmergencyReschedule': return loc.logEmergencyReschedule(params['id'] ?? '');
+      case 'logUpdatedBlockModality': return loc.logUpdatedBlockModality(params['id'] ?? '', params['modality'] ?? '');
+      case 'logApprovedBlock': return loc.logApprovedBlock(params['id'] ?? '');
+      case 'logApprovedMultipleBlocks': return loc.logApprovedMultipleBlocks(int.tryParse(params['count'] ?? '0') ?? 0);
+      case 'logRejectedMultipleBlocks': return loc.logRejectedMultipleBlocks(int.tryParse(params['count'] ?? '0') ?? 0);
+      case 'logUpdatedProposalStatus': return loc.logUpdatedProposalStatus(params['id'] ?? '', params['status'] ?? '');
+      case 'logApprovedAllBlocks': return loc.logApprovedAllBlocks(params['staffId'] ?? '', params['month'] ?? '');
+      case 'logSubmittedReport': return loc.logSubmittedReport(params['date'] ?? '');
+      default: return description;
+    }
   }
 }

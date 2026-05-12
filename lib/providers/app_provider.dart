@@ -53,13 +53,13 @@ class AppProvider with ChangeNotifier {
 
   void switchLocale(Locale newLocale) {
     _locale = newLocale;
-    LoggerService.log('Action', 'Switched Locale to ${newLocale.languageCode}');
+    LoggerService.log('Action', 'logLocaleSwitched|locale=${newLocale.languageCode}');
     notifyListeners();
   }
 
   void switchThemeMode(ThemeMode mode) {
     _themeMode = mode;
-    LoggerService.log('Action', 'Switched Theme Mode to ${mode.name}');
+    LoggerService.log('Action', 'logThemeSwitched|mode=${mode.name}');
     notifyListeners();
   }
 
@@ -67,7 +67,7 @@ class AppProvider with ChangeNotifier {
     var s = _staff.where((element) => element.id == staffId);
     if (s.isNotEmpty) {
       _currentJuniorStaff = s.first;
-      LoggerService.log('Action', 'Junior Login: ${_currentJuniorStaff?.name}');
+      LoggerService.log('Action', 'logJuniorLogin|name=${_currentJuniorStaff?.name}');
       notifyListeners();
     }
   }
@@ -90,7 +90,7 @@ class AppProvider with ChangeNotifier {
     );
     _staff.add(newApplicant);
     HiveService.saveStaff(newApplicant);
-    LoggerService.log('Action', 'Invited Staff: $email');
+    LoggerService.log('Action', 'logInvitedStaff|email=$email');
     notifyListeners();
   }
 
@@ -99,7 +99,7 @@ class AppProvider with ChangeNotifier {
     if (index != -1) {
       _staff[index].isSenior = true;
       HiveService.saveStaff(_staff[index]);
-      LoggerService.log('Action', 'Upgraded ${_staff[index].name} to Senior');
+      LoggerService.log('Action', 'logUpgradedSenior|name=${_staff[index].name}');
       notifyListeners();
     }
   }
@@ -112,7 +112,7 @@ class AppProvider with ChangeNotifier {
         _staff[index].isActive = false;
       }
       HiveService.saveStaff(_staff[index]);
-      LoggerService.log('Action', 'Finished employment for ${_staff[index].name} (End Date: ${endDate ?? "Immediately"})');
+      LoggerService.log('Action', 'logFinishedEmployment|name=${_staff[index].name}|date=${endDate ?? "Immediately"}');
       notifyListeners();
     }
   }
@@ -127,7 +127,7 @@ class AppProvider with ChangeNotifier {
     HiveService.saveOperatingHours(_operatingHours);
     LoggerService.log(
       'Action',
-      'Updated DaySchedule for $weekday: $start-$end closed:$isClosed',
+      'logUpdatedDaySchedule|day=$weekday|range=$start-$end|closed=$isClosed',
     );
     notifyListeners();
   }
@@ -162,7 +162,7 @@ class AppProvider with ChangeNotifier {
       );
     }
     HiveService.saveOperatingHours(_operatingHours);
-    LoggerService.log('Action', 'Added holidays for ${dates.length} days');
+    LoggerService.log('Action', 'logAddedHolidays|count=${dates.length}');
     notifyListeners();
   }
 
@@ -170,7 +170,7 @@ class AppProvider with ChangeNotifier {
     final dateOnly = DateTime(date.year, date.month, date.day);
     _operatingHours.holidays.removeWhere((h) => h.date == dateOnly);
     HiveService.saveOperatingHours(_operatingHours);
-    LoggerService.log('Action', 'Removed holiday on $dateOnly');
+    LoggerService.log('Action', 'logRemovedHoliday|date=$dateOnly');
     notifyListeners();
   }
 
@@ -189,7 +189,7 @@ class AppProvider with ChangeNotifier {
     HiveService.saveProposal(proposal);
     LoggerService.log(
       'Action',
-      'Event Proposal: $title by ${_currentJuniorStaff?.name}',
+      'logEventProposal|title=$title|name=${_currentJuniorStaff?.name}',
     );
     notifyListeners();
   }
@@ -200,7 +200,7 @@ class AppProvider with ChangeNotifier {
     updateJuniorProfile(updatedStaff);
     LoggerService.log(
       'Action',
-      'Completed applicant setup for ${updatedStaff.name}',
+      'logCompletedSetup|name=${updatedStaff.name}',
     );
   }
 
@@ -210,7 +210,7 @@ class AppProvider with ChangeNotifier {
       _staff[index] = updatedStaff;
       _currentJuniorStaff = updatedStaff;
       HiveService.saveStaff(updatedStaff);
-      LoggerService.log('Action', 'Updated profile for ${updatedStaff.name}');
+      LoggerService.log('Action', 'logUpdatedProfile|name=${updatedStaff.name}');
       notifyListeners();
     }
   }
@@ -220,7 +220,7 @@ class AppProvider with ChangeNotifier {
     HiveService.saveBlock(block);
     LoggerService.log(
       'Action',
-      'Added block for ${block.staffId} at ${block.startTime}',
+      'logAddedBlock|staffId=${block.staffId}|time=${block.startTime}',
     );
     notifyListeners();
   }
@@ -228,7 +228,7 @@ class AppProvider with ChangeNotifier {
   void removeBlock(String id) {
     _blocks.removeWhere((b) => b.id == id);
     HiveService.removeBlock(id);
-    LoggerService.log('Action', 'Removed block $id');
+    LoggerService.log('Action', 'logRemovedBlock|id=$id');
     notifyListeners();
   }
 
@@ -239,7 +239,7 @@ class AppProvider with ChangeNotifier {
       HiveService.saveBlock(_blocks[index]);
       LoggerService.log(
         'Action',
-        'Emergency Reschedule invoked for block $blockId',
+        'logEmergencyReschedule|id=$blockId',
       );
       notifyListeners();
     }
@@ -252,7 +252,7 @@ class AppProvider with ChangeNotifier {
       // Reset status to proposed if modality changes? Maybe safer.
       _blocks[index].status = 'proposed';
       HiveService.saveBlock(_blocks[index]);
-      LoggerService.log('Action', 'Updated block modality for $blockId to $newModality');
+      LoggerService.log('Action', 'logUpdatedBlockModality|id=$blockId|modality=$newModality');
       notifyListeners();
     }
   }
@@ -262,7 +262,7 @@ class AppProvider with ChangeNotifier {
     if (index != -1) {
       _blocks[index].status = 'approved';
       HiveService.saveBlock(_blocks[index]);
-      LoggerService.log('Action', 'Approved block $blockId');
+      LoggerService.log('Action', 'logApprovedBlock|id=$blockId');
       notifyListeners();
     }
   }
@@ -275,7 +275,7 @@ class AppProvider with ChangeNotifier {
         HiveService.saveBlock(_blocks[index]);
       }
     }
-    LoggerService.log('Action', 'Approved ${ids.length} blocks');
+    LoggerService.log('Action', 'logApprovedMultipleBlocks|count=${ids.length}');
     notifyListeners();
   }
 
@@ -287,7 +287,7 @@ class AppProvider with ChangeNotifier {
         HiveService.saveBlock(_blocks[index]);
       }
     }
-    LoggerService.log('Action', 'Rejected ${ids.length} blocks');
+    LoggerService.log('Action', 'logRejectedMultipleBlocks|count=${ids.length}');
     notifyListeners();
   }
 
@@ -296,7 +296,7 @@ class AppProvider with ChangeNotifier {
     if (index != -1) {
       _eventProposals[index].status = status;
       HiveService.saveProposal(_eventProposals[index]);
-      LoggerService.log('Action', 'Updated proposal $id to $status');
+      LoggerService.log('Action', 'logUpdatedProposalStatus|id=$id|status=$status');
       notifyListeners();
     }
   }
@@ -314,7 +314,7 @@ class AppProvider with ChangeNotifier {
       }
     }
     if (changed) {
-      LoggerService.log('Action', 'Approved all proposed blocks for $staffId in ${month.year}-${month.month}');
+      LoggerService.log('Action', 'logApprovedAllBlocks|staffId=$staffId|month=${month.year}-${month.month}');
       notifyListeners();
     }
   }
@@ -392,7 +392,7 @@ class AppProvider with ChangeNotifier {
     report.isSubmitted = true;
     _reports.add(report);
     HiveService.saveReport(report);
-    LoggerService.log('Action', 'Submitted Working Report for ${report.reportDate}');
+    LoggerService.log('Action', 'logSubmittedReport|date=${report.reportDate}');
     notifyListeners();
   }
 

@@ -424,4 +424,188 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get xStats => 'X (Twitter) 統計';
+
+  @override
+  String get week => '週';
+
+  @override
+  String get month => '月';
+
+  @override
+  String get noPendingShifts => 'この期間の保留中のシフトはありません';
+
+  @override
+  String get noEventProposals => 'イベント提案はまだありません。';
+
+  @override
+  String get actionRequiredReports => '要対応: 未提出の業務報告書を完了してください';
+
+  @override
+  String get date => '日付';
+
+  @override
+  String get fillReport => '報告書を作成';
+
+  @override
+  String logLocaleSwitched(String locale) {
+    return '言語を $locale に切り替えました';
+  }
+
+  @override
+  String logThemeSwitched(String mode) {
+    return 'テーマモードを $mode に切り替えました';
+  }
+
+  @override
+  String logJuniorLogin(String name) {
+    return 'ジュニアログイン: $name';
+  }
+
+  @override
+  String logInvitedStaff(String email) {
+    return 'スタッフを招待しました: $email';
+  }
+
+  @override
+  String logUpgradedSenior(String name) {
+    return '$name をシニアにアップグレードしました';
+  }
+
+  @override
+  String logFinishedEmployment(String name, String date) {
+    return '$name の雇用を終了しました (終了日: $date)';
+  }
+
+  @override
+  String logUpdatedDaySchedule(String day, String range, bool closed) {
+    return '$day のスケジュールを更新しました: $range (休業: $closed)';
+  }
+
+  @override
+  String logAddedHolidays(int count) {
+    return '$count 日間の休日を追加しました';
+  }
+
+  @override
+  String logRemovedHoliday(String date) {
+    return '$date の休日を削除しました';
+  }
+
+  @override
+  String logEventProposal(String title, String name) {
+    return 'イベント提案: $title ($name による)';
+  }
+
+  @override
+  String logCompletedSetup(String name) {
+    return '$name の初期設定が完了しました';
+  }
+
+  @override
+  String logUpdatedProfile(String name) {
+    return '$name のプロフィールを更新しました';
+  }
+
+  @override
+  String logAddedBlock(String staffId, String time) {
+    return '$staffId のブロックを $time に追加しました';
+  }
+
+  @override
+  String logRemovedBlock(String id) {
+    return 'ブロック $id を削除しました';
+  }
+
+  @override
+  String logEmergencyReschedule(String id) {
+    return 'ブロック $id の緊急再スケジュールが実行されました';
+  }
+
+  @override
+  String logUpdatedBlockModality(String id, String modality) {
+    return 'ブロック $id の勤務形態を $modality に更新しました';
+  }
+
+  @override
+  String logApprovedBlock(String id) {
+    return 'ブロック $id を承認しました';
+  }
+
+  @override
+  String logApprovedMultipleBlocks(int count) {
+    return '$count 件のブロックを承認しました';
+  }
+
+  @override
+  String logRejectedMultipleBlocks(int count) {
+    return '$count 件のブロックを却下しました';
+  }
+
+  @override
+  String logUpdatedProposalStatus(String id, String status) {
+    return '提案 $id のステータスを $status に更新しました';
+  }
+
+  @override
+  String logApprovedAllBlocks(String staffId, String month) {
+    return '$month の $staffId のすべての提案ブロックを承認しました';
+  }
+
+  @override
+  String logSubmittedReport(String date) {
+    return '$date の業務報告書が提出されました';
+  }
+
+  @override
+  String get logClearedLogs => 'ログをクリアしました';
+
+  @override
+  String get bachelors => '学士';
+
+  @override
+  String get masters => '修士';
+
+  @override
+  String get phd => '博士';
+
+  @override
+  String get research => '研究生';
+
+  @override
+  String get subscribers => '登録者数';
+
+  @override
+  String get followers => 'フォロワー';
+
+  @override
+  String get views => '視聴回数';
+
+  @override
+  String get posts => '投稿数';
+
+  @override
+  String get error => 'エラー';
+
+  @override
+  String get exportAllReportsTooltip => 'すべての業務報告書をエクスポート (複数ファイル)';
+
+  @override
+  String get selectDaysPrompt => '日付を選択 (タップで切り替え):';
+
+  @override
+  String get selectStaffPrompt => '報告書を表示するスタッフを選択してください。';
+
+  @override
+  String get exportCsv => 'CSVエクスポート';
+
+  @override
+  String get fluentLanguages => '流暢な言語';
+
+  @override
+  String get commPreference => '連絡手段の希望';
+
+  @override
+  String byAuthorOnDate(Object author, Object date) {
+    return '$dateに$authorによって提案されました';
+  }
 }

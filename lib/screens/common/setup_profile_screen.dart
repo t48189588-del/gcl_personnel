@@ -179,7 +179,7 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
               TextField(
                 controller: _phoneController,
                 decoration: InputDecoration(
-                  labelText: "Phone Number",
+                  labelText: loc.phoneNumber,
                   border: const OutlineInputBorder(),
                 ),
               ),
@@ -231,7 +231,12 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
                   labelText: loc.currentlyStudying,
                   border: const OutlineInputBorder(),
                 ),
-                items: ['Bachelors', 'Masters', 'PhD', 'Research'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+                items: [
+                  DropdownMenuItem(value: 'Bachelors', child: Text(loc.bachelors)),
+                  DropdownMenuItem(value: 'Masters', child: Text(loc.masters)),
+                  DropdownMenuItem(value: 'PhD', child: Text(loc.phd)),
+                  DropdownMenuItem(value: 'Research', child: Text(loc.research)),
+                ],
                 onChanged: (val) => setState(() => _currentlyStudying = val!),
               ),
               const SizedBox(height: 16),

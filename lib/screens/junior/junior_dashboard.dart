@@ -134,10 +134,10 @@ class _SchedulePainterViewState extends State<_SchedulePainterView> {
                   ),
                   const SizedBox(width: 8),
                   SegmentedButton<CalendarViewType>(
-                    segments: const [
-                      ButtonSegment(value: CalendarViewType.month, label: Text('M')),
-                      ButtonSegment(value: CalendarViewType.week, label: Text('W')),
-                      ButtonSegment(value: CalendarViewType.day, label: Text('D')),
+                    segments: [
+                      ButtonSegment(value: CalendarViewType.month, label: Text(loc.month[0].toUpperCase())),
+                      ButtonSegment(value: CalendarViewType.week, label: Text(loc.week[0].toUpperCase())),
+                      ButtonSegment(value: CalendarViewType.day, label: Text(loc.day[0].toUpperCase())),
                     ],
                     selected: {_viewType},
                     onSelectionChanged: (val) => setState(() => _viewType = val.first),
@@ -548,7 +548,7 @@ class _ProfileViewState extends State<_ProfileView> {
         const SizedBox(height: 16),
         TextField(controller: _emailController, decoration: InputDecoration(labelText: loc.emailLabel, prefixIcon: const Icon(Icons.email))),
         const SizedBox(height: 16),
-        TextField(controller: _phoneController, decoration: InputDecoration(labelText: "Phone Number", prefixIcon: const Icon(Icons.phone))),
+        TextField(controller: _phoneController, decoration: InputDecoration(labelText: loc.phoneNumber, prefixIcon: const Icon(Icons.phone))),
         const SizedBox(height: 16),
         TextField(controller: _descController, maxLines: 3, decoration: InputDecoration(labelText: loc.personalDescription, prefixIcon: const Icon(Icons.description))),
         const SizedBox(height: 32),
@@ -645,7 +645,7 @@ class _PendingReportsBanner extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  isTable ? "Action Required: Please complete your missing working reports" : loc.pendingReportsNotice,
+                  isTable ? loc.actionRequiredReports : loc.pendingReportsNotice,
                   style: TextStyle(fontWeight: FontWeight.bold, color: isTable ? Colors.red.shade900 : Colors.blue.shade900),
                 ),
               ),
@@ -658,10 +658,10 @@ class _PendingReportsBanner extends StatelessWidget {
               children: [
                 TableRow(
                   decoration: BoxDecoration(color: Colors.red.shade100),
-                  children: const [
-                    Padding(padding: EdgeInsets.all(8), child: Text("Date", style: TextStyle(fontWeight: FontWeight.bold))),
-                    Padding(padding: EdgeInsets.all(8), child: Text("Scheduled Time", style: TextStyle(fontWeight: FontWeight.bold))),
-                    Padding(padding: EdgeInsets.all(8), child: Text("Action", style: TextStyle(fontWeight: FontWeight.bold))),
+                  children: [
+                    Padding(padding: const EdgeInsets.all(8), child: Text(loc.date, style: const TextStyle(fontWeight: FontWeight.bold))),
+                    Padding(padding: const EdgeInsets.all(8), child: Text(loc.scheduledTime, style: const TextStyle(fontWeight: FontWeight.bold))),
+                    Padding(padding: const EdgeInsets.all(8), child: Text(loc.status, style: const TextStyle(fontWeight: FontWeight.bold))),
                   ]
                 ),
                 ...pending.map((r) => TableRow(
@@ -672,7 +672,7 @@ class _PendingReportsBanner extends StatelessWidget {
                       padding: const EdgeInsets.all(4),
                       child: TextButton(
                         onPressed: () => _showWorkingReportDialog(context, provider, r, loc),
-                        child: const Text("Fill Report"),
+                        child: Text(loc.fillReport),
                       ),
                     ),
                   ]

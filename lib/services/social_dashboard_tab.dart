@@ -48,7 +48,8 @@ class _SocialDashboardTabState extends State<SocialDashboardTab> {
             icon: Icons.play_circle_filled,
             iconColor: Colors.red,
             future: _youtubeFuture,
-            metricLabel: "Subscribers",
+            metricLabel: loc.subscribers,
+            secondaryMetricLabel: loc.views,
           ),
           const SizedBox(height: 16),
           _buildMetricCard(
@@ -56,7 +57,8 @@ class _SocialDashboardTabState extends State<SocialDashboardTab> {
             icon: Icons.camera_alt,
             iconColor: Colors.purple,
             future: _instagramFuture,
-            metricLabel: "Followers",
+            metricLabel: loc.followers,
+            secondaryMetricLabel: loc.posts,
           ),
           const SizedBox(height: 16),
           _buildMetricCard(
@@ -64,7 +66,8 @@ class _SocialDashboardTabState extends State<SocialDashboardTab> {
             icon: Icons.alternate_email,
             iconColor: Colors.black,
             future: _xFuture,
-            metricLabel: "Followers",
+            metricLabel: loc.followers,
+            secondaryMetricLabel: "",
           ),
         ],
       ),
@@ -77,7 +80,9 @@ class _SocialDashboardTabState extends State<SocialDashboardTab> {
     required Color iconColor,
     required Future<SocialMetrics> future,
     required String metricLabel,
+    required String secondaryMetricLabel,
   }) {
+    final loc = AppLocalizations.of(context)!;
     return FutureBuilder<SocialMetrics>(
       future: future,
       builder: (context, snapshot) {
@@ -123,7 +128,7 @@ class _SocialDashboardTabState extends State<SocialDashboardTab> {
                   )
                 else if (snapshot.hasError || data == null || data.isError)
                   Text(
-                    "Error: ${data?.source ?? snapshot.error}",
+                    "${loc.error}: ${data?.source ?? snapshot.error}",
                     style: const TextStyle(color: Colors.red),
                   )
                 else
@@ -141,7 +146,7 @@ class _SocialDashboardTabState extends State<SocialDashboardTab> {
                       ),
                       if (data.secondaryCount != null)
                         Text(
-                          data.secondaryCount!,
+                          "${data.secondaryCount} $secondaryMetricLabel",
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                     ],

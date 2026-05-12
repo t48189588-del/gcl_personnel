@@ -925,6 +925,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'X (Twitter) Stats'**
   String get xStats;
+
+  /// No description provided for @week.
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get week;
+
+  /// No description provided for @month.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get month;
+
+  /// No description provided for @noPendingShifts.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending shifts for this period'**
+  String get noPendingShifts;
+
+  /// No description provided for @noEventProposals.
+  ///
+  /// In en, this message translates to:
+  /// **'No event proposals yet.'**
+  String get noEventProposals;
+
+  /// No description provided for @actionRequiredReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Action Required: Please complete your missing working reports'**
+  String get actionRequiredReports;
+
+  /// No description provided for @date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get date;
+
+  /// No description provided for @fillReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill Report'**
+  String get fillReport;
+
+  /// No description provided for @logLocaleSwitched.
+  ///
+  /// In en, this message translates to:
+  /// **'Switched Locale to {locale}'**
+  String logLocaleSwitched(String locale);
+
+  /// No description provided for @logThemeSwitched.
+  ///
+  /// In en, this message translates to:
+  /// **'Switched Theme Mode to {mode}'**
+  String logThemeSwitched(String mode);
+
+  /// No description provided for @logJuniorLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Junior Login: {name}'**
+  String logJuniorLogin(String name);
+
+  /// No description provided for @logInvitedStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Invited Staff: {email}'**
+  String logInvitedStaff(String email);
+
+  /// No description provided for @logUpgradedSenior.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgraded {name} to Senior'**
+  String logUpgradedSenior(String name);
+
+  /// No description provided for @logFinishedEmployment.
+  ///
+  /// In en, this message translates to:
+  /// **'Finished employment for {name} (End Date: {date})'**
+  String logFinishedEmployment(String name, String date);
+
+  /// No description provided for @logUpdatedDaySchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated DaySchedule for {day}: {range} (Closed: {closed})'**
+  String logUpdatedDaySchedule(String day, String range, bool closed);
+
+  /// No description provided for @logAddedHolidays.
+  ///
+  /// In en, this message translates to:
+  /// **'Added holidays for {count} days'**
+  String logAddedHolidays(int count);
+
+  /// No description provided for @logRemovedHoliday.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed holiday on {date}'**
+  String logRemovedHoliday(String date);
+
+  /// No description provided for @logEventProposal.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Proposal: {title} by {name}'**
+  String logEventProposal(String title, String name);
+
+  /// No description provided for @logCompletedSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed applicant setup for {name}'**
+  String logCompletedSetup(String name);
+
+  /// No description provided for @logUpdatedProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated profile for {name}'**
+  String logUpdatedProfile(String name);
+
+  /// No description provided for @logAddedBlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Added block for {staffId} at {time}'**
+  String logAddedBlock(String staffId, String time);
+
+  /// No description provided for @logRemovedBlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed block {id}'**
+  String logRemovedBlock(String id);
+
+  /// No description provided for @logEmergencyReschedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency Reschedule invoked for block {id}'**
+  String logEmergencyReschedule(String id);
+
+  /// No description provided for @logUpdatedBlockModality.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated block modality for {id} to {modality}'**
+  String logUpdatedBlockModality(String id, String modality);
+
+  /// No description provided for @logApprovedBlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved block {id}'**
+  String logApprovedBlock(String id);
+
+  /// No description provided for @logApprovedMultipleBlocks.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved {count} blocks'**
+  String logApprovedMultipleBlocks(int count);
+
+  /// No description provided for @logRejectedMultipleBlocks.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected {count} blocks'**
+  String logRejectedMultipleBlocks(int count);
+
+  /// No description provided for @logUpdatedProposalStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated proposal {id} to {status}'**
+  String logUpdatedProposalStatus(String id, String status);
+
+  /// No description provided for @logApprovedAllBlocks.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved all proposed blocks for {staffId} in {month}'**
+  String logApprovedAllBlocks(String staffId, String month);
+
+  /// No description provided for @logSubmittedReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted Working Report for {date}'**
+  String logSubmittedReport(String date);
+
+  /// No description provided for @logClearedLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleared Logs'**
+  String get logClearedLogs;
+
+  /// No description provided for @bachelors.
+  ///
+  /// In en, this message translates to:
+  /// **'Bachelors'**
+  String get bachelors;
+
+  /// No description provided for @masters.
+  ///
+  /// In en, this message translates to:
+  /// **'Masters'**
+  String get masters;
+
+  /// No description provided for @phd.
+  ///
+  /// In en, this message translates to:
+  /// **'PhD'**
+  String get phd;
+
+  /// No description provided for @research.
+  ///
+  /// In en, this message translates to:
+  /// **'Research'**
+  String get research;
+
+  /// No description provided for @subscribers.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribers'**
+  String get subscribers;
+
+  /// No description provided for @followers.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers'**
+  String get followers;
+
+  /// No description provided for @views.
+  ///
+  /// In en, this message translates to:
+  /// **'Views'**
+  String get views;
+
+  /// No description provided for @posts.
+  ///
+  /// In en, this message translates to:
+  /// **'Posts'**
+  String get posts;
+
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
+
+  /// No description provided for @exportAllReportsTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Export All Working Reports (Multiple Files)'**
+  String get exportAllReportsTooltip;
+
+  /// No description provided for @selectDaysPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Select days (tap to toggle):'**
+  String get selectDaysPrompt;
+
+  /// No description provided for @selectStaffPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a staff member to view reports.'**
+  String get selectStaffPrompt;
+
+  /// No description provided for @exportCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Export CSV'**
+  String get exportCsv;
+
+  /// No description provided for @fluentLanguages.
+  ///
+  /// In en, this message translates to:
+  /// **'Fluent Languages'**
+  String get fluentLanguages;
+
+  /// No description provided for @commPreference.
+  ///
+  /// In en, this message translates to:
+  /// **'Communication Preference'**
+  String get commPreference;
+
+  /// No description provided for @byAuthorOnDate.
+  ///
+  /// In en, this message translates to:
+  /// **'By {author} on {date}'**
+  String byAuthorOnDate(Object author, Object date);
 }
 
 class _AppLocalizationsDelegate

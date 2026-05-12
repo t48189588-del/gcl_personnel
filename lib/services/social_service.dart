@@ -31,7 +31,7 @@ class SocialService {
             return SocialMetrics(
               name: data['items'][0]['snippet']['title'],
               count: stats['subscriberCount'] ?? "0",
-              secondaryCount: "${stats['viewCount'] ?? 0} views",
+              secondaryCount: stats['viewCount']?.toString() ?? "0",
               source: 'Official API',
             );
           }
@@ -70,7 +70,7 @@ class SocialService {
             name: data['business_discovery']['name'],
             count: data['business_discovery']['followers_count'].toString(),
             secondaryCount:
-                "${data['business_discovery']['media_count']} posts",
+                data['business_discovery']['media_count'].toString(),
             source: 'Meta Graph API',
           );
         }

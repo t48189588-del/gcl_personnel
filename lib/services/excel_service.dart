@@ -6,22 +6,22 @@ import 'package:intl/intl.dart';
 import '../../l10n/app_localizations.dart';
 
 class ExcelService {
-  static void exportStaffData(List<StaffMember> staff) {
+  static void exportStaffData(List<StaffMember> staff, AppLocalizations loc) {
     var excel = Excel.createExcel();
     Sheet sheetObject = excel['Staff Information'];
     excel.delete('Sheet1'); // Remove default sheet
 
     // Add headers
     List<String> headers = [
-      'Name',
-      'Native Language',
-      'Fluent Languages',
-      'Degree',
-      'Modality Preference',
-      'Availability Rate',
-      'Events Participation',
-      'Provided Assistance',
-      'Comm Preference'
+      loc.name,
+      loc.nativeLang,
+      loc.fluentLanguages,
+      loc.degree,
+      loc.modality,
+      loc.availRate,
+      loc.eventsPart,
+      loc.assistance,
+      loc.commPreference
     ];
     
     sheetObject.appendRow(headers.map((e) => TextCellValue(e)).toList());
@@ -31,8 +31,8 @@ class ExcelService {
         TextCellValue(s.name),
         TextCellValue(s.nativeLanguage),
         TextCellValue(s.fluentLanguages.join(', ')),
-        TextCellValue(s.degree),
-        TextCellValue(s.modalityPreference),
+        TextCellValue(_translateValue(s.degree, loc)),
+        TextCellValue(_translateValue(s.modalityPreference, loc)),
         DoubleCellValue(s.availabilityRate),
         IntCellValue(s.eventsParticipation),
         IntCellValue(s.providedAssistance),
@@ -98,11 +98,11 @@ class ExcelService {
             var block = blocks.first;
             String symbol = '';
             if (block.modality == 'Online') {
-              symbol = '○';
+              symbol = '○ (${loc.online})';
             } else if (block.modality == 'Both') {
-              symbol = '○ (In-Person)';
+              symbol = '○ (${loc.both})';
             } else {
-              symbol = '(In-Person)';
+              symbol = '(${loc.inPerson})';
             }
             
             row.add(TextCellValue(symbol));
@@ -203,6 +203,21 @@ class ExcelService {
       case DateTime.saturday: return loc.sat;
       case DateTime.sunday: return loc.sun;
       default: return '';
+    }
+  }
+
+  static String _translateValue(String value, AppLocalizations loc) {
+    switch (value) {
+      case 'Bachelors': return loc.bachelors;
+      case 'Masters': return loc.masters;
+      case 'PhD': return loc.phd;
+      case 'Research': return loc.research;
+      case 'Online': return loc.online;
+      case 'In-Person': return loc.inPerson;
+      case 'Both': return loc.both;
+      case 'Senior': return loc.senior;
+      case 'Junior': return loc.junior;
+      default: return value;
     }
   }
 
