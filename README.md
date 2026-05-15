@@ -179,3 +179,53 @@ After the initial event proposal is approved, the proposer shall be able to add:
 
 junior profile
 add languages (native and speaking)
+
+# Presentation scheme
+- Current situation (5 min)
+  - data organization
+    -  Excel (book & sheets)
+    -  SNS platforms   
+  - pros & cons
+    - not easily comparable
+    - not automatically scalable
+    - wasted/unused space (blank cells) show in % utilization
+    - easily error by human hand
+    - not chained/linked
+- Proposal explanation (5 min)
+  -   option 1: Power apps: included in the kyutech office 365 yearly license
+  -   option 2: Flutter: completely aisled but more customizable & integradable with other tools
+  -   build a single platform for all functions and services for all GCL personnel (and external visitors)
+    -   clearly labled in the users native language
+    -   short videos for explanations (<3 min)
+    -   keep exporting data as is, graphing generation and possible llm integration
+  -   Costs
+    - personnel
+    - equipment
+- Demo (10 min)
+  - pre record actions
+  - Live demo with 
+- my profile and experience (5 min)
+  - national university engineer
+  - projects to display
+    -   DINAGEA electric dashboard (national scale)
+    -   DIPLAN estudio de capacidad instalada (national scale)
+    -   LABSI insight (national scale)
+- final Q&A and requirements (5 min)
+  - requirements
+    - permission
+      - to use GCL staff present in teams and website
+        - emails, names, studies, language information 
+        - working schedules
+        - working reports
+        - events
+        - meetings
+      - SNS public information
+    - Assistance from Kyutech personnel (optional): for faster development
+      - double check japanese information (format and styling)
+      - making the documentation
+        - written
+        - videos with japanese audio
+      - setting color scheme and shapes compliant with Kyutech standards
+      - for future stage and admin
+        - data collection on
+          - All GCL equipment information and data sheet (dimensions and complete capabilities)
