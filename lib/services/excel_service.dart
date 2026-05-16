@@ -1,6 +1,5 @@
 import 'package:excel/excel.dart';
-import 'package:web/web.dart' as web;
-import 'dart:convert';
+import 'platform_helper.dart';
 import '../models/models.dart';
 import 'package:intl/intl.dart';
 import '../../l10n/app_localizations.dart';
@@ -43,7 +42,11 @@ class ExcelService {
 
     var fileBytes = excel.save();
     if (fileBytes != null) {
-      _downloadExcelWeb(fileBytes, "Staff_Metrics.xlsx");
+      PlatformHelper.downloadFile(
+        fileBytes, 
+        "Staff_Metrics.xlsx", 
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
     }
   }
 
@@ -118,7 +121,11 @@ class ExcelService {
 
     var fileBytes = excel.save();
     if (fileBytes != null) {
-      _downloadExcelWeb(fileBytes, "Master_Calendar_${sheetName.replaceAll(' ', '_')}.xlsx");
+      PlatformHelper.downloadFile(
+        fileBytes, 
+        "Master_Calendar_${sheetName.replaceAll(' ', '_')}.xlsx", 
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
     }
   }
 
@@ -178,7 +185,11 @@ class ExcelService {
 
     var fileBytes = excel.save();
     if (fileBytes != null) {
-      _downloadExcelWeb(fileBytes, "Working_Reports_${staff.name.replaceAll(' ', '_')}.xlsx");
+      PlatformHelper.downloadFile(
+        fileBytes, 
+        "Working_Reports_${staff.name.replaceAll(' ', '_')}.xlsx", 
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
     }
   }
 
@@ -219,17 +230,5 @@ class ExcelService {
       case 'Junior': return loc.junior;
       default: return value;
     }
-  }
-
-  static void _downloadExcelWeb(List<int> bytes, String fileName) {
-    final base64String = base64Encode(bytes);
-    final anchor = web.HTMLAnchorElement()
-      ..href = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,$base64String'
-      ..download = fileName
-      ..style.display = 'none';
-      
-    web.document.body?.append(anchor);
-    anchor.click();
-    anchor.remove();
   }
 }

@@ -32,15 +32,15 @@ Currently all information is hosted in excel files in teams groups
     - [ ] export (auto generated)
       - [ ] Excel 
       - [ ] generate PDF naming=japanese year.month_GCL_Schedule.pdf
-  - [ ] Staff information
-  - [ ] holidays input (to pull from internet yearly and ask for user confirmation)
-  - [ ] platform management logging
-    - [ ] instagram
+  - [x] Staff information
+  - [x] holidays input (to pull from internet yearly and ask for user confirmation)
+  - [x] platform management logging
+    - [x] instagram
     - [ ] website
-    - [ ] Twitter
+    - [x] Twitter
     - [ ] Line
     - [ ] Email
-    - [ ] Youtube
+    - [x] Youtube
     - [ ] Moodle
 - [ ] scheduling platform
   - [x] ~~date and time handler (within GCL hour schedule limit, holidays and events)~~
@@ -48,7 +48,7 @@ Currently all information is hosted in excel files in teams groups
     - [ ] in person
     - [ ] online only
   - [ ] attendance confirmation 
-  - [ ] working report (only activated AFTER the shift)
+  - [x] working report (only activated AFTER the shift)
     - [ ] confirm time (start time - finish time)
     - [ ] number of hours (floating data type)
     - [ ] what did you do?
@@ -179,3 +179,5 @@ After the initial event proposal is approved, the proposer shall be able to add:
 
 junior profile
 add languages (native and speaking)
+
+## Continuity demo approach

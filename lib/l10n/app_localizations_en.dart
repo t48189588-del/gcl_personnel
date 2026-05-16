@@ -607,6 +607,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportCsv => 'Export CSV';
 
   @override
+  String get importStaffJson => 'Import Staff (JSON)';
+
+  @override
+  String get importDataCsv => 'Import Schedule/Events (CSV)';
+
+  @override
+  String get importSuccess => 'Import successful!';
+
+  @override
+  String importError(String error) {
+    return 'Import failed: $error';
+  }
+
+  @override
   String get fluentLanguages => 'Fluent Languages';
 
   @override

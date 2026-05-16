@@ -1184,6 +1184,30 @@ abstract class AppLocalizations {
   /// **'Export CSV'**
   String get exportCsv;
 
+  /// No description provided for @importStaffJson.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Staff (JSON)'**
+  String get importStaffJson;
+
+  /// No description provided for @importDataCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Schedule/Events (CSV)'**
+  String get importDataCsv;
+
+  /// No description provided for @importSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Import successful!'**
+  String get importSuccess;
+
+  /// No description provided for @importError.
+  ///
+  /// In en, this message translates to:
+  /// **'Import failed: {error}'**
+  String importError(String error);
+
   /// No description provided for @fluentLanguages.
   ///
   /// In en, this message translates to:

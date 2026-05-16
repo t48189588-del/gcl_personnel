@@ -599,6 +599,20 @@ class AppLocalizationsJa extends AppLocalizations {
   String get exportCsv => 'CSVエクスポート';
 
   @override
+  String get importStaffJson => 'スタッフ読込 (JSON)';
+
+  @override
+  String get importDataCsv => '予定・イベント読込 (CSV)';
+
+  @override
+  String get importSuccess => 'インポートに成功しました！';
+
+  @override
+  String importError(String error) {
+    return 'インポートに失敗しました: $error';
+  }
+
+  @override
   String get fluentLanguages => '流暢な言語';
 
   @override

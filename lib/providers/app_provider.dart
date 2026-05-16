@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../services/hive_service.dart';
 import '../services/logger_service.dart';
+import 'dart:convert';
 import 'package:uuid/uuid.dart';
 
 class AppProvider with ChangeNotifier {
@@ -399,5 +400,102 @@ class AppProvider with ChangeNotifier {
   void addLog(String type, String message) {
     LoggerService.log(type, message);
     notifyListeners();
+  }
+
+  // --- Import Methods ---
+
+  Future<void> importStaffFromJson(String jsonContent) async {
+    try {
+      final List<dynamic> data = json.decode(jsonContent);
+      for (var item in data) {
+        // Ensure ID exists or generate one
+        if (item['id'] == null) {
+          item['id'] = const Uuid().v4();
+        }
+        final newStaff = StaffMember.fromJson(item);
+        
+        // Update if exists, otherwise add
+        final index = _staff.indexWhere((s) => s.email == newStaff.email);
+        if (index != -1) {
+          _staff[index] = newStaff;
+        } else {
+          _staff.add(newStaff);
+        }
+        HiveService.saveStaff(newStaff);
+      }
+      LoggerService.log('Action', 'logImportedStaff|count=${data.length}');
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error importing staff: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> importDataFromCsv(List<List<dynamic>> rows) async {
+    try {
+      if (rows.isEmpty) return;
+      
+      // Skip header if it contains "Type"
+      int startIndex = 0;
+      if (rows.first.isNotEmpty && rows.first.first.toString().toLowerCase().contains('type')) {
+        startIndex = 1;
+      }
+
+      for (int i = startIndex; i < rows.length; i++) {
+        final row = rows[i];
+        if (row.length < 5) continue;
+
+        final String type = row[0].toString().toUpperCase();
+        final String email = row[1].toString();
+        final String titleOrModality = row[2].toString();
+        final String description = row[3].toString();
+        final String dateStr = row[4].toString();
+        
+        final staff = _staff.where((s) => s.email == email).firstOrNull;
+        if (staff == null) continue;
+
+        if (type == 'BLOCK') {
+          final String startStr = row[5].toString();
+          final String endStr = row[6].toString();
+          
+          final date = DateTime.parse(dateStr);
+          final startParts = startStr.split(':');
+          final startTime = DateTime(date.year, date.month, date.day, int.parse(startParts[0]), int.parse(startParts[1]));
+          
+          final endParts = endStr.split(':');
+          final endTime = DateTime(date.year, date.month, date.day, int.parse(endParts[0]), int.parse(endParts[1]));
+
+          // Create blocks in 30min increments between start and end
+          DateTime current = startTime;
+          while (current.isBefore(endTime)) {
+            final block = AvailabilityBlock(
+              id: const Uuid().v4(),
+              startTime: current,
+              staffId: staff.id,
+              modality: titleOrModality,
+            );
+            _blocks.add(block);
+            HiveService.saveBlock(block);
+            current = current.add(const Duration(minutes: 30));
+          }
+        } else if (type == 'EVENT') {
+          final proposal = EventProposal(
+            id: const Uuid().v4(),
+            staffId: staff.id,
+            title: titleOrModality,
+            description: description,
+            proposedDate: DateTime.parse(dateStr),
+            proposerName: staff.name,
+          );
+          _eventProposals.add(proposal);
+          HiveService.saveProposal(proposal);
+        }
+      }
+      LoggerService.log('Action', 'logImportedCsvData|rows=${rows.length - startIndex}');
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error importing CSV: $e');
+      rethrow;
+    }
   }
 }

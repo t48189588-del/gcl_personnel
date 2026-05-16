@@ -104,6 +104,8 @@ class _DeveloperDashboardState extends State<DeveloperDashboard> {
       case 'logUpdatedProposalStatus': return loc.logUpdatedProposalStatus(params['id'] ?? '', params['status'] ?? '');
       case 'logApprovedAllBlocks': return loc.logApprovedAllBlocks(params['staffId'] ?? '', params['month'] ?? '');
       case 'logSubmittedReport': return loc.logSubmittedReport(params['date'] ?? '');
+      case 'logImportedStaff': return "Imported ${params['count']} staff members"; // TODO: Add to arb if needed, but for demo this works
+      case 'logImportedCsvData': return "Imported ${params['rows']} data rows from CSV";
       default: return description;
     }
   }

@@ -210,6 +210,17 @@
   "selectDaysPrompt": "Select days (tap to toggle):",
   "selectStaffPrompt": "Please select a staff member to view reports.",
   "exportCsv": "Export CSV",
+  "importStaffJson": "Import Staff (JSON)",
+  "importDataCsv": "Import Schedule/Events (CSV)",
+  "importSuccess": "Import successful!",
+  "importError": "Import failed: {error}",
+  "@importError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "fluentLanguages": "Fluent Languages",
   "commPreference": "Communication Preference",
   "byAuthorOnDate": "By {author} on {date}"

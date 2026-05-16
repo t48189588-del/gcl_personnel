@@ -10,7 +10,8 @@ import '../common/setup_profile_screen.dart';
 import '../../services/social_dashboard_tab.dart';
 import '../../services/logger_service.dart';
 import 'dart:convert';
-import 'package:web/web.dart' as web;
+import '../../services/platform_helper.dart';
+import '../../services/data_import_service.dart';
 
 class SeniorDashboard extends StatefulWidget {
   const SeniorDashboard({super.key});
@@ -33,29 +34,29 @@ class _SeniorDashboardState extends State<SeniorDashboard> {
           IconButton(
             icon: const Icon(Icons.calendar_month),
             tooltip: loc.masterCalendarExport,
-            onPressed: () async {
+            onPressed: PlatformHelper.isWeb ? () async {
               final DateTime? month = await _selectMonthDialog(context, loc);
               if (month != null && context.mounted) {
                 final juniors = provider.staff.where((s) => !s.isSenior && s.isSetupComplete).toList();
                 ExcelService.exportMasterCalendarMonthly(month, juniors, provider.blocks, loc);
               }
-            },
+            } : null,
           ),
           IconButton(
             icon: const Icon(Icons.download),
             tooltip: loc.exportExcel,
-            onPressed: () {
+            onPressed: PlatformHelper.isWeb ? () {
               final staff = provider.staff;
               ExcelService.exportStaffData(staff, loc);
-            },
+            } : null,
           ),
           IconButton(
             icon: const Icon(Icons.folder_zip_outlined),
             tooltip: loc.exportAllReportsTooltip,
-            onPressed: () {
+            onPressed: PlatformHelper.isWeb ? () {
               final juniors = provider.staff.where((s) => !s.isSenior && s.isSetupComplete).toList();
               ExcelService.exportAllStaffWorkingReports(juniors, provider.reports, loc);
-            },
+            } : null,
           ),
           ...buildGlobalAppActions(context),
           const SizedBox(width: 20),
@@ -272,7 +273,28 @@ class _MetricsViewState extends State<_MetricsView> {
                           emailController.clear();
                         }
                       },
-                    )
+                    ),
+                    const SizedBox(width: 8),
+                    OutlinedButton.icon(
+                      icon: const Icon(Icons.file_upload),
+                      label: Text(loc.importStaffJson),
+                      onPressed: () async {
+                        final messenger = ScaffoldMessenger.of(context);
+                        final content = await DataImportService.pickJsonFile();
+                        if (content != null) {
+                          try {
+                            await provider.importStaffFromJson(content);
+                            messenger.showSnackBar(
+                              SnackBar(content: Text(loc.importSuccess)),
+                            );
+                          } catch (e) {
+                            messenger.showSnackBar(
+                              SnackBar(content: Text(loc.importError(e.toString()))),
+                            );
+                          }
+                        }
+                      },
+                    ),
                   ],
                 ),
               )
@@ -497,10 +519,10 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
                 ElevatedButton.icon(
                   icon: const Icon(Icons.download),
                   label: Text(loc.exportExcel),
-                  onPressed: () {
+                  onPressed: PlatformHelper.isWeb ? () {
                     final staffReports = provider.reports.where((r) => r.staffId == _selectedStaff!.id).toList();
                     ExcelService.exportWorkingReports(_selectedStaff!, staffReports, loc);
-                  },
+                  } : null,
                 ),
             ],
           ),
@@ -700,6 +722,27 @@ class _ApprovalTabState extends State<_ApprovalTab> {
                 ],
                 selected: {_viewType},
                 onSelectionChanged: (val) => setState(() => _viewType = val.first),
+              ),
+              const SizedBox(width: 16),
+              OutlinedButton.icon(
+                icon: const Icon(Icons.upload_file),
+                label: Text(loc.importDataCsv),
+                onPressed: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  final rows = await DataImportService.pickCsvFile();
+                  if (rows != null) {
+                    try {
+                      await provider.importDataFromCsv(rows);
+                      messenger.showSnackBar(
+                        SnackBar(content: Text(loc.importSuccess)),
+                      );
+                    } catch (e) {
+                      messenger.showSnackBar(
+                        SnackBar(content: Text(loc.importError(e.toString()))),
+                      );
+                    }
+                  }
+                },
               ),
             ],
           ),
@@ -1023,15 +1066,7 @@ class _LogView extends StatelessWidget {
     }
     
     final bytes = utf8.encode(csv);
-    final base64String = base64Encode(bytes);
-    final anchor = web.HTMLAnchorElement()
-      ..href = 'data:text/csv;base64,$base64String'
-      ..download = "GCL_System_Logs.csv"
-      ..style.display = 'none';
-      
-    web.document.body?.append(anchor);
-    anchor.click();
-    anchor.remove();
+    PlatformHelper.downloadFile(bytes, "GCL_System_Logs.csv", "text/csv");
   }
 
   @override
@@ -1052,7 +1087,7 @@ class _LogView extends StatelessWidget {
               ElevatedButton.icon(
                 icon: const Icon(Icons.download),
                 label: Text(loc.exportCsv),
-                onPressed: () => _exportCSV(logs),
+                onPressed: PlatformHelper.isWeb ? () => _exportCSV(logs) : null,
               ),
               const SizedBox(width: 16),
               OutlinedButton.icon(

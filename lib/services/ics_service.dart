@@ -1,5 +1,5 @@
-import 'package:web/web.dart' as web;
 import 'dart:convert';
+import 'platform_helper.dart';
 import '../models/models.dart';
 import 'package:intl/intl.dart';
 
@@ -35,24 +35,16 @@ class ICSService {
 
     ics.writeln('END:VCALENDAR');
 
-    _downloadICSWeb(ics.toString(), "GCL_Availability_${staff.name.replaceAll(' ', '_')}.ics");
+    final bytes = utf8.encode(ics.toString());
+    PlatformHelper.downloadFile(
+      bytes, 
+      "GCL_Availability_${staff.name.replaceAll(' ', '_')}.ics", 
+      "text/calendar"
+    );
   }
 
   static String _formatDateTime(DateTime dt) {
     // ICS format: yyyyMMddTHHmmssZ
     return DateFormat("yyyyMMdd'T'HHmmss'Z'").format(dt.toUtc());
-  }
-
-  static void _downloadICSWeb(String content, String fileName) {
-    final bytes = utf8.encode(content);
-    final base64String = base64Encode(bytes);
-    final anchor = web.HTMLAnchorElement()
-      ..href = 'data:text/calendar;base64,$base64String'
-      ..download = fileName
-      ..style.display = 'none';
-      
-    web.document.body?.append(anchor);
-    anchor.click();
-    anchor.remove();
   }
 }

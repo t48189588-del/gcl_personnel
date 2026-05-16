@@ -188,6 +188,17 @@
   "selectDaysPrompt": "日付を選択 (タップで切り替え):",
   "selectStaffPrompt": "報告書を表示するスタッフを選択してください。",
   "exportCsv": "CSVエクスポート",
+  "importStaffJson": "スタッフ読込 (JSON)",
+  "importDataCsv": "予定・イベント読込 (CSV)",
+  "importSuccess": "インポートに成功しました！",
+  "importError": "インポートに失敗しました: {error}",
+  "@importError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "fluentLanguages": "流暢な言語",
   "commPreference": "連絡手段の希望",
   "byAuthorOnDate": "{date}に{author}によって提案されました"
