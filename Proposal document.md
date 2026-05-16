@@ -1,8 +1,37 @@
-# GCL INTEGRATED SYSTEM PROPOSAL
+<div style="font-family: 'MS Mincho', 'Hiragino Mincho Pro', serif; line-height: 1.6; color: #333;">
 
+<!-- DATE SECTION -->
+<div style="text-align: right; font-size: 12pt;">
+2026年5月14日
+</div>
 
+<!-- RECIPIENT SECTION -->
+<div style="text-align: left; font-size: 14pt; font-weight: bold; margin-top: 20px;">
+九州工業大学 飯塚キャンパス<br>
+グローバル・コミュニケーション・ラウンジ (GCL)<br>
+運営担当職員 各位
+</div>
 
-**Operational Optimization & Digital Interface Transformation**
+<br><br><br><br>
+<br>
+<hr style="border-top: 2px solid #002147;">
+<br>
+
+<!-- MAIN TITLES (REFACTORED FOR VS CODE COMPATIBILITY) -->
+<div style="text-align: center; margin-top: 80px; margin-bottom: 80px;">
+    <p style="font-size: 32pt; margin: 0; padding: 0;">GCL 統合システム導入提案書</p>    
+    <p style="font-size: 24pt; margin-top: 60px; margin-bottom: 0; text-transform: uppercase; font-family: 'Arial', sans-serif;">GCL Integrated System Proposal</p>    
+</div>
+
+<br>
+<hr style="border-top: 1px solid #eee;">
+<br>
+
+<br><br><br><br>
+
+</div>
+
+<div style="page-break-after: always;"></div>
 
 ---
 
@@ -137,7 +166,7 @@ The development process is currently **90% complete**.
 * **ステージ1 / Stage 1:** プロトタイプによるデモンストレーション [準備完了] / Live Prototype Demonstration [Ready]
 
 
-* **ステージ2 / Stage 2:** 現場フィードバックに基づく最終調整 [2週間を想定] / Deployment & Final Calibration [Estimated 2 weeks]
+* **ステージ2 / Stage 2:** 現場フィードバックに基づく最終調整 [1ヶ月を想定] / Deployment & Final Calibration [Estimated 1 month]
 
 
 
@@ -204,7 +233,35 @@ Thank you for your kind attention and for considering this proposal. It would be
 
 **Respectfully yours,**
 
+
+
 **Kung Kelvin**
 
-
 Student Staff, Global Communication Lounge
+
+<div style="break-after: page;"></div>
+
+## Built system preview
+
+<div align="center">
+  <img src="./mainscreen.png" alt="Portfolio QR Code">
+  <p><i>メインダッシュボード: 全プラットフォームの通知と稼働状況を俯瞰する一元管理画面<br>Main Dashboard: A centralized interface for a high-level overview of all platform notifications and operational status.</i></p>
+</div>
+
+<div align="center">
+  <img src="./senior_staff.png" alt="Portfolio QR Code">
+  <p><i>管理者用管理画面: 権限設定、リソース配分、および全体統計を確認するための上級スタッフ専用UI<br>Senior Admin Interface: A dedicated UI for senior staff to manage permissions, resource allocation, and review overall analytics.</i></p>
+</div>
+
+<div style="break-after: page;"></div>
+<div align="center">
+  <img src="./junior_staff_availability.png" alt="Portfolio QR Code">
+  <p><i>スタッフ稼働スケジュール: リアルタイムでの空き状況確認とシフト調整を自動化するインターフェース<br>Staff Availability Screen: An automated interface for real-time availability tracking and seamless shift coordination.</i></p>
+</div>
+
+<div align="center">
+  <img src="./junior_staff_profile.png" alt="Portfolio QR Code">
+  <p><i>個別プロファイル編集: 語学スキルや担当業務を管理し、最適な人員配置を支援する編集画面<br>Student Profile Editor: A management screen for language skills and assignments to ensure optimized personnel placement.</i></p>
+</div>
+
+<div style="break-after: page;"></div>
