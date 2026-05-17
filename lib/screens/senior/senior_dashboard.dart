@@ -744,6 +744,27 @@ class _ApprovalTabState extends State<_ApprovalTab> {
                   }
                 },
               ),
+              const SizedBox(width: 8),
+              OutlinedButton.icon(
+                icon: const Icon(Icons.integration_instructions),
+                label: const Text("Import Cleaned JSON"),
+                onPressed: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  final content = await DataImportService.pickJsonFile();
+                  if (content != null) {
+                    try {
+                      await provider.importDataFromJson(content);
+                      messenger.showSnackBar(
+                        SnackBar(content: Text(loc.importSuccess)),
+                      );
+                    } catch (e) {
+                      messenger.showSnackBar(
+                        SnackBar(content: Text(loc.importError(e.toString()))),
+                      );
+                    }
+                  }
+                },
+              ),
             ],
           ),
           const SizedBox(height: 24),

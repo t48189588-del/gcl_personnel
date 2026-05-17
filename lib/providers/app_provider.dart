@@ -431,6 +431,56 @@ class AppProvider with ChangeNotifier {
     }
   }
 
+  Future<void> importDataFromJson(String jsonContent) async {
+    try {
+      final List<dynamic> data = json.decode(jsonContent);
+      for (var item in data) {
+        if (item is! Map) continue;
+        
+        final String type = (item['type'] ?? item['Type'] ?? '').toString().toUpperCase();
+        final String email = (item['email'] ?? item['Email'] ?? '').toString();
+        final String titleOrModality = (item['modality'] ?? item['Modality'] ?? item['modalityPreference'] ?? '').toString();
+        final String dateStr = (item['date'] ?? item['Date'] ?? '').toString();
+        
+        final staff = _staff.where((s) => s.email == email).firstOrNull;
+        if (staff == null) continue;
+
+        if (type == 'BLOCK') {
+          final String startStr = (item['start'] ?? item['Start'] ?? item['startTime'] ?? '').toString();
+          final String endStr = (item['end'] ?? item['End'] ?? item['endTime'] ?? '').toString();
+          
+          if (dateStr.isEmpty || startStr.isEmpty || endStr.isEmpty) continue;
+          
+          final date = DateTime.parse(dateStr);
+          final startParts = startStr.split(':');
+          final startTime = DateTime(date.year, date.month, date.day, int.parse(startParts[0]), int.parse(startParts[1]));
+          
+          final endParts = endStr.split(':');
+          final endTime = DateTime(date.year, date.month, date.day, int.parse(endParts[0]), int.parse(endParts[1]));
+
+          // Create blocks in 30min increments between start and end
+          DateTime current = startTime;
+          while (current.isBefore(endTime)) {
+            final block = AvailabilityBlock(
+              id: const Uuid().v4(),
+              startTime: current,
+              staffId: staff.id,
+              modality: titleOrModality,
+            );
+            _blocks.add(block);
+            HiveService.saveBlock(block);
+            current = current.add(const Duration(minutes: 30));
+          }
+        }
+      }
+      LoggerService.log('Action', 'logImportedJsonData|count=${data.length}');
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error importing data from JSON: $e');
+      rethrow;
+    }
+  }
+
   Future<void> importDataFromCsv(List<List<dynamic>> rows) async {
     try {
       if (rows.isEmpty) return;
