@@ -23,7 +23,7 @@ Currently all information is hosted in excel files in teams groups
 - [ ] admin information
   - [ ] seniour staff (3 people)
     - [ ] Hatsuda Hisanori
-    - [ ] Shiraishi Shinya
+    - [ ] Shiraishi Shinyav
     - [ ] Kiruma Tomoko
   - [ ] student staff (25 people)
     - [ ] admin / owner
@@ -314,7 +314,7 @@ Act as a Principal Python Engineer specializing in data pipelines and Streamlit 
 The app must feature a clean, professional multi-stage layout optimized for a live audience presentation:
 
 1. METRICS & TELEMETRY ENGINE:
-   - Create a helper function that takes a raw Excel workbook and calculates: Total rows/columns, count of empty/null cells, count of leading/trailing whitespaces, and total character length of all strings combined.
+   - Create a helper function that takes a raw Excel workbook and calculates: Detects colored cells, Total rows/columns, count of empty/null cells, count of leading/trailing whitespaces, and total character length of all strings combined.
    - Create an identical metric evaluator for the final output so we can display a "Before vs. After" side-by-side comparison matrix showing an "Efficiency Score" (Wasted characters and layout blocks removed).
 
 2. INGESTION & BOUNDING BOX DISCOVERY:

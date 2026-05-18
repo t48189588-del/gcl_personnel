@@ -9,7 +9,3 @@ abstract class PlatformHelper {
     platformDownloadFile(bytes, fileName, mimeType);
   }
 }
-
-void platformDownloadFile(List<int> bytes, String fileName, String mimeType) {
-  throw UnimplementedError('platformDownloadFile has not been implemented.');
-}
