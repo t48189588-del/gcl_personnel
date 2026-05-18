@@ -144,6 +144,24 @@ Currently all information is hosted in excel files in teams groups
   - [ ] staff schedule information 
   - [ ] fix information formatting for online/local storage and dashboard reading or excel pivoting
 
+### issues to be fixed by wed 20!!!
+meetings is not accepting hours
+
+commander view-senior staff
+approve windows - next month availability 
+add a new layout option for day presentation.
+When multiple staff has submitted availability for the same time block change layout to each day show the time block grid, inside each block show the proposed schedule for the respective studnet staff with an approve or reject option
+instead of removing the block when approved, change to a green background block (for approved), gray (pending approval), red for rejected, also enable the senior staff to change the approval status
+
+fix to uptimize view in web browser mobile format
+add graphings for the senior dashboard reports
+1. historgram chart showing the total approved hours worked per time block
+2. individual staff working vs approved schedule pie chart
+3. based on all the staff languages proficiency, a bar grpahs showing the amount of speakers per language 
+4. a line chart per staff member, showing the accumulative worked hours per day
+5. based on the staff academic status (master, bacherlor, phd, reseatch) show a column bar graphs showing the number of staff per academic status
+
+
 # option 1
 Office 365 only tools
 - power apps
