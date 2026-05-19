@@ -223,5 +223,19 @@
   },
   "fluentLanguages": "Fluent Languages",
   "commPreference": "Communication Preference",
-  "byAuthorOnDate": "By {author} on {date}"
+  "byAuthorOnDate": "By {author} on {date}",
+  "charts": "Charts",
+  "chartVisualizations": "Chart Visualizations",
+  "meetingRequests": "Meeting Requests",
+  "noMeetingRequests": "No meeting requests.",
+  "chartApprovedHours": "Approved Hours per Time Block",
+  "chartWorkedVsApproved": "Staff Worked vs Approved Hours",
+  "chartLanguageProficiency": "Speakers per Language Proficiency",
+  "chartCumulativeHours": "Cumulative Worked Hours per Day",
+  "chartAcademicStatus": "Staff per Academic Status",
+  "noData": "No data",
+  "basic": "Basic",
+  "intermediate": "Intermediate",
+  "advanced": "Advanced",
+  "native": "Native"
 }

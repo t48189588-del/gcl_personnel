@@ -630,4 +630,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String byAuthorOnDate(Object author, Object date) {
     return 'By $author on $date';
   }
+
+  @override
+  String get charts => 'Charts';
+
+  @override
+  String get chartVisualizations => 'Chart Visualizations';
+
+  @override
+  String get meetingRequests => 'Meeting Requests';
+
+  @override
+  String get noMeetingRequests => 'No meeting requests.';
+
+  @override
+  String get chartApprovedHours => 'Approved Hours per Time Block';
+
+  @override
+  String get chartWorkedVsApproved => 'Staff Worked vs Approved Hours';
+
+  @override
+  String get chartLanguageProficiency => 'Speakers per Language Proficiency';
+
+  @override
+  String get chartCumulativeHours => 'Cumulative Worked Hours per Day';
+
+  @override
+  String get chartAcademicStatus => 'Staff per Academic Status';
+
+  @override
+  String get noData => 'No data';
+
+  @override
+  String get basic => 'Basic';
+
+  @override
+  String get intermediate => 'Intermediate';
+
+  @override
+  String get advanced => 'Advanced';
+
+  @override
+  String get native => 'Native';
 }

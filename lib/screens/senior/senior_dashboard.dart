@@ -7,6 +7,7 @@ import '../../services/excel_service.dart';
 import 'package:intl/intl.dart';
 import '../common/app_actions.dart';
 import '../common/setup_profile_screen.dart';
+import 'chart_visualization_tab.dart';
 import '../../services/social_dashboard_tab.dart';
 import '../../services/logger_service.dart';
 import 'dart:convert';
@@ -99,6 +100,16 @@ class _SeniorDashboardState extends State<SeniorDashboard> {
                 label: Text(loc.eventProposal),
               ),
               NavigationRailDestination(
+                icon: const Icon(Icons.meeting_room_outlined),
+                selectedIcon: const Icon(Icons.meeting_room),
+                label: Text(loc.meetingRequests),
+              ),
+              NavigationRailDestination(
+                icon: const Icon(Icons.show_chart_outlined),
+                selectedIcon: const Icon(Icons.show_chart),
+                label: Text(loc.charts),
+              ),
+              NavigationRailDestination(
                 icon: const Icon(Icons.bar_chart_outlined),
                 selectedIcon: const Icon(Icons.bar_chart),
                 label: Text(loc.socialMetrics),
@@ -121,8 +132,10 @@ class _SeniorDashboardState extends State<SeniorDashboard> {
       case 2: return const _WorkingReportsView();
       case 3: return const _ApprovalTab();
       case 4: return const _EventProposalsTab();
-      case 5: return const SocialDashboardTab();
-      case 6: return const _LogView();
+      case 5: return const _MeetingRequestsTab();
+      case 6: return const ChartVisualizationTab();
+      case 7: return const SocialDashboardTab();
+      case 8: return const _LogView();
       default: return const _MetricsView();
     }
   }
@@ -312,6 +325,7 @@ class _MetricsViewState extends State<_MetricsView> {
                   columns: [
                     DataColumn(label: _sortableHeader(loc.name), onSort: (index, asc) => setState(() { _sortColumnIndex = index; _isAscending = asc; })),
                     DataColumn(label: _sortableHeader(loc.nativeLang), onSort: (index, asc) => setState(() { _sortColumnIndex = index; _isAscending = asc; })),
+                    DataColumn(label: Text(loc.otherLanguages)),
                     DataColumn(label: _sortableHeader(loc.currentlyStudying), onSort: (index, asc) => setState(() { _sortColumnIndex = index; _isAscending = asc; })),
                     DataColumn(label: _sortableHeader(loc.availRate), onSort: (index, asc) => setState(() { _sortColumnIndex = index; _isAscending = asc; })),
                     DataColumn(label: _sortableHeader(loc.eventsPart), onSort: (index, asc) => setState(() { _sortColumnIndex = index; _isAscending = asc; })),
@@ -338,6 +352,7 @@ class _MetricsViewState extends State<_MetricsView> {
                         )
                       ])),
                       DataCell(Text(_translateModelValue(s.nativeLanguage, loc))),
+                      DataCell(Text(s.languageSkills.map((e) => '${e.language} (${e.proficiency})').join(', '))),
                       DataCell(Text(_translateModelValue(s.degree, loc))),
                       DataCell(Text('${(s.availabilityRate * 100).toStringAsFixed(1)}%')),
                       DataCell(Text(s.eventsParticipation.toString())),
@@ -412,7 +427,7 @@ class _GuardrailsView extends StatelessWidget {
             const SizedBox(height: 16),
             ElevatedButton.icon(icon: const Icon(Icons.calendar_month), label: Text(loc.addHoliday), onPressed: () => _showAddHolidayDialog(context, provider, loc)),
             const SizedBox(height: 16),
-            Wrap(spacing: 8, children: config.holidays.map((h) => Chip(label: Text('${DateFormat.yMd(Localizations.localeOf(context).toString()).format(h.date)}: ${h.message}'), onDeleted: () => provider.removeHoliday(h.date))).toList()),
+            Wrap(spacing: 8, children: config.holidays.map((h) => Chip(label: Text('${DateFormat.yMd(Localizations.localeOf(context).toString()).format(h.date)}: ${h.message}' + (h.isAllDay ? '' : ' (${h.startTime}-${h.endTime})')), onDeleted: () => provider.removeHoliday(h.date))).toList()),
           ],
         ),
       ),
@@ -846,7 +861,6 @@ class _ApprovalTabState extends State<_ApprovalTab> {
 
   Widget _buildApprovalTimeline(BuildContext context, AppProvider provider, AppLocalizations loc) {
     final blocks = provider.blocks.where((b) {
-      if (b.status != 'proposed') return false;
       final bDate = DateTime(b.startTime.year, b.startTime.month, b.startTime.day);
       if (_viewType == CalendarViewType.day) {
         final dDate = DateTime(_currentDate.year, _currentDate.month, _currentDate.day);
@@ -862,122 +876,111 @@ class _ApprovalTabState extends State<_ApprovalTab> {
 
     if (blocks.isEmpty) return Center(child: Text(loc.noPendingShifts));
 
-    Map<String, List<Shift>> staffShifts = {};
-    final activeJuniors = provider.staff.where((s) => !s.isSenior && s.isSetupComplete).toList();
-    
-    for (var s in activeJuniors) {
-      final staffBlocks = blocks.where((b) => b.staffId == s.id).toList();
-      if (staffBlocks.isEmpty) continue;
-      
-      staffBlocks.sort((a, b) => a.startTime.compareTo(b.startTime));
-      
-      List<Shift> shifts = [];
-      List<AvailabilityBlock> currentBlocks = [staffBlocks.first];
-      for (int i = 1; i < staffBlocks.length; i++) {
-        final prev = staffBlocks[i-1];
-        final curr = staffBlocks[i];
-        if (curr.startTime.difference(prev.startTime).inMinutes == 30 && curr.startTime.day == prev.startTime.day) {
-          currentBlocks.add(curr);
-        } else {
-          shifts.add(Shift(staff: s, blocks: currentBlocks, start: currentBlocks.first.startTime, end: currentBlocks.last.startTime.add(const Duration(minutes: 30))));
-          currentBlocks = [curr];
-        }
-      }
-      shifts.add(Shift(staff: s, blocks: currentBlocks, start: currentBlocks.first.startTime, end: currentBlocks.last.startTime.add(const Duration(minutes: 30))));
-      staffShifts[s.id] = shifts;
+    Map<DateTime, List<AvailabilityBlock>> blocksByDay = {};
+    for (var b in blocks) {
+      final d = DateTime(b.startTime.year, b.startTime.month, b.startTime.day);
+      blocksByDay.putIfAbsent(d, () => []).add(b);
     }
 
-    if (staffShifts.isEmpty) return const Center(child: Text('No pending shifts for this period'));
+    final sortedDays = blocksByDay.keys.toList()..sort();
 
     return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
+      scrollDirection: Axis.vertical,
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: staffShifts.entries.map((entry) {
-          final staff = activeJuniors.firstWhere((s) => s.id == entry.key);
-          final shifts = entry.value;
-          final color = Colors.primaries[staff.name.length % Colors.primaries.length];
+        children: sortedDays.map((day) {
+          final dayBlocks = blocksByDay[day]!..sort((a, b) => a.startTime.compareTo(b.startTime));
           
+          Map<String, List<AvailabilityBlock>> blocksBySlot = {};
+          for (var b in dayBlocks) {
+            final slot = DateFormat('HH:mm').format(b.startTime);
+            blocksBySlot.putIfAbsent(slot, () => []).add(b);
+          }
+
+          final sortedSlots = blocksBySlot.keys.toList()..sort();
+
           return Container(
-            width: 280,
-            margin: const EdgeInsets.only(right: 16),
+            margin: const EdgeInsets.only(bottom: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(color: color.withAlpha(25), borderRadius: BorderRadius.circular(8)),
-                  child: Row(
-                    children: [
-                      CircleAvatar(backgroundColor: color, radius: 6),
-                      const SizedBox(width: 8),
-                      Expanded(child: Text(staff.name, style: const TextStyle(fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis)),
-                    ],
-                  ),
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(color: Theme.of(context).primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                  child: Text(DateFormat('EEEE, MMM d, yyyy').format(day), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
                 const SizedBox(height: 12),
-                ...shifts.map((s) => _buildShiftCard(context, provider, s, color, loc)),
+                Wrap(
+                  spacing: 16,
+                  runSpacing: 16,
+                  children: sortedSlots.map((slot) {
+                    final slotBlocks = blocksBySlot[slot]!;
+                    return Container(
+                      width: 250,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(slot, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                          const Divider(),
+                          ...slotBlocks.map((b) {
+                            final staff = provider.staff.firstWhere((s) => s.id == b.staffId, orElse: () => StaffMember(id: '', name: 'Unknown', nativeLanguage: '', degree: '', modalityPreference: '', availabilityRate: 0.0, eventsParticipation: 0, providedAssistance: 0));
+                            Color bgColor;
+                            if (b.status == 'approved') {
+                              bgColor = Colors.green.shade100;
+                            } else if (b.status == 'rejected') {
+                              bgColor = Colors.red.shade100;
+                            } else {
+                              bgColor = Colors.grey.shade200; 
+                            }
+                            
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 8),
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(8)),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(staff.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                                        Text("${DateFormat('HH:mm').format(b.startTime)} - ${DateFormat('HH:mm').format(b.startTime.add(const Duration(minutes: 30)))}", style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
+                                        Text(_localizeModality(b.modality, loc), style: const TextStyle(fontSize: 11)),
+                                        Text(b.status.toUpperCase(), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black54)),
+                                      ],
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.check, color: Colors.green, size: 20),
+                                    onPressed: () => provider.approveBlocks([b.id]),
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  IconButton(
+                                    icon: const Icon(Icons.close, color: Colors.red, size: 20),
+                                    onPressed: () => provider.rejectBlocks([b.id]),
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                )
               ],
             ),
           );
         }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildShiftCard(BuildContext context, AppProvider provider, Shift s, Color color, AppLocalizations loc) {
-    final ids = s.blocks.map((b) => b.id).toList();
-    final isSelected = ids.every((id) => _selectedBlockIds.contains(id));
-    final isLong = s.blocks.length >= 3;
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      shape: RoundedRectangleBorder(side: BorderSide(color: color.withAlpha(76), width: 1), borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          children: [
-            if (isLong)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(icon: const Icon(Icons.check, color: Colors.green, size: 20), onPressed: () => provider.approveBlocks(ids)),
-                  IconButton(icon: const Icon(Icons.close, color: Colors.red, size: 20), onPressed: () => provider.rejectBlocks(ids)),
-                ],
-              ),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: Checkbox(
-                value: isSelected,
-                onChanged: (val) {
-                  setState(() {
-                    if (val == true) {
-                      for (var id in ids) {
-                        if (!_selectedBlockIds.contains(id)) _selectedBlockIds.add(id);
-                      }
-                    } else {
-                      for (var id in ids) {
-                        _selectedBlockIds.remove(id);
-                      }
-                    }
-                  });
-                },
-              ),
-              title: Text(DateFormat('EEEE, MMM d').format(s.start), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-              subtitle: Text(
-                '${DateFormat('HH:mm').format(s.start)} - ${DateFormat('HH:mm').format(s.end)}\n${_localizeModality(s.blocks.first.modality, loc)}',
-                style: const TextStyle(fontSize: 13, height: 1.5),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(icon: const Icon(Icons.check, color: Colors.green, size: 20), onPressed: () => provider.approveBlocks(ids)),
-                IconButton(icon: const Icon(Icons.close, color: Colors.red, size: 20), onPressed: () => provider.rejectBlocks(ids)),
-              ],
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -1180,3 +1183,155 @@ class _LogView extends StatelessWidget {
     }
   }
 }
+
+class _MeetingRequestsTab extends StatelessWidget {
+  const _MeetingRequestsTab();
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.watch<AppProvider>();
+    final pendingRequests = provider.externalMeetingRequests.where((r) => r.status == 'pending').toList();
+    final loc = AppLocalizations.of(context)!;
+
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(loc.meetingRequests, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 24),
+          if (pendingRequests.isEmpty)
+            Expanded(child: Center(child: Text(loc.noMeetingRequests)))
+          else
+            Expanded(
+              child: ListView.builder(
+                itemCount: pendingRequests.length,
+                itemBuilder: (context, index) {
+                  final req = pendingRequests[index];
+                  
+                  // Find available staff for this meeting
+                  final availableStaff = provider.staff.where((s) {
+                    if (s.isSenior || !s.isSetupComplete) return false;
+                    final speaksLang = s.nativeLanguage == req.language || s.languageSkills.any((skill) => skill.language == req.language);
+                    if (!speaksLang) return false;
+                    final hasBlock = provider.blocks.any((b) => 
+                      b.staffId == s.id && 
+                      b.status == 'approved' &&
+                      b.startTime.year == req.requestedTime.year &&
+                      b.startTime.month == req.requestedTime.month &&
+                      b.startTime.day == req.requestedTime.day &&
+                      b.startTime.hour == req.requestedTime.hour &&
+                      b.startTime.minute == req.requestedTime.minute
+                    );
+                    return hasBlock;
+                  }).toList();
+
+                  return _MeetingRequestCard(req: req, availableStaff: availableStaff);
+                },
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MeetingRequestCard extends StatefulWidget {
+  final ExternalMeetingRequest req;
+  final List<StaffMember> availableStaff;
+
+  const _MeetingRequestCard({required this.req, required this.availableStaff});
+
+  @override
+  State<_MeetingRequestCard> createState() => _MeetingRequestCardState();
+}
+
+class _MeetingRequestCardState extends State<_MeetingRequestCard> {
+  String? _selectedStaffId;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.availableStaff.isNotEmpty) {
+      _selectedStaffId = widget.availableStaff.first.id;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.read<AppProvider>();
+    final loc = AppLocalizations.of(context)!;
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(widget.req.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(widget.req.meetingType == 'Online' ? loc.online : loc.inPerson, style: const TextStyle(color: Colors.grey)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text('${loc.affiliation}: ${widget.req.department} (${widget.req.studyYear})'),
+            Text('${loc.personalDescription}: ${widget.req.purpose}'),
+            Text('${loc.nativeLang}: ${widget.req.language}'),
+            Text('${loc.scheduledTime}: ${DateFormat('yyyy-MM-dd HH:mm').format(widget.req.requestedTime)}'),
+            const Divider(),
+            if (widget.availableStaff.isEmpty)
+              const Text('No available staff found for this time and language.', style: TextStyle(color: Colors.red))
+            else ...[
+              Row(
+                children: [
+                  const Text('Assign Staff: '),
+                  const SizedBox(width: 8),
+                  DropdownButton<String>(
+                    value: _selectedStaffId,
+                    items: widget.availableStaff.map((s) => DropdownMenuItem(
+                      value: s.id,
+                      child: Text(s.name),
+                    )).toList(),
+                    onChanged: (val) {
+                      setState(() {
+                        _selectedStaffId = val;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
+                    onPressed: () {
+                      if (_selectedStaffId != null) {
+                        provider.approveMeetingRequest(widget.req.id, _selectedStaffId!);
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Meeting approved and staff assigned.')));
+                      }
+                    },
+                    child: Text(loc.approve),
+                  ),
+                  const SizedBox(width: 8),
+                  OutlinedButton(
+                    style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+                    onPressed: () {
+                      provider.rejectMeetingRequest(widget.req.id);
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Meeting request rejected.')));
+                    },
+                    child: Text(loc.reject),
+                  ),
+                ],
+              )
+            ]
+          ],
+        ),
+      ),
+    );
+  }
+}
+

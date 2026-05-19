@@ -1225,6 +1225,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'By {author} on {date}'**
   String byAuthorOnDate(Object author, Object date);
+
+  /// No description provided for @charts.
+  ///
+  /// In en, this message translates to:
+  /// **'Charts'**
+  String get charts;
+
+  /// No description provided for @chartVisualizations.
+  ///
+  /// In en, this message translates to:
+  /// **'Chart Visualizations'**
+  String get chartVisualizations;
+
+  /// No description provided for @meetingRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting Requests'**
+  String get meetingRequests;
+
+  /// No description provided for @noMeetingRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No meeting requests.'**
+  String get noMeetingRequests;
+
+  /// No description provided for @chartApprovedHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved Hours per Time Block'**
+  String get chartApprovedHours;
+
+  /// No description provided for @chartWorkedVsApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Worked vs Approved Hours'**
+  String get chartWorkedVsApproved;
+
+  /// No description provided for @chartLanguageProficiency.
+  ///
+  /// In en, this message translates to:
+  /// **'Speakers per Language Proficiency'**
+  String get chartLanguageProficiency;
+
+  /// No description provided for @chartCumulativeHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Cumulative Worked Hours per Day'**
+  String get chartCumulativeHours;
+
+  /// No description provided for @chartAcademicStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff per Academic Status'**
+  String get chartAcademicStatus;
+
+  /// No description provided for @noData.
+  ///
+  /// In en, this message translates to:
+  /// **'No data'**
+  String get noData;
+
+  /// No description provided for @basic.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic'**
+  String get basic;
+
+  /// No description provided for @intermediate.
+  ///
+  /// In en, this message translates to:
+  /// **'Intermediate'**
+  String get intermediate;
+
+  /// No description provided for @advanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced'**
+  String get advanced;
+
+  /// No description provided for @native.
+  ///
+  /// In en, this message translates to:
+  /// **'Native'**
+  String get native;
 }
 
 class _AppLocalizationsDelegate

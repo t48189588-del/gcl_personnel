@@ -7,6 +7,7 @@ import 'app_actions.dart';
 import '../senior/senior_dashboard.dart';
 import '../junior/junior_dashboard.dart';
 import '../developer/developer_dashboard.dart';
+import '../external/external_meeting_request_screen.dart';
 
 class RoleGateScreen extends StatelessWidget {
   const RoleGateScreen({super.key});
@@ -79,6 +80,22 @@ class RoleGateScreen extends StatelessWidget {
                           builder: (_) => Theme(
                             data: isDark ? AppTheme.darkTheme : ThemeData.light(),
                             child: const DeveloperDashboard(),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  _RoleCard(
+                    title: 'Request a Meeting',
+                    icon: Icons.event_available,
+                    color: Colors.orange.shade800,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => Theme(
+                            data: isDark ? AppTheme.darkTheme : ThemeData.light(),
+                            child: const ExternalMeetingRequestScreen(),
                           ),
                         ),
                       );

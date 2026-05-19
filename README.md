@@ -29,9 +29,9 @@ Currently all information is hosted in excel files in teams groups
     - [ ] admin / owner
     - [ ] users
   - [x] GCL hour schedule
-    - [ ] export (auto generated)
-      - [ ] Excel 
-      - [ ] generate PDF naming=japanese year.month_GCL_Schedule.pdf
+    - [x] export (auto generated)
+      - [x] Excel 
+      - [x] generate PDF naming=japanese year.month_GCL_Schedule.pdf
   - [x] Staff information
   - [x] holidays input (to pull from internet yearly and ask for user confirmation)
   - [x] platform management logging
@@ -45,17 +45,17 @@ Currently all information is hosted in excel files in teams groups
 - [ ] scheduling platform
   - [x] ~~date and time handler (within GCL hour schedule limit, holidays and events)~~
   - [x] ~~type of availability~~
-    - [ ] in person
-    - [ ] online only
-  - [ ] attendance confirmation 
+    - [x] in person
+    - [x] online only
+  - [x] attendance confirmation 
   - [x] working report (only activated AFTER the shift)
-    - [ ] confirm time (start time - finish time)
-    - [ ] number of hours (floating data type)
-    - [ ] what did you do?
+    - [x] confirm time (start time - finish time)
+    - [x] number of hours (floating data type)
+    - [x] what did you do?
     - [ ] when exporting 
       - [ ] header
-        - [ ] name
-        - [ ] affiliation
+        - [x] name
+        - [x] affiliation
       - [ ] 1 book per year
       - [ ] 1 month per tab
       - [ ] 1 day per row
@@ -109,7 +109,7 @@ Currently all information is hosted in excel files in teams groups
   - meeting agenda
 - Login capability
   - cojoin with office 365 (kyutech credentials) 
-- Multi-language support
+- Multi-language support (integrate with translation API and cache saving)
   - English
   - Japanese
   - Chinese
@@ -143,25 +143,46 @@ Currently all information is hosted in excel files in teams groups
   - [ ] event information
   - [ ] staff schedule information 
   - [ ] fix information formatting for online/local storage and dashboard reading or excel pivoting
+- [ ] People counter (to be defined)
+  - [ ] GCL staff
+  - [ ] non staff (public?)
+  - [ ] frequency count?
 
 ### issues to be fixed by wed 20!!!
-meetings is not accepting hours
+1. auto detect language based from browser language settings
+2. meetings hours are not being correctly processed by the system 
+
+add auto language detection, application and display result in console terminal 
+
+in the student block, block ONLY the meeting hours block
+
+for students staff
+in the schedule view, show also de the details of approved external meeting request.
+
+in the event proposal tab, add a log of previosly proposed events (show if they are approved, pending or rejected)
+
+in the senior dashboard approval panel
+show for each block the start and end time
+
 
 commander view-senior staff
 approve windows - next month availability 
-add a new layout option for day presentation.
-When multiple staff has submitted availability for the same time block change layout to each day show the time block grid, inside each block show the proposed schedule for the respective studnet staff with an approve or reject option
-instead of removing the block when approved, change to a green background block (for approved), gray (pending approval), red for rejected, also enable the senior staff to change the approval status
+1. add a new layout option for day presentation.
+   1. When multiple staff has submitted availability for the same time block change layout to each day show the time block grid, inside each block show the proposed schedule for the respective studnet staff with an approve or reject option
+2. instead of removing the block when approved, change to a green background block (for approved), gray (pending approval), red for rejected, also enable the senior staff to change the approval status
 
 fix to uptimize view in web browser mobile format
 add graphings for the senior dashboard reports
 1. historgram chart showing the total approved hours worked per time block
-2. individual staff working vs approved schedule pie chart
 3. based on all the staff languages proficiency, a bar grpahs showing the amount of speakers per language 
 4. a line chart per staff member, showing the accumulative worked hours per day
 5. based on the staff academic status (master, bacherlor, phd, reseatch) show a column bar graphs showing the number of staff per academic status
 
-
+to try 
+from the existing data, create a "form" like for external meeting requests
+only apply to approved student staff schedule
+show date, time and language, academic information? (level and specialty)
+requested topic, amount of persons
 # option 1
 Office 365 only tools
 - power apps

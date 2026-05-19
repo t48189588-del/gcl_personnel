@@ -29,7 +29,7 @@ class ExcelService {
       List<CellValue> row = [
         TextCellValue(s.name),
         TextCellValue(s.nativeLanguage),
-        TextCellValue(s.fluentLanguages.join(', ')),
+        TextCellValue(s.languageSkills.map((e) => '${e.language} (${e.proficiency})').join(', ')),
         TextCellValue(_translateValue(s.degree, loc)),
         TextCellValue(_translateValue(s.modalityPreference, loc)),
         DoubleCellValue(s.availabilityRate),

@@ -622,4 +622,46 @@ class AppLocalizationsJa extends AppLocalizations {
   String byAuthorOnDate(Object author, Object date) {
     return '$dateに$authorによって提案されました';
   }
+
+  @override
+  String get charts => 'チャート';
+
+  @override
+  String get chartVisualizations => 'チャート視覚化';
+
+  @override
+  String get meetingRequests => '面談リクエスト';
+
+  @override
+  String get noMeetingRequests => '面談リクエストはありません。';
+
+  @override
+  String get chartApprovedHours => '時間帯別の承認済み時間';
+
+  @override
+  String get chartWorkedVsApproved => 'スタッフの実働時間と承認時間';
+
+  @override
+  String get chartLanguageProficiency => '言語習得度別の話者数';
+
+  @override
+  String get chartCumulativeHours => '日別の累計実働時間';
+
+  @override
+  String get chartAcademicStatus => '学位別のスタッフ数';
+
+  @override
+  String get noData => 'データなし';
+
+  @override
+  String get basic => '初級';
+
+  @override
+  String get intermediate => '中級';
+
+  @override
+  String get advanced => '上級';
+
+  @override
+  String get native => '母国語';
 }

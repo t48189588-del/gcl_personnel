@@ -1,12 +1,32 @@
 import 'package:uuid/uuid.dart';
 
+class LanguageSkill {
+  String language;
+  String proficiency;
+
+  LanguageSkill({required this.language, required this.proficiency});
+
+  factory LanguageSkill.fromJson(Map<String, dynamic> json) {
+    return LanguageSkill(
+      language: json['language'] ?? '',
+      proficiency: json['proficiency'] ?? 'Basic',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'language': language,
+      'proficiency': proficiency,
+    };
+  }
+}
+
 class StaffMember {
   final String id;
   String name;
   String email;
   String nativeLanguage;
-  List<String> fluentLanguages;
-  List<String> otherLanguages;
+  List<LanguageSkill> languageSkills;
   String degree;
   String modalityPreference;
   double availabilityRate;
@@ -29,8 +49,7 @@ class StaffMember {
     required this.name,
     this.email = '',
     required this.nativeLanguage,
-    required this.fluentLanguages,
-    this.otherLanguages = const [],
+    this.languageSkills = const [],
     required this.degree,
     required this.modalityPreference,
     required this.availabilityRate,
@@ -55,8 +74,10 @@ class StaffMember {
       name: json['name'],
       email: json['email'] ?? '',
       nativeLanguage: json['nativeLanguage'],
-      fluentLanguages: List<String>.from(json['fluentLanguages'] ?? []),
-      otherLanguages: List<String>.from(json['otherLanguages'] ?? []),
+      languageSkills: (json['languageSkills'] as List<dynamic>?)
+              ?.map((e) => LanguageSkill.fromJson(e))
+              .toList() ??
+          _migrateOldLanguages(json),
       degree: json['degree'],
       modalityPreference: json['modalityPreference'],
       availabilityRate: (json['availabilityRate'] ?? 0.0).toDouble(),
@@ -84,8 +105,7 @@ class StaffMember {
       'name': name,
       'email': email,
       'nativeLanguage': nativeLanguage,
-      'fluentLanguages': fluentLanguages,
-      'otherLanguages': otherLanguages,
+      'languageSkills': languageSkills.map((e) => e.toJson()).toList(),
       'degree': degree,
       'modalityPreference': modalityPreference,
       'availabilityRate': availabilityRate,
@@ -113,10 +133,10 @@ class StaffMember {
       name: 'Staff $index',
       email: 'staff$index@example.com',
       nativeLanguage: index % 2 == 0 ? 'English' : 'Japanese',
-      fluentLanguages: index % 2 == 0
-          ? ['Japanese', 'French']
-          : ['English', 'Spanish'],
-      otherLanguages: ['German'],
+      languageSkills: [
+        LanguageSkill(language: index % 2 == 0 ? 'Japanese' : 'English', proficiency: 'Advanced'),
+        LanguageSkill(language: 'German', proficiency: 'Basic'),
+      ],
       degree: degrees[index % 3],
       modalityPreference: modality[index % 3],
       availabilityRate: 0.5 + (0.01 * index),
@@ -129,6 +149,19 @@ class StaffMember {
       isSetupComplete: true,
       isSenior: index == 1,
     );
+  }
+
+  static List<LanguageSkill> _migrateOldLanguages(Map<String, dynamic> json) {
+    List<LanguageSkill> skills = [];
+    final fluent = List<String>.from(json['fluentLanguages'] ?? []);
+    final other = List<String>.from(json['otherLanguages'] ?? []);
+    for (var l in fluent) {
+      skills.add(LanguageSkill(language: l, proficiency: 'Advanced'));
+    }
+    for (var l in other) {
+      skills.add(LanguageSkill(language: l, proficiency: 'Basic'));
+    }
+    return skills;
   }
 }
 
@@ -394,6 +427,66 @@ class WorkingReport {
       'confirmedEnd': confirmedEnd.toIso8601String(),
       'workDone': workDone,
       'isSubmitted': isSubmitted,
+    };
+  }
+}
+
+class ExternalMeetingRequest {
+  final String id;
+  final String meetingType; // Online, In Person
+  final String name;
+  final String department;
+  final String studyYear; 
+  final String purpose; 
+  final String language;
+  final DateTime requestedDate;
+  final DateTime requestedTime; // start time
+  String status; // pending, approved, rejected
+  String? assignedStaffId;
+
+  ExternalMeetingRequest({
+    required this.id,
+    required this.meetingType,
+    required this.name,
+    required this.department,
+    required this.studyYear,
+    required this.purpose,
+    required this.language,
+    required this.requestedDate,
+    required this.requestedTime,
+    this.status = 'pending',
+    this.assignedStaffId,
+  });
+
+  factory ExternalMeetingRequest.fromJson(Map<String, dynamic> json) {
+    return ExternalMeetingRequest(
+      id: json['id'],
+      meetingType: json['meetingType'],
+      name: json['name'],
+      department: json['department'],
+      studyYear: json['studyYear'],
+      purpose: json['purpose'],
+      language: json['language'],
+      requestedDate: DateTime.parse(json['requestedDate']),
+      requestedTime: DateTime.parse(json['requestedTime']),
+      status: json['status'] ?? 'pending',
+      assignedStaffId: json['assignedStaffId'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'meetingType': meetingType,
+      'name': name,
+      'department': department,
+      'studyYear': studyYear,
+      'purpose': purpose,
+      'language': language,
+      'requestedDate': requestedDate.toIso8601String(),
+      'requestedTime': requestedTime.toIso8601String(),
+      'status': status,
+      'assignedStaffId': assignedStaffId,
     };
   }
 }

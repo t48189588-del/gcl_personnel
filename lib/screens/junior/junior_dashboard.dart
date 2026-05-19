@@ -353,7 +353,32 @@ class _TimeBlock extends StatelessWidget {
         if (hasBlock) {
           _showBlockDialog(context, provider, existingBlocks.first, staff, loc);
         } else {
-          provider.addBlock(AvailabilityBlock(id: const Uuid().v4(), startTime: slot, staffId: staff.id, modality: staff.modalityPreference));
+          int monthBlocksCount = provider.blocks.where((b) => b.staffId == staff.id && b.startTime.year == slot.year && b.startTime.month == slot.month && b.status != 'rejected').length;
+          double totalHours = monthBlocksCount * 0.5;
+          if (totalHours >= 20) {
+            showDialog(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: const Text('Limit Reached'),
+                content: const Text('You have exceeded the 20 hours limit for this month. You can still submit this availability for emergency changes, but please be aware of the limit.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      provider.addBlock(AvailabilityBlock(id: const Uuid().v4(), startTime: slot, staffId: staff.id, modality: 'Both'));
+                      Navigator.pop(ctx);
+                    },
+                    child: const Text('Proceed'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    child: Text(loc.cancel),
+                  ),
+                ],
+              )
+            );
+          } else {
+            provider.addBlock(AvailabilityBlock(id: const Uuid().v4(), startTime: slot, staffId: staff.id, modality: 'Both'));
+          }
         }
       },
       child: Container(
@@ -428,6 +453,7 @@ class _EventProposalViewState extends State<_EventProposalView> {
   final _titleController = TextEditingController();
   final _descController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
+  TimeOfDay _selectedTime = TimeOfDay.now();
 
   @override
   Widget build(BuildContext context) {
@@ -446,12 +472,20 @@ class _EventProposalViewState extends State<_EventProposalView> {
           const SizedBox(height: 16),
           Row(
             children: [
-              Text('${loc.proposedDate}: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}'),
+              Text('${loc.proposedDate}: ${DateFormat('yyyy-MM-dd').format(_selectedDate)} ${_selectedTime.format(context)}'),
               const Spacer(),
               ElevatedButton(
                 onPressed: () async {
                   final d = await showDatePicker(context: context, initialDate: _selectedDate, firstDate: DateTime.now(), lastDate: DateTime(2030));
-                  if (d != null && mounted) setState(() => _selectedDate = d);
+                  if (d != null && mounted) {
+                    final t = await showTimePicker(context: context, initialTime: _selectedTime);
+                    if (t != null && mounted) {
+                      setState(() {
+                        _selectedDate = d;
+                        _selectedTime = t;
+                      });
+                    }
+                  }
                 },
                 child: Text(loc.selectDate),
               ),
@@ -461,7 +495,8 @@ class _EventProposalViewState extends State<_EventProposalView> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 50)),
             onPressed: () {
-              provider.proposeEvent(_titleController.text, _descController.text, _selectedDate);
+              final finalDateTime = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, _selectedTime.hour, _selectedTime.minute);
+              provider.proposeEvent(_titleController.text, _descController.text, finalDateTime);
               _titleController.clear(); _descController.clear();
               if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.proposalSubmitted)));
             },
@@ -488,6 +523,36 @@ class _ProfileViewState extends State<_ProfileView> {
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
   bool _hasChanges = false;
+  String _nativeLanguage = 'English';
+  final Map<String, String> _selectedOtherLanguages = {};
+
+  final Map<String, String> _languagesWithFlags = {
+    'English': '🇺🇸',
+    'Mandarin': '🇨🇳',
+    'Spanish': '🇪🇸',
+    'French': '🇫🇷',
+    'Arabic': '🇸🇦',
+    'Japanese': '🇯🇵',
+    'Korean': '🇰🇷',
+    'Vietnamese': '🇻🇳',
+    'Thai': '🇹🇭',
+    'Hindi': '🇮🇳',
+    'Bengali': '🇧🇩',
+    'Indonesian': '🇮🇩',
+    'Malay': '🇲🇾',
+    'Filipino': '🇵🇭',
+    'Burmese': '🇲🇲',
+    'Khmer': '🇰🇭',
+    'Lao': '🇱🇦',
+    'German': '🇩🇪',
+    'Italian': '🇮🇹',
+    'Portuguese': '🇵🇹',
+    'Russian': '🇷🇺',
+    'Turkish': '🇹🇷',
+    'Urdu': '🇵🇰',
+    'Tamil': '🇮🇳',
+    'Cantonese': '🇭🇰',
+  };
 
   @override
   void initState() {
@@ -500,7 +565,13 @@ class _ProfileViewState extends State<_ProfileView> {
     _descController = TextEditingController(text: staff.personalDescription)..addListener(_checkForChanges);
     _emailController = TextEditingController(text: staff.email)..addListener(_checkForChanges);
     _phoneController = TextEditingController(text: staff.phoneNumber)..addListener(_checkForChanges);
+    _nativeLanguage = staff.nativeLanguage;
+    for (var skill in staff.languageSkills) {
+      _selectedOtherLanguages[skill.language] = skill.proficiency;
+    }
   }
+
+
 
   void _checkForChanges() {
     final staff = context.read<AppProvider>().currentJuniorStaff!;
@@ -551,6 +622,80 @@ class _ProfileViewState extends State<_ProfileView> {
         TextField(controller: _phoneController, decoration: InputDecoration(labelText: loc.phoneNumber, prefixIcon: const Icon(Icons.phone))),
         const SizedBox(height: 16),
         TextField(controller: _descController, maxLines: 3, decoration: InputDecoration(labelText: loc.personalDescription, prefixIcon: const Icon(Icons.description))),
+        const SizedBox(height: 24),
+        DropdownButtonFormField<String>(
+          value: _languagesWithFlags.containsKey(_nativeLanguage) ? _nativeLanguage : 'English',
+          decoration: InputDecoration(
+            labelText: loc.nativeLang,
+            border: const OutlineInputBorder(),
+          ),
+          items: _languagesWithFlags.entries.map((entry) {
+            return DropdownMenuItem(
+              value: entry.key,
+              child: Text('${entry.value} ${entry.key}'),
+            );
+          }).toList(),
+          onChanged: (val) {
+            if (val != null) {
+              setState(() {
+                _nativeLanguage = val;
+                _hasChanges = true;
+              });
+            }
+          },
+        ),
+        const SizedBox(height: 24),
+        Text(loc.otherLanguages, style: const TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 12),
+        Column(
+          children: _languagesWithFlags.entries.map((entry) {
+            final isSelected = _selectedOtherLanguages.containsKey(entry.key);
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Row(
+                      children: [
+                        Checkbox(
+                          value: isSelected,
+                          onChanged: (val) {
+                            setState(() {
+                              if (val == true) {
+                                _selectedOtherLanguages[entry.key] = 'Basic';
+                              } else {
+                                _selectedOtherLanguages.remove(entry.key);
+                              }
+                              _hasChanges = true;
+                            });
+                          },
+                        ),
+                        Expanded(child: Text('${entry.value} ${entry.key}')),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: isSelected ? DropdownButtonFormField<String>(
+                      value: _selectedOtherLanguages[entry.key],
+                      decoration: const InputDecoration(border: OutlineInputBorder(), isDense: true, contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8)),
+                      items: ['Basic', 'Intermediate', 'Advanced', 'Native'].map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(),
+                      onChanged: (val) {
+                        if (val != null) {
+                          setState(() {
+                            _selectedOtherLanguages[entry.key] = val;
+                            _hasChanges = true;
+                          });
+                        }
+                      },
+                    ) : const SizedBox.shrink(),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        ),
         const SizedBox(height: 32),
         ElevatedButton(
           onPressed: _hasChanges ? () {
@@ -561,6 +706,10 @@ class _ProfileViewState extends State<_ProfileView> {
             staff.email = _emailController.text;
             staff.phoneNumber = _phoneController.text;
             staff.personalDescription = _descController.text;
+            staff.nativeLanguage = _nativeLanguage;
+            staff.languageSkills = _selectedOtherLanguages.entries
+                .map((e) => LanguageSkill(language: e.key, proficiency: e.value))
+                .toList();
             provider.updateJuniorProfile(staff);
             setState(() => _hasChanges = false);
           } : null,

@@ -201,5 +201,19 @@
   },
   "fluentLanguages": "流暢な言語",
   "commPreference": "連絡手段の希望",
-  "byAuthorOnDate": "{date}に{author}によって提案されました"
+  "byAuthorOnDate": "{date}に{author}によって提案されました",
+  "charts": "チャート",
+  "chartVisualizations": "チャート視覚化",
+  "meetingRequests": "面談リクエスト",
+  "noMeetingRequests": "面談リクエストはありません。",
+  "chartApprovedHours": "時間帯別の承認済み時間",
+  "chartWorkedVsApproved": "スタッフの実働時間と承認時間",
+  "chartLanguageProficiency": "言語習得度別の話者数",
+  "chartCumulativeHours": "日別の累計実働時間",
+  "chartAcademicStatus": "学位別のスタッフ数",
+  "noData": "データなし",
+  "basic": "初級",
+  "intermediate": "中級",
+  "advanced": "上級",
+  "native": "母国語"
 }

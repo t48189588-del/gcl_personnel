@@ -8,6 +8,7 @@ class HiveService {
   static const String configBoxName = 'config_box';
   static const String reportsBoxName = 'reports_box';
   static const String proposalsBoxName = 'proposals_box';
+  static const String externalMeetingsBoxName = 'external_meetings_box';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -16,6 +17,7 @@ class HiveService {
     await Hive.openBox(configBoxName);
     await Hive.openBox(reportsBoxName);
     await Hive.openBox(proposalsBoxName);
+    await Hive.openBox(externalMeetingsBoxName);
     await LoggerService.init();
 
     // Seed mock data if empty
@@ -99,5 +101,16 @@ class HiveService {
   static void saveProposal(EventProposal proposal) {
     var box = Hive.box(proposalsBoxName);
     box.put(proposal.id, proposal.toJson());
+  }
+
+  // External Meetings
+  static List<ExternalMeetingRequest> getExternalMeetings() {
+    var box = Hive.box(externalMeetingsBoxName);
+    return box.values.map((e) => ExternalMeetingRequest.fromJson(Map<String, dynamic>.from(e as Map))).toList();
+  }
+
+  static void saveExternalMeeting(ExternalMeetingRequest meeting) {
+    var box = Hive.box(externalMeetingsBoxName);
+    box.put(meeting.id, meeting.toJson());
   }
 }

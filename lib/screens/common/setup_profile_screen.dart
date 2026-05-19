@@ -26,7 +26,7 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
   String _nativeLanguage = 'English';
-  final List<String> _selectedOtherLanguages = [];
+  final Map<String, String> _selectedOtherLanguages = {};
   String _currentlyStudying = 'Computer Science';
   Uint8List? _profileImageData;
 
@@ -204,23 +204,44 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
               Text(loc.otherLanguages,
                   style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
+              Column(
                 children: _languagesWithFlags.entries.map((entry) {
-                  final isSelected = _selectedOtherLanguages.contains(entry.key);
-                  return FilterChip(
-                    label: Text('${entry.value} ${entry.key}'),
-                    selected: isSelected,
-                    onSelected: (val) {
-                      setState(() {
-                        if (val) {
-                          _selectedOtherLanguages.add(entry.key);
-                        } else {
-                          _selectedOtherLanguages.remove(entry.key);
-                        }
-                      });
-                    },
+                  final isSelected = _selectedOtherLanguages.containsKey(entry.key);
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Row(
+                            children: [
+                              Checkbox(
+                                value: isSelected,
+                                onChanged: (val) {
+                                  if (val == true) {
+                                    setState(() => _selectedOtherLanguages[entry.key] = 'Basic');
+                                  } else {
+                                    setState(() => _selectedOtherLanguages.remove(entry.key));
+                                  }
+                                },
+                              ),
+                              Expanded(child: Text('${entry.value} ${entry.key}')),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: isSelected ? DropdownButtonFormField<String>(
+                            value: _selectedOtherLanguages[entry.key],
+                            decoration: const InputDecoration(border: OutlineInputBorder(), isDense: true, contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8)),
+                            items: ['Basic', 'Intermediate', 'Advanced', 'Native'].map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(),
+                            onChanged: (val) {
+                              if (val != null) setState(() => _selectedOtherLanguages[entry.key] = val);
+                            },
+                          ) : const SizedBox.shrink(),
+                        ),
+                      ],
+                    ),
                   );
                 }).toList(),
               ),
@@ -258,7 +279,9 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
                 onPressed: () {
                   widget.applicant.name = _nameController.text;
                   widget.applicant.nativeLanguage = _nativeLanguage;
-                  widget.applicant.otherLanguages = _selectedOtherLanguages;
+                  widget.applicant.languageSkills = _selectedOtherLanguages.entries
+                      .map((e) => LanguageSkill(language: e.key, proficiency: e.value))
+                      .toList();
                   widget.applicant.degree = _currentlyStudying;
                   widget.applicant.originCountry = _originController.text;
                   widget.applicant.kanaName = _kanaController.text;

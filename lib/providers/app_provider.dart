@@ -16,10 +16,13 @@ class AppProvider with ChangeNotifier {
   );
   final List<EventProposal> _eventProposals = [];
   final List<WorkingReport> _reports = [];
+  final List<ExternalMeetingRequest> _externalMeetingRequests = [];
 
   StaffMember? _currentJuniorStaff;
 
-  Locale _locale = const Locale('en');
+  Locale _locale = WidgetsBinding.instance.platformDispatcher.locale.languageCode == 'ja' 
+      ? const Locale('ja') 
+      : const Locale('en');
   ThemeMode _themeMode = ThemeMode.light;
 
   List<StaffMember> get staff => _staff;
@@ -27,6 +30,7 @@ class AppProvider with ChangeNotifier {
   OperatingHours get operatingHours => _operatingHours;
   List<EventProposal> get eventProposals => _eventProposals;
   List<WorkingReport> get reports => _reports;
+  List<ExternalMeetingRequest> get externalMeetingRequests => _externalMeetingRequests;
   StaffMember? get currentJuniorStaff => _currentJuniorStaff;
   Locale get locale => _locale;
   ThemeMode get themeMode => _themeMode;
@@ -41,6 +45,8 @@ class AppProvider with ChangeNotifier {
     _reports.addAll(HiveService.getReports());
     _eventProposals.clear();
     _eventProposals.addAll(HiveService.getProposals());
+    _externalMeetingRequests.clear();
+    _externalMeetingRequests.addAll(HiveService.getExternalMeetings());
     if (_staff.isNotEmpty) {
       _currentJuniorStaff = _staff
           .where((s) => s.isSetupComplete && !s.isSenior)
@@ -80,7 +86,7 @@ class AppProvider with ChangeNotifier {
       name: 'Pending Applicant',
       email: email,
       nativeLanguage: 'English',
-      fluentLanguages: [],
+      languageSkills: [],
       degree: '-',
       modalityPreference: 'In-Person',
       availabilityRate: 0,
@@ -320,6 +326,35 @@ class AppProvider with ChangeNotifier {
     }
   }
 
+  // --- External Meeting Logic ---
+  void addExternalMeetingRequest(ExternalMeetingRequest request) {
+    _externalMeetingRequests.add(request);
+    HiveService.saveExternalMeeting(request);
+    LoggerService.log('Action', 'logAddedExternalMeeting|name=${request.name}');
+    notifyListeners();
+  }
+
+  void approveMeetingRequest(String id, String staffId) {
+    final index = _externalMeetingRequests.indexWhere((r) => r.id == id);
+    if (index != -1) {
+      _externalMeetingRequests[index].status = 'approved';
+      _externalMeetingRequests[index].assignedStaffId = staffId;
+      HiveService.saveExternalMeeting(_externalMeetingRequests[index]);
+      LoggerService.log('Action', 'logApprovedExternalMeeting|id=$id|staffId=$staffId');
+      notifyListeners();
+    }
+  }
+
+  void rejectMeetingRequest(String id) {
+    final index = _externalMeetingRequests.indexWhere((r) => r.id == id);
+    if (index != -1) {
+      _externalMeetingRequests[index].status = 'rejected';
+      HiveService.saveExternalMeeting(_externalMeetingRequests[index]);
+      LoggerService.log('Action', 'logRejectedExternalMeeting|id=$id');
+      notifyListeners();
+    }
+  }
+
   // --- Working Reports Logic ---
 
   List<WorkingReport> getPendingReports() {
@@ -373,6 +408,15 @@ class AppProvider with ChangeNotifier {
       );
       
       if (!alreadyReported) {
+        // Check if there are any approved external meetings during this shift
+        final meetingDetails = _externalMeetingRequests.where((m) => 
+          m.assignedStaffId == _currentJuniorStaff!.id &&
+          m.status == 'approved' &&
+          m.requestedDate == date &&
+          !m.requestedTime.isBefore(start) &&
+          m.requestedTime.isBefore(end)
+        ).map((m) => 'Meeting: ${m.name} (${m.meetingType}, ${m.purpose})').join('\\n');
+
         pending.add(WorkingReport(
           id: const Uuid().v4(),
           staffId: _currentJuniorStaff!.id,
@@ -381,7 +425,7 @@ class AppProvider with ChangeNotifier {
           scheduledEnd: end,
           confirmedStart: start,
           confirmedEnd: end,
-          workDone: '',
+          workDone: meetingDetails,
         ));
       }
     }
