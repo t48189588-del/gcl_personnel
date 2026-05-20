@@ -73,28 +73,25 @@ Currently all information is hosted in excel files in teams groups
       - [ ] photos
       - [ ] summary 
       - [ ] SNS publication
-- [ ] Meeting reservation forms integrations (for external people of GCL)
-  - [ ] date and time (30 minute limit per session)
+- [x] Meeting reservation forms (for external people of GCL)
+  - [x] date and time (30 minute limit per session) based on approved schedule
   - [ ] japanese compatibility
   - [ ] forms
-    - [ ] place
+    - [x] place
       - [ ] online
       - [ ] in person
-    - [ ] department
-    - [ ] grade
-    - [ ] purpose
-    - [ ] name
+    - [x] department
+    - [x] grade
+    - [x] name
       - [ ] organizer
       - [ ] participant
-    - [ ] purpose
-      - [ ] assignment
-      - [ ] conversation
-        - [ ] English
-        - [ ] Chinese
-        - [ ] Japanese
-      - [ ] Presentation practice
-        - [ ] English
-        - [ ] Japanese
+    - [x] purpose
+      - [x] assignment
+      - [x] conversation
+      - [x] Presentation practice
+    - [x] purpose language
+        - [x] English
+        - [x] Japanese
     - [ ] export
       - [ ] create menu and log to register previously exported information
       - [ ] Excel (1 tab per month - 1 book per year)
