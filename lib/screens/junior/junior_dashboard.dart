@@ -243,7 +243,11 @@ class _SchedulePainterViewState extends State<_SchedulePainterView> {
         itemCount: 7,
         itemBuilder: (context, dex) {
           final targetDay = startOfWeek.add(Duration(days: dex));
-          final targetHoliday = config.holidays.any((h) => h.date == DateTime(targetDay.year, targetDay.month, targetDay.day));
+          final dayOnly = DateTime(targetDay.year, targetDay.month, targetDay.day);
+          final matchingHoliday = config.holidays.cast<Holiday?>().firstWhere(
+            (h) => h!.date == dayOnly, orElse: () => null);
+          final isAllDayHoliday = matchingHoliday != null && matchingHoliday.isAllDay;
+          final hasAnyHoliday = matchingHoliday != null;
           return Container(
             width: 200,
             margin: const EdgeInsets.only(right: 16),
@@ -251,15 +255,16 @@ class _SchedulePainterViewState extends State<_SchedulePainterView> {
             child: Column(
               children: [
                 Container(
-                  color: targetHoliday ? Colors.red.withValues(alpha: 0.1) : Colors.blue.withValues(alpha: 0.05),
+                  color: hasAnyHoliday ? Colors.red.withValues(alpha: 0.1) : Colors.blue.withValues(alpha: 0.05),
                   padding: const EdgeInsets.all(8),
                   width: double.infinity,
-                  child: Text(DateFormat('E, MMM d').format(targetDay), textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: targetHoliday ? Colors.red : null)),
+                  child: Text(DateFormat('E, MMM d').format(targetDay), textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: hasAnyHoliday ? Colors.red : null)),
                 ),
                 Expanded(
-                  child: targetHoliday 
+                  child: isAllDayHoliday
                     ? Center(child: Text(loc.holidayNotice, style: const TextStyle(color: Colors.red, fontSize: 12)))
-                    : _buildTimeGrid(context, provider, config, staff, targetDay, true),
+                    : _buildTimeGrid(context, provider, config, staff, targetDay, true,
+                        partialHoliday: matchingHoliday),
                 )
               ],
             ),
@@ -267,11 +272,31 @@ class _SchedulePainterViewState extends State<_SchedulePainterView> {
         },
       );
     } else {
-      return _buildTimeGrid(context, provider, config, staff, _selectedDate, false);
+      final dayOnly = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day);
+      final matchingHoliday = config.holidays.cast<Holiday?>().firstWhere(
+        (h) => h!.date == dayOnly, orElse: () => null);
+      // If today is a full-day holiday, show a prominent notice instead of the grid
+      if (matchingHoliday != null && matchingHoliday.isAllDay) {
+        return Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.beach_access, color: Colors.red, size: 48),
+              const SizedBox(height: 12),
+              Text(loc.holidayNotice,
+                  style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18)),
+              if (matchingHoliday.message.isNotEmpty) ...
+                [const SizedBox(height: 8), Text(matchingHoliday.message, style: const TextStyle(color: Colors.grey))],
+            ],
+          ),
+        );
+      }
+      return _buildTimeGrid(context, provider, config, staff, _selectedDate, false,
+          partialHoliday: (matchingHoliday != null && !matchingHoliday.isAllDay) ? matchingHoliday : null);
     }
   }
 
-  Widget _buildTimeGrid(BuildContext context, AppProvider provider, OperatingHours config, StaffMember staff, DateTime queryDate, bool isCompact) {
+  Widget _buildTimeGrid(BuildContext context, AppProvider provider, OperatingHours config, StaffMember staff, DateTime queryDate, bool isCompact, {Holiday? partialHoliday}) {
     final loc = AppLocalizations.of(context)!;
     int dayIndex = queryDate.weekday;
     DaySchedule daySched = config.weeklySchedule.firstWhere((ds) => ds.weekday == dayIndex);
@@ -280,6 +305,14 @@ class _SchedulePainterViewState extends State<_SchedulePainterView> {
     // Employment check
     final isAfterEnd = staff.employmentEndDate != null && queryDate.isAfter(staff.employmentEndDate!);
     final isDisabled = !staff.isActive || isAfterEnd;
+
+    // Derive holiday blocked hour range for partial holidays
+    int? holidayStartH;
+    int? holidayEndH;
+    if (partialHoliday != null) {
+      holidayStartH = int.tryParse(partialHoliday.startTime.split(':').first);
+      holidayEndH = int.tryParse(partialHoliday.endTime.split(':').first);
+    }
 
     int startH = int.tryParse(daySched.startHour.split(':').first) ?? 9;
     int endH = int.tryParse(daySched.endHour.split(':').first) ?? 17;
@@ -302,7 +335,20 @@ class _SchedulePainterViewState extends State<_SchedulePainterView> {
             mainAxisSpacing: 8,
           ),
           itemCount: timeSlots.length,
-          itemBuilder: (context, index) => _TimeBlock(slot: timeSlots[index], provider: provider, staff: staff),
+          itemBuilder: (context, index) {
+            final slotTime = timeSlots[index];
+            // Determine if this specific slot is blocked by a partial-day holiday
+            final isHolidayBlocked = holidayStartH != null &&
+                holidayEndH != null &&
+                slotTime.hour >= holidayStartH &&
+                slotTime.hour < holidayEndH;
+            return _TimeBlock(
+              slot: slotTime,
+              provider: provider,
+              staff: staff,
+              isHolidayBlocked: isHolidayBlocked,
+            );
+          },
         ),
       ),
     );
@@ -313,11 +359,35 @@ class _TimeBlock extends StatelessWidget {
   final DateTime slot;
   final AppProvider provider;
   final StaffMember staff;
-  const _TimeBlock({required this.slot, required this.provider, required this.staff});
+  final bool isHolidayBlocked;
+  const _TimeBlock({required this.slot, required this.provider, required this.staff, this.isHolidayBlocked = false});
 
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
+
+    // If this slot is blocked by a partial-day holiday, render a disabled tile
+    if (isHolidayBlocked) {
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.red.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: Colors.red.shade200),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '${DateFormat('HH:mm').format(slot)} - ${DateFormat('HH:mm').format(slot.add(const Duration(minutes: 30)))}',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: Colors.red.shade400),
+            ),
+            const SizedBox(height: 2),
+            Text(loc.holidaySlotBlocked, style: TextStyle(fontSize: 8, color: Colors.red.shade400)),
+          ],
+        ),
+      );
+    }
+
     final existingBlocks = provider.blocks.where((b) => b.staffId == staff.id && b.startTime == slot);
     final hasBlock = existingBlocks.isNotEmpty;
     final block = hasBlock ? existingBlocks.first : null;
@@ -353,32 +423,43 @@ class _TimeBlock extends StatelessWidget {
         if (hasBlock) {
           _showBlockDialog(context, provider, existingBlocks.first, staff, loc);
         } else {
-          int monthBlocksCount = provider.blocks.where((b) => b.staffId == staff.id && b.startTime.year == slot.year && b.startTime.month == slot.month && b.status != 'rejected').length;
-          double totalHours = monthBlocksCount * 0.5;
-          if (totalHours >= 20) {
-            showDialog(
-              context: context,
-              builder: (ctx) => AlertDialog(
-                title: const Text('Limit Reached'),
-                content: const Text('You have exceeded the 20 hours limit for this month. You can still submit this availability for emergency changes, but please be aware of the limit.'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      provider.addBlock(AvailabilityBlock(id: const Uuid().v4(), startTime: slot, staffId: staff.id, modality: 'Both'));
-                      Navigator.pop(ctx);
-                    },
-                    child: const Text('Proceed'),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.pop(ctx),
-                    child: Text(loc.cancel),
-                  ),
-                ],
-              )
-            );
-          } else {
-            provider.addBlock(AvailabilityBlock(id: const Uuid().v4(), startTime: slot, staffId: staff.id, modality: 'Both'));
+          // --- Weekly hours limit enforcement ---
+          final maxWeekly = provider.operatingHours.maxWeeklyHours;
+          if (maxWeekly != null) {
+            // Find the start of the week (Monday) containing this slot
+            final weekStart = slot.subtract(Duration(days: slot.weekday - 1));
+            final weekEnd = weekStart.add(const Duration(days: 7));
+            final weekBlocksCount = provider.blocks.where((b) =>
+              b.staffId == staff.id &&
+              !b.startTime.isBefore(weekStart) &&
+              b.startTime.isBefore(weekEnd) &&
+              b.status != 'rejected').length;
+            final weeklyHours = weekBlocksCount * 0.5;
+            if (weeklyHours >= maxWeekly) {
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: Text(loc.weeklyLimitDialogTitle),
+                  content: Text(loc.weeklyLimitDialogContent(maxWeekly.toString())),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        provider.addBlock(AvailabilityBlock(id: const Uuid().v4(), startTime: slot, staffId: staff.id, modality: 'Both'));
+                        Navigator.pop(ctx);
+                      },
+                      child: const Text('Proceed'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: Text(loc.cancel),
+                    ),
+                  ],
+                ),
+              );
+              return;
+            }
           }
+          provider.addBlock(AvailabilityBlock(id: const Uuid().v4(), startTime: slot, staffId: staff.id, modality: 'Both'));
         }
       },
       child: Container(

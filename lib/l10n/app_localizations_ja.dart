@@ -664,4 +664,21 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get native => '母国語';
+
+  @override
+  String get weeklyHoursLimit => '週あたり稼働上限（最大）';
+
+  @override
+  String get weeklyHoursLimitHint => '上限時間（時間/週）を入力';
+
+  @override
+  String get weeklyLimitDialogTitle => '週上限に達しました';
+
+  @override
+  String weeklyLimitDialogContent(String limit) {
+    return '週の上限（$limit時間）を超えています。緊急調整のためにこの時間帯を提出することは可能ですが、上限にご注意ください。';
+  }
+
+  @override
+  String get holidaySlotBlocked => '祝日休館';
 }

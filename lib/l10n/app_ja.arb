@@ -215,5 +215,17 @@
   "basic": "初級",
   "intermediate": "中級",
   "advanced": "上級",
-  "native": "母国語"
+  "native": "母国語",
+  "weeklyHoursLimit": "週あたり稼働上限（最大）",
+  "weeklyHoursLimitHint": "上限時間（時間/週）を入力",
+  "weeklyLimitDialogTitle": "週上限に達しました",
+  "weeklyLimitDialogContent": "週の上限（{limit}時間）を超えています。緊急調整のためにこの時間帯を提出することは可能ですが、上限にご注意ください。",
+  "@weeklyLimitDialogContent": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "holidaySlotBlocked": "祝日休館"
 }

@@ -237,5 +237,17 @@
   "basic": "Basic",
   "intermediate": "Intermediate",
   "advanced": "Advanced",
-  "native": "Native"
+  "native": "Native",
+  "weeklyHoursLimit": "Weekly Hours Limit (Max)",
+  "weeklyHoursLimitHint": "Set limit (hours/week)",
+  "weeklyLimitDialogTitle": "Weekly Limit Reached",
+  "weeklyLimitDialogContent": "You have exceeded the weekly limit of {limit} hours. You can still submit this availability for emergency changes, but please be aware of the limit.",
+  "@weeklyLimitDialogContent": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "holidaySlotBlocked": "Closed (Holiday)"
 }

@@ -380,8 +380,29 @@ class _MetricsViewState extends State<_MetricsView> {
   }
 }
 
-class _GuardrailsView extends StatelessWidget {
+class _GuardrailsView extends StatefulWidget {
   const _GuardrailsView();
+
+  @override
+  State<_GuardrailsView> createState() => _GuardrailsViewState();
+}
+
+class _GuardrailsViewState extends State<_GuardrailsView> {
+  late TextEditingController _limitController;
+
+  @override
+  void initState() {
+    super.initState();
+    final provider = context.read<AppProvider>();
+    final currentLimit = provider.operatingHours.maxWeeklyHours;
+    _limitController = TextEditingController(text: currentLimit?.toString() ?? '');
+  }
+
+  @override
+  void dispose() {
+    _limitController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -428,6 +449,60 @@ class _GuardrailsView extends StatelessWidget {
             ElevatedButton.icon(icon: const Icon(Icons.calendar_month), label: Text(loc.addHoliday), onPressed: () => _showAddHolidayDialog(context, provider, loc)),
             const SizedBox(height: 16),
             Wrap(spacing: 8, children: config.holidays.map((h) => Chip(label: Text('${DateFormat.yMd(Localizations.localeOf(context).toString()).format(h.date)}: ${h.message}' + (h.isAllDay ? '' : ' (${h.startTime}-${h.endTime})')), onDeleted: () => provider.removeHoliday(h.date))).toList()),
+            const SizedBox(height: 48),
+            Text(loc.weeklyHoursLimit, style: Theme.of(context).textTheme.headlineSmall),
+            const SizedBox(height: 16),
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    const Icon(Icons.hourglass_bottom, color: Colors.blue, size: 28),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            loc.weeklyHoursLimit,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Specify the maximum weekly hours a junior staff member can request (leave empty for no limit).',
+                            style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 24),
+                    SizedBox(
+                      width: 150,
+                      child: TextFormField(
+                        controller: _limitController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: loc.weeklyHoursLimitHint,
+                          border: const OutlineInputBorder(),
+                          suffixText: 'hrs',
+                          isDense: true,
+                        ),
+                        onChanged: (val) {
+                          final parsed = int.tryParse(val);
+                          if (val.isEmpty) {
+                            provider.updateMaxWeeklyHours(null);
+                          } else if (parsed != null) {
+                            provider.updateMaxWeeklyHours(parsed);
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),

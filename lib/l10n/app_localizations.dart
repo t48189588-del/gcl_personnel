@@ -1309,6 +1309,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Native'**
   String get native;
+
+  /// No description provided for @weeklyHoursLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly Hours Limit (Max)'**
+  String get weeklyHoursLimit;
+
+  /// No description provided for @weeklyHoursLimitHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Set limit (hours/week)'**
+  String get weeklyHoursLimitHint;
+
+  /// No description provided for @weeklyLimitDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly Limit Reached'**
+  String get weeklyLimitDialogTitle;
+
+  /// No description provided for @weeklyLimitDialogContent.
+  ///
+  /// In en, this message translates to:
+  /// **'You have exceeded the weekly limit of {limit} hours. You can still submit this availability for emergency changes, but please be aware of the limit.'**
+  String weeklyLimitDialogContent(String limit);
+
+  /// No description provided for @holidaySlotBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed (Holiday)'**
+  String get holidaySlotBlocked;
 }
 
 class _AppLocalizationsDelegate

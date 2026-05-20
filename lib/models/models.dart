@@ -276,8 +276,9 @@ class DaySchedule {
 class OperatingHours {
   List<DaySchedule> weeklySchedule;
   List<Holiday> holidays;
+  int? maxWeeklyHours;
 
-  OperatingHours({required this.weeklySchedule, this.holidays = const []});
+  OperatingHours({required this.weeklySchedule, this.holidays = const [], this.maxWeeklyHours});
 
   factory OperatingHours.fromJson(Map<String, dynamic> json) {
     return OperatingHours(
@@ -291,6 +292,7 @@ class OperatingHours {
               ?.map((e) => Holiday.fromJson(e))
               .toList() ??
           [],
+      maxWeeklyHours: json['maxWeeklyHours'] as int?,
     );
   }
 
@@ -298,6 +300,7 @@ class OperatingHours {
     return {
       'weeklySchedule': weeklySchedule.map((e) => e.toJson()).toList(),
       'holidays': holidays.map((e) => e.toJson()).toList(),
+      'maxWeeklyHours': maxWeeklyHours,
     };
   }
 }

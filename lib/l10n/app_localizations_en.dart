@@ -672,4 +672,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get native => 'Native';
+
+  @override
+  String get weeklyHoursLimit => 'Weekly Hours Limit (Max)';
+
+  @override
+  String get weeklyHoursLimitHint => 'Set limit (hours/week)';
+
+  @override
+  String get weeklyLimitDialogTitle => 'Weekly Limit Reached';
+
+  @override
+  String weeklyLimitDialogContent(String limit) {
+    return 'You have exceeded the weekly limit of $limit hours. You can still submit this availability for emergency changes, but please be aware of the limit.';
+  }
+
+  @override
+  String get holidaySlotBlocked => 'Closed (Holiday)';
 }

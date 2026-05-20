@@ -139,6 +139,13 @@ class AppProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void updateMaxWeeklyHours(int? limit) {
+    _operatingHours.maxWeeklyHours = limit;
+    HiveService.saveOperatingHours(_operatingHours);
+    LoggerService.log('Action', 'logUpdatedMaxWeeklyHours|limit=$limit');
+    notifyListeners();
+  }
+
   void addHoliday(
     DateTime date,
     String message, {
