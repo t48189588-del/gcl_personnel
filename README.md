@@ -383,3 +383,12 @@ Please write the Python functions to execute the following pipeline logic:
 Integrate this cleanly as a standalone module or block of functions that drop straight into our Streamlit application architecture. Provide clear instructions on how to start the Ollama instance via terminal before launching the presentation app.
 
 ```
+# Suggestions after hatsuda-san and sugawara-san meeting
+- export excel should be same format as original excel file (same column order and same column names )
+- print availability schuedule
+  - type 1: date, time, headers student staff name
+  - type 2: date, time, row students staff side by side
+- think about future updates/changes adding new screens/templates?
+- build power apps 
+- data permission obtained from hatsuda-san
+
