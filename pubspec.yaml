@@ -71,8 +71,8 @@ dev_dependencies:
 flutter:
   generate: true
   uses-material-design: true
-  assets:
-    - .env
+  # assets:
+  #   - .env
 
   # To add assets to your application, add an assets section, like this:
   # assets:

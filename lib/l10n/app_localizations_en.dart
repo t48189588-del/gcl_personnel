@@ -689,4 +689,110 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get holidaySlotBlocked => 'Closed (Holiday)';
+
+  @override
+  String get requestMeeting => 'Request a Meeting';
+
+  @override
+  String get scheduleMeetingWithGCL => 'Schedule a meeting with GCL Staff';
+
+  @override
+  String get meetingType => 'Type of Meeting';
+
+  @override
+  String get onlineTeams => 'Online [Teams]';
+
+  @override
+  String get department => 'Department';
+
+  @override
+  String get pleaseEnterName => 'Please enter your name';
+
+  @override
+  String get pleaseEnterDepartment => 'Please enter your department';
+
+  @override
+  String get studyYear => 'Study Year';
+
+  @override
+  String get purpose => 'Purpose';
+
+  @override
+  String get pleaseSelectDate => 'Please select a date';
+
+  @override
+  String get timeBlock => 'Time (30 min block)';
+
+  @override
+  String get pleaseSelectTime => 'Please select a time';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get pleaseSelectLanguage => 'Please select a language';
+
+  @override
+  String get meetingSubmittedSuccess =>
+      'Meeting request submitted successfully!';
+
+  @override
+  String get submitRequest => 'Submit Request';
+
+  @override
+  String get researchStudent => 'Research student';
+
+  @override
+  String get assignment => 'Assignment';
+
+  @override
+  String get conversation => 'Conversation';
+
+  @override
+  String get presentationPractice => 'Presentation practice';
+
+  @override
+  String get weeklyLimitDescription =>
+      'Specify the maximum weekly hours a junior staff member can request (leave empty for no limit).';
+
+  @override
+  String get hoursSuffix => 'hrs';
+
+  @override
+  String get importCleanedJson => 'Import Cleaned JSON';
+
+  @override
+  String finishEmploymentConfirmTitle(String name) {
+    return 'Finish Employment: $name';
+  }
+
+  @override
+  String get finishEmploymentConfirmContent =>
+      'Are you sure you want to finalize this staff member\'s employment? This will disable their scheduling access.';
+
+  @override
+  String get noAvailableStaff =>
+      'No available staff found for this time and language.';
+
+  @override
+  String get assignStaff => 'Assign Staff';
+
+  @override
+  String get meetingApprovedSuccess => 'Meeting approved and staff assigned.';
+
+  @override
+  String get meetingRejectedSuccess => 'Meeting request rejected.';
+
+  @override
+  String get proceed => 'Proceed';
+
+  @override
+  String logImportedStaff(String count) {
+    return 'Imported $count staff members';
+  }
+
+  @override
+  String logImportedCsvData(String rows) {
+    return 'Imported $rows data rows from CSV';
+  }
 }

@@ -249,5 +249,58 @@
       }
     }
   },
-  "holidaySlotBlocked": "Closed (Holiday)"
+  "holidaySlotBlocked": "Closed (Holiday)",
+  "requestMeeting": "Request a Meeting",
+  "scheduleMeetingWithGCL": "Schedule a meeting with GCL Staff",
+  "meetingType": "Type of Meeting",
+  "onlineTeams": "Online [Teams]",
+  "department": "Department",
+  "pleaseEnterName": "Please enter your name",
+  "pleaseEnterDepartment": "Please enter your department",
+  "studyYear": "Study Year",
+  "purpose": "Purpose",
+  "pleaseSelectDate": "Please select a date",
+  "timeBlock": "Time (30 min block)",
+  "pleaseSelectTime": "Please select a time",
+  "language": "Language",
+  "pleaseSelectLanguage": "Please select a language",
+  "meetingSubmittedSuccess": "Meeting request submitted successfully!",
+  "submitRequest": "Submit Request",
+  "researchStudent": "Research student",
+  "assignment": "Assignment",
+  "conversation": "Conversation",
+  "presentationPractice": "Presentation practice",
+  "weeklyLimitDescription": "Specify the maximum weekly hours a junior staff member can request (leave empty for no limit).",
+  "hoursSuffix": "hrs",
+  "importCleanedJson": "Import Cleaned JSON",
+  "finishEmploymentConfirmTitle": "Finish Employment: {name}",
+  "@finishEmploymentConfirmTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "finishEmploymentConfirmContent": "Are you sure you want to finalize this staff member's employment? This will disable their scheduling access.",
+  "noAvailableStaff": "No available staff found for this time and language.",
+  "assignStaff": "Assign Staff",
+  "meetingApprovedSuccess": "Meeting approved and staff assigned.",
+  "meetingRejectedSuccess": "Meeting request rejected.",
+  "proceed": "Proceed",
+  "logImportedStaff": "Imported {count} staff members",
+  "@logImportedStaff": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "logImportedCsvData": "Imported {rows} data rows from CSV",
+  "@logImportedCsvData": {
+    "placeholders": {
+      "rows": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -681,4 +681,108 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get holidaySlotBlocked => '祝日休館';
+
+  @override
+  String get requestMeeting => '面談を申し込む';
+
+  @override
+  String get scheduleMeetingWithGCL => 'GCLスタッフとの面談をスケジュール';
+
+  @override
+  String get meetingType => '面談タイプ';
+
+  @override
+  String get onlineTeams => 'オンライン [Teams]';
+
+  @override
+  String get department => '学部・学科';
+
+  @override
+  String get pleaseEnterName => 'お名前を入力してください';
+
+  @override
+  String get pleaseEnterDepartment => '学部・学科を入力してください';
+
+  @override
+  String get studyYear => '学年';
+
+  @override
+  String get purpose => '目的';
+
+  @override
+  String get pleaseSelectDate => '日付を選択してください';
+
+  @override
+  String get timeBlock => '時間帯 (30分枠)';
+
+  @override
+  String get pleaseSelectTime => '時間を選択してください';
+
+  @override
+  String get language => '言語';
+
+  @override
+  String get pleaseSelectLanguage => '言語を選択してください';
+
+  @override
+  String get meetingSubmittedSuccess => '面談リクエストが送信されました！';
+
+  @override
+  String get submitRequest => 'リクエスト送信';
+
+  @override
+  String get researchStudent => '研究生';
+
+  @override
+  String get assignment => '課題';
+
+  @override
+  String get conversation => '会話練習';
+
+  @override
+  String get presentationPractice => 'プレゼン練習';
+
+  @override
+  String get weeklyLimitDescription =>
+      'ジュニアスタッフが申請できる週あたりの最大時間を指定してください（空欄の場合は制限なし）。';
+
+  @override
+  String get hoursSuffix => '時間';
+
+  @override
+  String get importCleanedJson => '整形済みJSON読込';
+
+  @override
+  String finishEmploymentConfirmTitle(String name) {
+    return '退職手続き: $name';
+  }
+
+  @override
+  String get finishEmploymentConfirmContent =>
+      'このスタッフの雇用を終了してもよろしいですか？終了するとスケジュールへのアクセスが無効になります。';
+
+  @override
+  String get noAvailableStaff => 'この時間帯と言語に対応可能なスタッフが見つかりません。';
+
+  @override
+  String get assignStaff => 'スタッフを割り当て';
+
+  @override
+  String get meetingApprovedSuccess => '面談が承認され、スタッフが割り当てられました。';
+
+  @override
+  String get meetingRejectedSuccess => '面談リクエストが却下されました。';
+
+  @override
+  String get proceed => '続行';
+
+  @override
+  String logImportedStaff(String count) {
+    return '$count 名のスタッフをインポートしました';
+  }
+
+  @override
+  String logImportedCsvData(String rows) {
+    return 'CSVから $rows 行のデータをインポートしました';
+  }
 }

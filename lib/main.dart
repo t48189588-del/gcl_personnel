@@ -14,7 +14,7 @@ void main() async {
   // Initialize local storage
   await HiveService.init();
   
-  await dotenv.load(fileName: ".env"); // Load API keys before app starts
+  // await dotenv.load(fileName: ".env"); // Load API keys before app starts
 
   runApp(
     MultiProvider(

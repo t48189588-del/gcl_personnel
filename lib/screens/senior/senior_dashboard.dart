@@ -471,7 +471,7 @@ class _GuardrailsViewState extends State<_GuardrailsView> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Specify the maximum weekly hours a junior staff member can request (leave empty for no limit).',
+                            loc.weeklyLimitDescription,
                             style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                           ),
                         ],
@@ -486,7 +486,7 @@ class _GuardrailsViewState extends State<_GuardrailsView> {
                         decoration: InputDecoration(
                           hintText: loc.weeklyHoursLimitHint,
                           border: const OutlineInputBorder(),
-                          suffixText: 'hrs',
+                          suffixText: loc.hoursSuffix,
                           isDense: true,
                         ),
                         onChanged: (val) {
@@ -837,7 +837,7 @@ class _ApprovalTabState extends State<_ApprovalTab> {
               const SizedBox(width: 8),
               OutlinedButton.icon(
                 icon: const Icon(Icons.integration_instructions),
-                label: const Text("Import Cleaned JSON"),
+                label: Text(loc.importCleanedJson),
                 onPressed: () async {
                   final messenger = ScaffoldMessenger.of(context);
                   final content = await DataImportService.pickJsonFile();
@@ -1073,14 +1073,14 @@ void _showFinishEmploymentDialog(BuildContext context, AppProvider provider, Sta
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      title: Text("${loc.finishEmployment}: ${staff.name}"),
-      content: const Text("Are you sure you want to finalize this staff member's employment? This will disable their scheduling access."),
+      title: Text(loc.finishEmploymentConfirmTitle(staff.name)),
+      content: Text(loc.finishEmploymentConfirmContent),
       actions: [
         TextButton(onPressed: () => Navigator.pop(context), child: Text(loc.cancel)),
         ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
           onPressed: () { provider.finishEmployment(staff.id); Navigator.pop(context); },
-          child: const Text("Finish Immediately"),
+          child: Text(loc.finishImmediately),
         ),
       ],
     ),
@@ -1254,6 +1254,8 @@ class _LogView extends StatelessWidget {
       case 'logUpdatedProposalStatus': return loc.logUpdatedProposalStatus(params['id'] ?? '', params['status'] ?? '');
       case 'logApprovedAllBlocks': return loc.logApprovedAllBlocks(params['staffId'] ?? '', params['month'] ?? '');
       case 'logSubmittedReport': return loc.logSubmittedReport(params['date'] ?? '');
+      case 'logImportedStaff': return loc.logImportedStaff(params['count'] ?? '0');
+      case 'logImportedCsvData': return loc.logImportedCsvData(params['rows'] ?? '0');
       default: return description;
     }
   }
@@ -1352,16 +1354,16 @@ class _MeetingRequestCardState extends State<_MeetingRequestCard> {
             ),
             const SizedBox(height: 8),
             Text('${loc.affiliation}: ${widget.req.department} (${widget.req.studyYear})'),
-            Text('${loc.personalDescription}: ${widget.req.purpose}'),
+            Text('${loc.purpose}: ${widget.req.purpose}'),
             Text('${loc.nativeLang}: ${widget.req.language}'),
             Text('${loc.scheduledTime}: ${DateFormat('yyyy-MM-dd HH:mm').format(widget.req.requestedTime)}'),
             const Divider(),
             if (widget.availableStaff.isEmpty)
-              const Text('No available staff found for this time and language.', style: TextStyle(color: Colors.red))
+              Text(loc.noAvailableStaff, style: const TextStyle(color: Colors.red))
             else ...[
               Row(
                 children: [
-                  const Text('Assign Staff: '),
+                  Text('${loc.assignStaff}: '),
                   const SizedBox(width: 8),
                   DropdownButton<String>(
                     value: _selectedStaffId,
@@ -1386,7 +1388,7 @@ class _MeetingRequestCardState extends State<_MeetingRequestCard> {
                     onPressed: () {
                       if (_selectedStaffId != null) {
                         provider.approveMeetingRequest(widget.req.id, _selectedStaffId!);
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Meeting approved and staff assigned.')));
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.meetingApprovedSuccess)));
                       }
                     },
                     child: Text(loc.approve),
@@ -1396,7 +1398,7 @@ class _MeetingRequestCardState extends State<_MeetingRequestCard> {
                     style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
                     onPressed: () {
                       provider.rejectMeetingRequest(widget.req.id);
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Meeting request rejected.')));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.meetingRejectedSuccess)));
                     },
                     child: Text(loc.reject),
                   ),

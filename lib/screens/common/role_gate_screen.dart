@@ -86,7 +86,7 @@ class RoleGateScreen extends StatelessWidget {
                     },
                   ),
                   _RoleCard(
-                    title: 'Request a Meeting',
+                    title: loc.requestMeeting,
                     icon: Icons.event_available,
                     color: Colors.orange.shade800,
                     onTap: () {

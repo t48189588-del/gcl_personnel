@@ -447,7 +447,7 @@ class _TimeBlock extends StatelessWidget {
                         provider.addBlock(AvailabilityBlock(id: const Uuid().v4(), startTime: slot, staffId: staff.id, modality: 'Both'));
                         Navigator.pop(ctx);
                       },
-                      child: const Text('Proceed'),
+                      child: Text(loc.proceed),
                     ),
                     TextButton(
                       onPressed: () => Navigator.pop(ctx),

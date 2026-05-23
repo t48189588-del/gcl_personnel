@@ -1339,6 +1339,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Closed (Holiday)'**
   String get holidaySlotBlocked;
+
+  /// No description provided for @requestMeeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Request a Meeting'**
+  String get requestMeeting;
+
+  /// No description provided for @scheduleMeetingWithGCL.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule a meeting with GCL Staff'**
+  String get scheduleMeetingWithGCL;
+
+  /// No description provided for @meetingType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type of Meeting'**
+  String get meetingType;
+
+  /// No description provided for @onlineTeams.
+  ///
+  /// In en, this message translates to:
+  /// **'Online [Teams]'**
+  String get onlineTeams;
+
+  /// No description provided for @department.
+  ///
+  /// In en, this message translates to:
+  /// **'Department'**
+  String get department;
+
+  /// No description provided for @pleaseEnterName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your name'**
+  String get pleaseEnterName;
+
+  /// No description provided for @pleaseEnterDepartment.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your department'**
+  String get pleaseEnterDepartment;
+
+  /// No description provided for @studyYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Study Year'**
+  String get studyYear;
+
+  /// No description provided for @purpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Purpose'**
+  String get purpose;
+
+  /// No description provided for @pleaseSelectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a date'**
+  String get pleaseSelectDate;
+
+  /// No description provided for @timeBlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Time (30 min block)'**
+  String get timeBlock;
+
+  /// No description provided for @pleaseSelectTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a time'**
+  String get pleaseSelectTime;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @pleaseSelectLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a language'**
+  String get pleaseSelectLanguage;
+
+  /// No description provided for @meetingSubmittedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting request submitted successfully!'**
+  String get meetingSubmittedSuccess;
+
+  /// No description provided for @submitRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Request'**
+  String get submitRequest;
+
+  /// No description provided for @researchStudent.
+  ///
+  /// In en, this message translates to:
+  /// **'Research student'**
+  String get researchStudent;
+
+  /// No description provided for @assignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Assignment'**
+  String get assignment;
+
+  /// No description provided for @conversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation'**
+  String get conversation;
+
+  /// No description provided for @presentationPractice.
+  ///
+  /// In en, this message translates to:
+  /// **'Presentation practice'**
+  String get presentationPractice;
+
+  /// No description provided for @weeklyLimitDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Specify the maximum weekly hours a junior staff member can request (leave empty for no limit).'**
+  String get weeklyLimitDescription;
+
+  /// No description provided for @hoursSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'hrs'**
+  String get hoursSuffix;
+
+  /// No description provided for @importCleanedJson.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Cleaned JSON'**
+  String get importCleanedJson;
+
+  /// No description provided for @finishEmploymentConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish Employment: {name}'**
+  String finishEmploymentConfirmTitle(String name);
+
+  /// No description provided for @finishEmploymentConfirmContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to finalize this staff member\'s employment? This will disable their scheduling access.'**
+  String get finishEmploymentConfirmContent;
+
+  /// No description provided for @noAvailableStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'No available staff found for this time and language.'**
+  String get noAvailableStaff;
+
+  /// No description provided for @assignStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign Staff'**
+  String get assignStaff;
+
+  /// No description provided for @meetingApprovedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting approved and staff assigned.'**
+  String get meetingApprovedSuccess;
+
+  /// No description provided for @meetingRejectedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting request rejected.'**
+  String get meetingRejectedSuccess;
+
+  /// No description provided for @proceed.
+  ///
+  /// In en, this message translates to:
+  /// **'Proceed'**
+  String get proceed;
+
+  /// No description provided for @logImportedStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported {count} staff members'**
+  String logImportedStaff(String count);
+
+  /// No description provided for @logImportedCsvData.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported {rows} data rows from CSV'**
+  String logImportedCsvData(String rows);
 }
 
 class _AppLocalizationsDelegate

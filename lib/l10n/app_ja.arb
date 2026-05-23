@@ -227,5 +227,58 @@
       }
     }
   },
-  "holidaySlotBlocked": "祝日休館"
+  "holidaySlotBlocked": "祝日休館",
+  "requestMeeting": "面談を申し込む",
+  "scheduleMeetingWithGCL": "GCLスタッフとの面談をスケジュール",
+  "meetingType": "面談タイプ",
+  "onlineTeams": "オンライン [Teams]",
+  "department": "学部・学科",
+  "pleaseEnterName": "お名前を入力してください",
+  "pleaseEnterDepartment": "学部・学科を入力してください",
+  "studyYear": "学年",
+  "purpose": "目的",
+  "pleaseSelectDate": "日付を選択してください",
+  "timeBlock": "時間帯 (30分枠)",
+  "pleaseSelectTime": "時間を選択してください",
+  "language": "言語",
+  "pleaseSelectLanguage": "言語を選択してください",
+  "meetingSubmittedSuccess": "面談リクエストが送信されました！",
+  "submitRequest": "リクエスト送信",
+  "researchStudent": "研究生",
+  "assignment": "課題",
+  "conversation": "会話練習",
+  "presentationPractice": "プレゼン練習",
+  "weeklyLimitDescription": "ジュニアスタッフが申請できる週あたりの最大時間を指定してください（空欄の場合は制限なし）。",
+  "hoursSuffix": "時間",
+  "importCleanedJson": "整形済みJSON読込",
+  "finishEmploymentConfirmTitle": "退職手続き: {name}",
+  "@finishEmploymentConfirmTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "finishEmploymentConfirmContent": "このスタッフの雇用を終了してもよろしいですか？終了するとスケジュールへのアクセスが無効になります。",
+  "noAvailableStaff": "この時間帯と言語に対応可能なスタッフが見つかりません。",
+  "assignStaff": "スタッフを割り当て",
+  "meetingApprovedSuccess": "面談が承認され、スタッフが割り当てられました。",
+  "meetingRejectedSuccess": "面談リクエストが却下されました。",
+  "proceed": "続行",
+  "logImportedStaff": "{count} 名のスタッフをインポートしました",
+  "@logImportedStaff": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "logImportedCsvData": "CSVから {rows} 行のデータをインポートしました",
+  "@logImportedCsvData": {
+    "placeholders": {
+      "rows": {
+        "type": "String"
+      }
+    }
+  }
 }

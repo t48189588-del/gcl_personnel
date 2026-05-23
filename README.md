@@ -21,11 +21,11 @@ Currently all information is hosted in excel files in teams groups
 
 ## Tasks
 - [ ] admin information
-  - [ ] seniour staff (3 people)
+  - [x] seniour staff (3 people)
     - [ ] Hatsuda Hisanori
     - [ ] Shiraishi Shinyav
     - [ ] Kiruma Tomoko
-  - [ ] student staff (25 people)
+  - [x] student staff (25 people)
     - [ ] admin / owner
     - [ ] users
   - [x] GCL hour schedule
@@ -138,7 +138,7 @@ Currently all information is hosted in excel files in teams groups
 - [ ] Data collecting
   - [ ] staff web information
   - [ ] event information
-  - [ ] staff schedule information 
+  - [x] staff schedule information 
   - [ ] fix information formatting for online/local storage and dashboard reading or excel pivoting
 - [ ] People counter (to be defined)
   - [ ] GCL staff
@@ -383,7 +383,7 @@ Please write the Python functions to execute the following pipeline logic:
 Integrate this cleanly as a standalone module or block of functions that drop straight into our Streamlit application architecture. Provide clear instructions on how to start the Ollama instance via terminal before launching the presentation app.
 
 ```
-# Suggestions after hatsuda-san and sugawara-san meeting
+# Suggestions after hatsuda-san and sugawara-san meeting (may 20, 2026)
 - export excel should be same format as original excel file (same column order and same column names )
 - print availability schuedule
   - type 1: date, time, headers student staff name
