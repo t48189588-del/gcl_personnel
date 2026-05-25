@@ -392,3 +392,11 @@ Integrate this cleanly as a standalone module or block of functions that drop st
 - build power apps 
 - data permission obtained from hatsuda-san
 
+## For exporting flutter project to github pages
+|Step|Explain|code|
+|---|---|---|
+|0|Preparation, ensuring all libraries are up to date|`flutter clean && flutter pub get`|
+|1|Preparing web pages elements (html, css, js)|`flutter build web`|
+|2|Navigate to build/web directory|`cd build/web`|
+|3|temporary git (for uploading to github pages)|`git init && git add . && git commit -m "first commit`|
+|4|uploading pages|`git push -f <repo>.git master:gh-pages`|
