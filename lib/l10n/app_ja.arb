@@ -280,5 +280,43 @@
         "type": "String"
       }
     }
-  }
+  },
+  "calendarOverview": "カレンダー概要",
+  "timeSlot": "タイムスロット",
+  "expand": "展開",
+  "collapse": "折りたたむ",
+  "allStudents": "すべての学生",
+  "reportStatus": "レポートステータス",
+  "filterAll": "すべて",
+  "filterPending": "未提出",
+  "filterCompleted": "提出済",
+  "clearFilters": "フィルタークリア",
+  "todaySchedule": "今日のスケジュール",
+  "deadlineReminder": "来月のシフト希望は今月の24日までに提出してください。",
+  "deadlinePassedWarning": "警告：来月のシフト希望提出期限（24日）を過ぎています！",
+  "noScheduleToday": "今日のシフトはありません。",
+  "activeMeetings": "ミーティング",
+  "upcomingEvents": "イベント",
+  "holidaysLabel": "祝日",
+  "availabilitySubmissionTitle": "来月のシフト希望提出",
+  "assignedMeetingsCount": "割り当てられたミーティング ({count})",
+  "@assignedMeetingsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pendingReportsCount": "未提出レポート ({count})",
+  "@pendingReportsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deadlineDialogTitle": "シフト提出のリマインダー",
+  "deadlineDialogContent": "24日の締め切りになりました。来月のシフト希望を提出してください。",
+  "goToSubmission": "シフト入力へ",
+  "skip": "スキップ"
 }

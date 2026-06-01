@@ -75,6 +75,11 @@ class _SeniorDashboardState extends State<SeniorDashboard> {
             labelType: NavigationRailLabelType.all,
             destinations: [
               NavigationRailDestination(
+                icon: const Icon(Icons.calendar_today_outlined),
+                selectedIcon: const Icon(Icons.calendar_today),
+                label: Text(loc.calendarOverview),
+              ),
+              NavigationRailDestination(
                 icon: const Icon(Icons.dashboard_outlined),
                 selectedIcon: const Icon(Icons.dashboard),
                 label: Text(loc.metrics),
@@ -127,17 +132,689 @@ class _SeniorDashboardState extends State<SeniorDashboard> {
 
   Widget _buildBody() {
     switch (_selectedIndex) {
-      case 0: return const _MetricsView();
-      case 1: return const _GuardrailsView();
-      case 2: return const _WorkingReportsView();
-      case 3: return const _ApprovalTab();
-      case 4: return const _EventProposalsTab();
-      case 5: return const _MeetingRequestsTab();
-      case 6: return const ChartVisualizationTab();
-      case 7: return const SocialDashboardTab();
-      case 8: return const _LogView();
-      default: return const _MetricsView();
+      case 0: return const _OverviewCalendarTab();
+      case 1: return const _MetricsView();
+      case 2: return const _GuardrailsView();
+      case 3: return const _WorkingReportsView();
+      case 4: return const _ApprovalTab();
+      case 5: return const _EventProposalsTab();
+      case 6: return const _MeetingRequestsTab();
+      case 7: return const ChartVisualizationTab();
+      case 8: return const SocialDashboardTab();
+      case 9: return const _LogView();
+      default: return const _OverviewCalendarTab();
     }
+  }
+}
+
+class _OverviewCalendarTab extends StatefulWidget {
+  const _OverviewCalendarTab();
+
+  @override
+  State<_OverviewCalendarTab> createState() => _OverviewCalendarTabState();
+}
+
+class _OverviewCalendarTabState extends State<_OverviewCalendarTab> {
+  DateTime _selectedDate = DateTime.now();
+  String? _selectedTimeSlot;
+  bool _isExpanded = false;
+
+  // Working Reports Filter State
+  DateTime? _reportDateFilter;
+  String? _reportStaffIdFilter;
+  String _reportStatusFilter = 'All'; // 'All', 'Pending', 'Completed'
+
+  List<DateTime> _generateTimeSlots(AppProvider provider, DateTime date) {
+    final daySchedule = provider.operatingHours.weeklySchedule.firstWhere(
+      (ds) => ds.weekday == date.weekday,
+      orElse: () => DaySchedule(weekday: date.weekday),
+    );
+    if (daySchedule.isClosed) return [];
+    
+    final startParts = daySchedule.startHour.split(':');
+    final endParts = daySchedule.endHour.split(':');
+    if (startParts.length != 2 || endParts.length != 2) return [];
+    
+    final startHour = int.tryParse(startParts[0]) ?? 9;
+    final startMin = int.tryParse(startParts[1]) ?? 0;
+    final endHour = int.tryParse(endParts[0]) ?? 17;
+    final endMin = int.tryParse(endParts[1]) ?? 0;
+    
+    final startTime = DateTime(date.year, date.month, date.day, startHour, startMin);
+    final endTime = DateTime(date.year, date.month, date.day, endHour, endMin);
+    
+    List<DateTime> slots = [];
+    var temp = startTime;
+    while (temp.isBefore(endTime)) {
+      slots.add(temp);
+      temp = temp.add(const Duration(minutes: 30));
+    }
+    return slots;
+  }
+
+  // Group past approved blocks into shifts for reports calculation
+  List<WorkingReport> _getAllReportsAcrossStaff(AppProvider provider) {
+    final juniors = provider.staff.where((s) => !s.isSenior && s.isSetupComplete).toList();
+    final now = DateTime.now();
+    List<WorkingReport> allReports = [];
+
+    for (var junior in juniors) {
+      // 1. Get all past approved blocks for this junior
+      final pastBlocks = provider.blocks.where((b) =>
+        b.staffId == junior.id &&
+        b.status == 'approved' &&
+        b.startTime.add(const Duration(minutes: 30)).isBefore(now)
+      ).toList();
+
+      if (pastBlocks.isEmpty) continue;
+
+      pastBlocks.sort((a, b) => a.startTime.compareTo(b.startTime));
+
+      // 2. Group into contiguous shifts
+      List<List<AvailabilityBlock>> shifts = [];
+      List<AvailabilityBlock> currentShift = [pastBlocks.first];
+      for (int i = 1; i < pastBlocks.length; i++) {
+        final prev = pastBlocks[i - 1];
+        final curr = pastBlocks[i];
+
+        if (curr.startTime.difference(prev.startTime).inMinutes == 30 &&
+            curr.startTime.day == prev.startTime.day) {
+          currentShift.add(curr);
+        } else {
+          shifts.add(currentShift);
+          currentShift = [curr];
+        }
+      }
+      shifts.add(currentShift);
+
+      // 3. For each shift, see if there is a matching submitted report
+      for (var shiftBlocks in shifts) {
+        final start = shiftBlocks.first.startTime;
+        final end = shiftBlocks.last.startTime.add(const Duration(minutes: 30));
+        final dateOnly = DateTime(start.year, start.month, start.day);
+
+        // Find existing submitted report
+        final existingReport = provider.reports.firstWhere(
+          (r) => r.staffId == junior.id &&
+                 DateTime(r.reportDate.year, r.reportDate.month, r.reportDate.day) == dateOnly &&
+                 r.scheduledStart == start &&
+                 r.isSubmitted,
+          orElse: () {
+            // Check if there are meetings in this shift for a default message
+            final meetingsStr = provider.externalMeetingRequests.where((m) =>
+              m.assignedStaffId == junior.id &&
+              m.status == 'approved' &&
+              m.requestedDate == dateOnly &&
+              !m.requestedTime.isBefore(start) &&
+              m.requestedTime.isBefore(end)
+            ).map((m) => 'Meeting: ${m.name} (${m.meetingType}, ${m.purpose})').join('\\n');
+
+            return WorkingReport(
+              id: '',
+              staffId: junior.id,
+              reportDate: dateOnly,
+              scheduledStart: start,
+              scheduledEnd: end,
+              confirmedStart: start,
+              confirmedEnd: end,
+              workDone: meetingsStr,
+              isSubmitted: false,
+            );
+          }
+        );
+        allReports.add(existingReport);
+      }
+    }
+    
+    // Sort all reports by date descending
+    allReports.sort((a, b) => b.reportDate.compareTo(a.reportDate));
+    return allReports;
+  }
+
+  String _localizeModality(String val, AppLocalizations loc) {
+    if (val == 'Online') return loc.online;
+    if (val == 'In Person' || val == 'In-Person') return loc.inPerson;
+    if (val == 'Both') return loc.both;
+    return val;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+    final provider = context.watch<AppProvider>();
+    final locale = Localizations.localeOf(context).toString();
+
+    final slots = _generateTimeSlots(provider, _selectedDate);
+    if (_selectedTimeSlot == null && slots.isNotEmpty) {
+      _selectedTimeSlot = DateFormat('HH:mm').format(slots.first);
+    } else if (slots.isNotEmpty && !slots.any((s) => DateFormat('HH:mm').format(s) == _selectedTimeSlot)) {
+      _selectedTimeSlot = DateFormat('HH:mm').format(slots.first);
+    }
+
+    final dateOnlyStr = DateFormat.yMMMMd(locale).format(_selectedDate);
+
+    // Get holiday if any
+    final dateOnly = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day);
+    final holiday = provider.operatingHours.holidays.firstWhere(
+      (h) => DateTime(h.date.year, h.date.month, h.date.day) == dateOnly,
+      orElse: () => Holiday(date: DateTime(1970), message: ''),
+    );
+    final hasHoliday = holiday.message.isNotEmpty;
+
+    // Filtered reports
+    final allReports = _getAllReportsAcrossStaff(provider);
+    final filteredReports = allReports.where((r) {
+      if (_reportDateFilter != null) {
+        final d1 = DateTime(r.reportDate.year, r.reportDate.month, r.reportDate.day);
+        final d2 = DateTime(_reportDateFilter!.year, _reportDateFilter!.month, _reportDateFilter!.day);
+        if (d1 != d2) return false;
+      }
+      if (_reportStaffIdFilter != null && _reportStaffIdFilter != 'All') {
+        if (r.staffId != _reportStaffIdFilter) return false;
+      }
+      if (_reportStatusFilter != 'All') {
+        final isSub = _reportStatusFilter == 'Completed';
+        if (r.isSubmitted != isSub) return false;
+      }
+      return true;
+    }).toList();
+
+    Widget reportsSection = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(loc.workingReports, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+            const Spacer(),
+            // Date Filter Button
+            OutlinedButton.icon(
+              icon: const Icon(Icons.calendar_today, size: 16),
+              label: Text(_reportDateFilter == null ? loc.selectDate : DateFormat.yMd(locale).format(_reportDateFilter!)),
+              onPressed: () async {
+                final d = await showDatePicker(
+                  context: context,
+                  initialDate: _reportDateFilter ?? DateTime.now(),
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime(2030),
+                );
+                if (d != null) {
+                  setState(() => _reportDateFilter = d);
+                }
+              },
+            ),
+            if (_reportDateFilter != null)
+              IconButton(
+                icon: const Icon(Icons.clear),
+                tooltip: loc.clearFilters,
+                onPressed: () => setState(() => _reportDateFilter = null),
+              ),
+            const SizedBox(width: 8),
+            // Staff Filter Dropdown
+            DropdownButton<String>(
+              value: _reportStaffIdFilter ?? 'All',
+              items: [
+                DropdownMenuItem(value: 'All', child: Text(loc.allStudents)),
+                ...provider.staff.where((s) => !s.isSenior && s.isSetupComplete).map((s) => DropdownMenuItem(
+                  value: s.id,
+                  child: Text(s.name),
+                )),
+              ],
+              onChanged: (val) {
+                setState(() => _reportStaffIdFilter = val == 'All' ? null : val);
+              },
+            ),
+            const SizedBox(width: 16),
+            // Status Filter SegmentedButton
+            SegmentedButton<String>(
+              segments: [
+                ButtonSegment(value: 'All', label: Text(loc.filterAll)),
+                ButtonSegment(value: 'Pending', label: Text(loc.filterPending)),
+                ButtonSegment(value: 'Completed', label: Text(loc.filterCompleted)),
+              ],
+              selected: {_reportStatusFilter},
+              onSelectionChanged: (val) => setState(() => _reportStatusFilter = val.first),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Expanded(
+          child: filteredReports.isEmpty
+              ? Center(child: Text(loc.noData))
+              : ListView(
+                  children: [
+                    PaginatedDataTable(
+                      showCheckboxColumn: false,
+                      columns: [
+                        DataColumn(label: Text(loc.date)),
+                        DataColumn(label: Text(loc.name)),
+                        DataColumn(label: Text(loc.scheduledTime)),
+                        DataColumn(label: Text(loc.confirmedStartTime)),
+                        DataColumn(label: Text(loc.workedHours)),
+                        DataColumn(label: Text(loc.status)),
+                      ],
+                      source: _ReportsTableSource(filteredReports, provider, context, loc),
+                      rowsPerPage: filteredReports.length < 5 ? (filteredReports.isEmpty ? 1 : filteredReports.length) : 5,
+                    ),
+                  ],
+                ),
+        ),
+      ],
+    );
+
+    if (_isExpanded) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("$dateOnlyStr - ${loc.calendarOverview}"),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => setState(() => _isExpanded = false),
+          ),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(loc.todaySchedule, style: Theme.of(context).textTheme.headlineMedium),
+                  const Spacer(),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.close_fullscreen),
+                    label: Text(loc.collapse),
+                    onPressed: () => setState(() => _isExpanded = false),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              if (hasHoliday)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(color: Colors.red.shade100, borderRadius: BorderRadius.circular(8)),
+                  child: Text("${loc.holidayNotice}: ${holiday.message}", style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                ),
+              Expanded(
+                child: slots.isEmpty
+                    ? Center(child: Text(loc.noPendingShifts))
+                    : SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: DataTable(
+                            columns: [
+                              DataColumn(label: Text(loc.date)),
+                              DataColumn(label: Text(loc.timeSlot)),
+                              DataColumn(label: Text(loc.allStudents)),
+                            ],
+                            rows: slots.map((slot) {
+                              final slotTimeStr = DateFormat('HH:mm').format(slot);
+                              final slotEndTimeStr = DateFormat('HH:mm').format(slot.add(const Duration(minutes: 30)));
+                              
+                              // Get and sort blocks
+                              final slotBlocks = provider.blocks.where((b) =>
+                                b.startTime.year == _selectedDate.year &&
+                                b.startTime.month == _selectedDate.month &&
+                                b.startTime.day == _selectedDate.day &&
+                                DateFormat('HH:mm').format(b.startTime) == slotTimeStr
+                              ).toList();
+
+                              final approvedBlocks = slotBlocks.where((b) => b.status == 'approved').toList();
+                              final pendingBlocks = slotBlocks.where((b) => b.status == 'proposed').toList();
+                              final sortedBlocks = [...approvedBlocks, ...pendingBlocks];
+
+                              return DataRow(cells: [
+                                DataCell(Text(DateFormat.yMMMd(locale).format(_selectedDate))),
+                                DataCell(Text("$slotTimeStr - $slotEndTimeStr")),
+                                DataCell(Wrap(
+                                  spacing: 8,
+                                  runSpacing: 4,
+                                  children: sortedBlocks.isEmpty
+                                      ? [Text(loc.none)]
+                                      : sortedBlocks.map((b) {
+                                          final student = provider.staff.firstWhere(
+                                            (s) => s.id == b.staffId,
+                                            orElse: () => StaffMember(id: '', name: 'Unknown', nativeLanguage: '', degree: '', modalityPreference: '', availabilityRate: 0, eventsParticipation: 0, providedAssistance: 0)
+                                          );
+                                          final isApp = b.status == 'approved';
+                                          final cellColor = isApp
+                                              ? (Theme.of(context).brightness == Brightness.light ? Colors.amber.shade100 : Colors.amber.shade800)
+                                              : (Theme.of(context).brightness == Brightness.light ? Colors.grey.shade200 : Colors.grey.shade700);
+
+                                          return _buildStudentChip(context, provider, b, student, cellColor);
+                                        }).toList(),
+                                )),
+                              ]);
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Collapsed View (2 rows)
+    final slotTimeStr = _selectedTimeSlot ?? (slots.isNotEmpty ? DateFormat('HH:mm').format(slots.first) : '');
+    final activeBlocks = slots.isEmpty ? <AvailabilityBlock>[] : provider.blocks.where((b) =>
+      b.startTime.year == _selectedDate.year &&
+      b.startTime.month == _selectedDate.month &&
+      b.startTime.day == _selectedDate.day &&
+      DateFormat('HH:mm').format(b.startTime) == slotTimeStr
+    ).toList();
+    final approvedActive = activeBlocks.where((b) => b.status == 'approved').toList();
+    final pendingActive = activeBlocks.where((b) => b.status == 'proposed').toList();
+    final sortedActive = [...approvedActive, ...pendingActive];
+
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        children: [
+          // Row 1: Daily Schedule Block
+          Card(
+            margin: const EdgeInsets.only(bottom: 24),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(loc.calendarOverview, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                      const Spacer(),
+                      // Date Selector
+                      IconButton(
+                        icon: const Icon(Icons.chevron_left),
+                        onPressed: () => setState(() {
+                          _selectedDate = _selectedDate.subtract(const Duration(days: 1));
+                          _selectedTimeSlot = null;
+                        }),
+                      ),
+                      TextButton.icon(
+                        icon: const Icon(Icons.calendar_month),
+                        label: Text(dateOnlyStr),
+                        onPressed: () async {
+                          final d = await showDatePicker(
+                            context: context,
+                            initialDate: _selectedDate,
+                            firstDate: DateTime(2020),
+                            lastDate: DateTime(2030),
+                          );
+                          if (d != null) {
+                            setState(() {
+                              _selectedDate = d;
+                              _selectedTimeSlot = null;
+                            });
+                          }
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.chevron_right),
+                        onPressed: () => setState(() {
+                          _selectedDate = _selectedDate.add(const Duration(days: 1));
+                          _selectedTimeSlot = null;
+                        }),
+                      ),
+                      const SizedBox(width: 16),
+                      // Time Slot Dropdown selector
+                      if (slots.isNotEmpty) ...[
+                        Text('${loc.timeSlot}: '),
+                        DropdownButton<String>(
+                          value: slotTimeStr,
+                          items: slots.map((s) {
+                            final sStr = DateFormat('HH:mm').format(s);
+                            return DropdownMenuItem(value: sStr, child: Text(sStr));
+                          }).toList(),
+                          onChanged: (val) => setState(() => _selectedTimeSlot = val),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  if (hasHoliday)
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(8),
+                      margin: const EdgeInsets.only(bottom: 12),
+                      decoration: BoxDecoration(color: Colors.red.shade100, borderRadius: BorderRadius.circular(8)),
+                      child: Text("${loc.holidayNotice}: ${holiday.message}", style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                    ),
+                  // Table (1 header, 1 value row)
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: slots.isEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 24.0),
+                            child: Text(loc.noPendingShifts),
+                          )
+                        : DataTable(
+                            columns: [
+                              DataColumn(label: Text(loc.date)),
+                              DataColumn(label: Text(loc.timeSlot)),
+                              DataColumn(label: Text(loc.allStudents)),
+                            ],
+                            rows: [
+                              DataRow(cells: [
+                                DataCell(Text(DateFormat.yMMMd(locale).format(_selectedDate))),
+                                DataCell(Text("$slotTimeStr - ${DateFormat('HH:mm').format(DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, int.parse(slotTimeStr.split(':')[0]), int.parse(slotTimeStr.split(':')[1])).add(const Duration(minutes: 30)))}")),
+                                DataCell(Wrap(
+                                  spacing: 8,
+                                  runSpacing: 4,
+                                  children: sortedActive.isEmpty
+                                      ? [Text(loc.none)]
+                                      : sortedActive.map((b) {
+                                          final student = provider.staff.firstWhere(
+                                            (s) => s.id == b.staffId,
+                                            orElse: () => StaffMember(id: '', name: 'Unknown', nativeLanguage: '', degree: '', modalityPreference: '', availabilityRate: 0, eventsParticipation: 0, providedAssistance: 0)
+                                          );
+                                          final isApp = b.status == 'approved';
+                                          final cellColor = isApp
+                                              ? (Theme.of(context).brightness == Brightness.light ? Colors.amber.shade100 : Colors.amber.shade800)
+                                              : (Theme.of(context).brightness == Brightness.light ? Colors.grey.shade200 : Colors.grey.shade700);
+
+                                          return _buildStudentChip(context, provider, b, student, cellColor);
+                                        }).toList(),
+                                )),
+                              ]),
+                            ],
+                          ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.open_in_full),
+                        label: Text(loc.expand),
+                        onPressed: () => setState(() => _isExpanded = true),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Row 2: Working Reports status
+          Expanded(
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: reportsSection,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStudentChip(BuildContext context, AppProvider provider, AvailabilityBlock b, StaffMember student, Color cellColor) {
+    final loc = AppLocalizations.of(context)!;
+    return Tooltip(
+      message: "Status: ${b.status.toUpperCase()}\nModality: ${b.modality}\nClick to change status",
+      child: InkWell(
+        onTap: () {
+          // Show popup menu to change status
+          final RenderBox button = context.findRenderObject() as RenderBox;
+          final RenderBox overlay = Navigator.of(context).overlay!.context.findRenderObject() as RenderBox;
+          final RelativeRect position = RelativeRect.fromRect(
+            Rect.fromPoints(
+              button.localToGlobal(Offset.zero, ancestor: overlay),
+              button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
+            ),
+            Offset.zero & overlay.size,
+          );
+          showMenu<String>(
+            context: context,
+            position: position,
+            items: [
+              PopupMenuItem(value: 'approve', child: Text(loc.approve)),
+              PopupMenuItem(value: 'reject', child: Text(loc.reject)),
+            ],
+          ).then((value) {
+            if (value == 'approve') {
+              provider.approveBlocks([b.id]);
+            } else if (value == 'reject') {
+              provider.rejectBlocks([b.id]);
+            }
+          });
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: cellColor,
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: Colors.grey.shade400, width: 0.5),
+          ),
+          child: Text(
+            "${student.name} (${_localizeModality(b.modality, loc).toLowerCase()})",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+              color: Theme.of(context).brightness == Brightness.light ? Colors.black87 : Colors.white,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ReportsTableSource extends DataTableSource {
+  final List<WorkingReport> reports;
+  final AppProvider provider;
+  final BuildContext context;
+  final AppLocalizations loc;
+
+  _ReportsTableSource(this.reports, this.provider, this.context, this.loc);
+
+  @override
+  DataRow? getRow(int index) {
+    if (index >= reports.length) return null;
+    final r = reports[index];
+    final student = provider.staff.firstWhere(
+      (s) => s.id == r.staffId,
+      orElse: () => StaffMember(id: '', name: 'Unknown', nativeLanguage: '', degree: '', modalityPreference: '', availabilityRate: 0, eventsParticipation: 0, providedAssistance: 0)
+    );
+
+    final locale = Localizations.localeOf(context).toString();
+    final dateStr = DateFormat.yMMMd(locale).format(r.reportDate);
+    final timeStr = "${DateFormat('HH:mm').format(r.scheduledStart)} - ${DateFormat('HH:mm').format(r.scheduledEnd)}";
+
+    Widget statusBadge;
+    if (r.isSubmitted) {
+      statusBadge = Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(color: Colors.green.shade100, borderRadius: BorderRadius.circular(4)),
+        child: Text(loc.filledReport, style: TextStyle(color: Colors.green.shade800, fontWeight: FontWeight.bold, fontSize: 11)),
+      );
+    } else {
+      statusBadge = Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(color: Colors.red.shade100, borderRadius: BorderRadius.circular(4)),
+        child: Text(loc.missingReport, style: TextStyle(color: Colors.red.shade800, fontWeight: FontWeight.bold, fontSize: 11)),
+      );
+    }
+
+    return DataRow(
+      onSelectChanged: (_) {
+        if (r.isSubmitted) {
+          _showReportDetail(r);
+        } else {
+          showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: Text(loc.missingReport),
+              content: Text(loc.pendingReportsNotice),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: Text(loc.proceed),
+                ),
+              ],
+            ),
+          );
+        }
+      },
+      cells: [
+        DataCell(Text(dateStr)),
+        DataCell(Text(student.name)),
+        DataCell(Text(timeStr)),
+        DataCell(Text(r.isSubmitted ? DateFormat('HH:mm').format(r.confirmedStart) : 'N/A')),
+        DataCell(Text(r.isSubmitted ? r.workedHours.toStringAsFixed(2) : 'N/A')),
+        DataCell(statusBadge),
+      ],
+    );
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => reports.length;
+
+  @override
+  int get selectedRowCount => 0;
+
+  void _showReportDetail(WorkingReport report) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('${loc.workingReports} - ${DateFormat.yMd(Localizations.localeOf(context).toString()).format(report.reportDate)}'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _detailItem(loc.scheduledTime, '${DateFormat('HH:mm').format(report.scheduledStart)} - ${DateFormat('HH:mm').format(report.scheduledEnd)}'),
+            _detailItem(loc.confirmedStartTime, DateFormat('HH:mm').format(report.confirmedStart)),
+            _detailItem(loc.confirmedEndTime, DateFormat('HH:mm').format(report.confirmedEnd)),
+            _detailItem(loc.workedHours, report.workedHours.toStringAsFixed(2)),
+            const Divider(),
+            Text(loc.workDoneLabel, style: const TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 4),
+            Text(report.workDone),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(loc.proceed)),
+        ],
+      ),
+    );
+  }
+
+  Widget _detailItem(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        children: [
+          Text('$label: ', style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(value),
+        ],
+      ),
+    );
   }
 }
 
@@ -448,7 +1125,7 @@ class _GuardrailsViewState extends State<_GuardrailsView> {
             const SizedBox(height: 16),
             ElevatedButton.icon(icon: const Icon(Icons.calendar_month), label: Text(loc.addHoliday), onPressed: () => _showAddHolidayDialog(context, provider, loc)),
             const SizedBox(height: 16),
-            Wrap(spacing: 8, children: config.holidays.map((h) => Chip(label: Text('${DateFormat.yMd(Localizations.localeOf(context).toString()).format(h.date)}: ${h.message}' + (h.isAllDay ? '' : ' (${h.startTime}-${h.endTime})')), onDeleted: () => provider.removeHoliday(h.date))).toList()),
+            Wrap(spacing: 8, children: config.holidays.map((h) => Chip(label: Text('${DateFormat.yMd(Localizations.localeOf(context).toString()).format(h.date)}: ${h.message}${h.isAllDay ? '' : ' (${h.startTime}-${h.endTime})'}'), onDeleted: () => provider.removeHoliday(h.date))).toList()),
             const SizedBox(height: 48),
             Text(loc.weeklyHoursLimit, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 16),
@@ -981,7 +1658,7 @@ class _ApprovalTabState extends State<_ApprovalTab> {
               children: [
                 Container(
                   padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(color: Theme.of(context).primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                  decoration: BoxDecoration(color: Theme.of(context).primaryColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
                   child: Text(DateFormat('EEEE, MMM d, yyyy').format(day), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
                 const SizedBox(height: 12),

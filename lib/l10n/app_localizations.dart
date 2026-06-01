@@ -1531,6 +1531,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Imported {rows} data rows from CSV'**
   String logImportedCsvData(String rows);
+
+  /// No description provided for @calendarOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar Overview'**
+  String get calendarOverview;
+
+  /// No description provided for @timeSlot.
+  ///
+  /// In en, this message translates to:
+  /// **'Time Slot'**
+  String get timeSlot;
+
+  /// No description provided for @expand.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand'**
+  String get expand;
+
+  /// No description provided for @collapse.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse'**
+  String get collapse;
+
+  /// No description provided for @allStudents.
+  ///
+  /// In en, this message translates to:
+  /// **'All Students'**
+  String get allStudents;
+
+  /// No description provided for @reportStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Status'**
+  String get reportStatus;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @filterPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get filterPending;
+
+  /// No description provided for @filterCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get filterCompleted;
+
+  /// No description provided for @clearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Filters'**
+  String get clearFilters;
+
+  /// No description provided for @todaySchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Schedule'**
+  String get todaySchedule;
+
+  /// No description provided for @deadlineReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Next month availability must be submitted by day 24 of this month.'**
+  String get deadlineReminder;
+
+  /// No description provided for @deadlinePassedWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning: Next month\'s availability submission deadline (24th) has passed!'**
+  String get deadlinePassedWarning;
+
+  /// No description provided for @noScheduleToday.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no scheduled shifts today.'**
+  String get noScheduleToday;
+
+  /// No description provided for @activeMeetings.
+  ///
+  /// In en, this message translates to:
+  /// **'Meetings'**
+  String get activeMeetings;
+
+  /// No description provided for @upcomingEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Events'**
+  String get upcomingEvents;
+
+  /// No description provided for @holidaysLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Holidays'**
+  String get holidaysLabel;
+
+  /// No description provided for @availabilitySubmissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Next Month\'s Availability'**
+  String get availabilitySubmissionTitle;
+
+  /// No description provided for @assignedMeetingsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Meetings ({count})'**
+  String assignedMeetingsCount(int count);
+
+  /// No description provided for @pendingReportsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Reports ({count})'**
+  String pendingReportsCount(int count);
+
+  /// No description provided for @deadlineDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability Submission Reminder'**
+  String get deadlineDialogTitle;
+
+  /// No description provided for @deadlineDialogContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Please submit your availability for next month as the 24th deadline has arrived or passed.'**
+  String get deadlineDialogContent;
+
+  /// No description provided for @goToSubmission.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Submission'**
+  String get goToSubmission;
+
+  /// No description provided for @skip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skip;
 }
 
 class _AppLocalizationsDelegate

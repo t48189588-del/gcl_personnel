@@ -785,4 +785,80 @@ class AppLocalizationsJa extends AppLocalizations {
   String logImportedCsvData(String rows) {
     return 'CSVから $rows 行のデータをインポートしました';
   }
+
+  @override
+  String get calendarOverview => 'カレンダー概要';
+
+  @override
+  String get timeSlot => 'タイムスロット';
+
+  @override
+  String get expand => '展開';
+
+  @override
+  String get collapse => '折りたたむ';
+
+  @override
+  String get allStudents => 'すべての学生';
+
+  @override
+  String get reportStatus => 'レポートステータス';
+
+  @override
+  String get filterAll => 'すべて';
+
+  @override
+  String get filterPending => '未提出';
+
+  @override
+  String get filterCompleted => '提出済';
+
+  @override
+  String get clearFilters => 'フィルタークリア';
+
+  @override
+  String get todaySchedule => '今日のスケジュール';
+
+  @override
+  String get deadlineReminder => '来月のシフト希望は今月の24日までに提出してください。';
+
+  @override
+  String get deadlinePassedWarning => '警告：来月のシフト希望提出期限（24日）を過ぎています！';
+
+  @override
+  String get noScheduleToday => '今日のシフトはありません。';
+
+  @override
+  String get activeMeetings => 'ミーティング';
+
+  @override
+  String get upcomingEvents => 'イベント';
+
+  @override
+  String get holidaysLabel => '祝日';
+
+  @override
+  String get availabilitySubmissionTitle => '来月のシフト希望提出';
+
+  @override
+  String assignedMeetingsCount(int count) {
+    return '割り当てられたミーティング ($count)';
+  }
+
+  @override
+  String pendingReportsCount(int count) {
+    return '未提出レポート ($count)';
+  }
+
+  @override
+  String get deadlineDialogTitle => 'シフト提出のリマインダー';
+
+  @override
+  String get deadlineDialogContent => '24日の締め切りになりました。来月のシフト希望を提出してください。';
+
+  @override
+  String get goToSubmission => 'シフト入力へ';
+
+  @override
+  String get skip => 'スキップ';
 }

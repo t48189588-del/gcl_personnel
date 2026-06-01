@@ -302,5 +302,43 @@
         "type": "String"
       }
     }
-  }
+  },
+  "calendarOverview": "Calendar Overview",
+  "timeSlot": "Time Slot",
+  "expand": "Expand",
+  "collapse": "Collapse",
+  "allStudents": "All Students",
+  "reportStatus": "Report Status",
+  "filterAll": "All",
+  "filterPending": "Pending",
+  "filterCompleted": "Completed",
+  "clearFilters": "Clear Filters",
+  "todaySchedule": "Today's Schedule",
+  "deadlineReminder": "Next month availability must be submitted by day 24 of this month.",
+  "deadlinePassedWarning": "Warning: Next month's availability submission deadline (24th) has passed!",
+  "noScheduleToday": "You have no scheduled shifts today.",
+  "activeMeetings": "Meetings",
+  "upcomingEvents": "Events",
+  "holidaysLabel": "Holidays",
+  "availabilitySubmissionTitle": "Submit Next Month's Availability",
+  "assignedMeetingsCount": "Assigned Meetings ({count})",
+  "@assignedMeetingsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pendingReportsCount": "Pending Reports ({count})",
+  "@pendingReportsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deadlineDialogTitle": "Availability Submission Reminder",
+  "deadlineDialogContent": "Please submit your availability for next month as the 24th deadline has arrived or passed.",
+  "goToSubmission": "Go to Submission",
+  "skip": "Skip"
 }

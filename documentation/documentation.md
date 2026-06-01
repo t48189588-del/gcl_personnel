@@ -10,7 +10,7 @@ A comprehensive Flutter web application for managing Global Center for Languages
 
 ## 1. Role Selection & Access Gateway
 
-**User Role:** Administrator, Junior Staff, Senior Staff, External Visitors, Developer
+**User Roles:** Administrator,Student Assistants (International or Japanese), Senior Staff, External Visitors, Developer
 
 **Screen:** `RoleGateScreen` - Main landing page with role selection cards
 
@@ -1219,3 +1219,259 @@ sequenceDiagram
 - System supports unlimited staff members and scheduling entries
 - Offline functionality available - application works without internet connection
 - All data stored locally on user's device (no cloud required for demo)
+--------------
+# Hand raised documentation
+## Roles
+- Main staff
+- Student Assistant
+  -   International
+  -   Japanese
+- Visitor
+
+## Process
+- Working
+  - availability scheduling
+  - report generation
+- Events
+  - meetings
+  - cultural events
+- Reservations
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor SA as Student Assistant
+    actor MS as Main Staff
+    actor HR as Human Resources
+
+    %% STAGE 1
+    Note over SA, MS: STAGE 1: Availability Submission (Process: Working)
+    SA->>MS: Submit proposed start/end (datetime) & location
+
+    %% STAGE 2
+    Note over SA, MS: STAGE 2: Confirmation
+    MS->>SA: Evaluate schedule (Approve / Pending / Reject)
+
+    %% STAGE 3 (Shared)
+    rect rgba(0, 128, 255, 0.1)
+        Note over SA, MS: STAGE 3: Execution [SHARED STAGE]
+        SA->>SA: Do assigned tasks, meetings, events, or reservations
+    end
+
+    %% STAGE 4 (Shared)
+    rect rgba(0, 128, 255, 0.1)
+        Note over SA, MS: STAGE 4: Report [SHARED STAGE]
+        SA->>MS: Report actual start/end (timestamp) & details (text)
+    end
+
+    %% STAGE 5 (Shared)
+    rect rgba(0, 128, 255, 0.1)
+        Note over MS, HR: STAGE 5: Verification & Submission [SHARED STAGE]
+        MS->>MS: Review submitted report & fix errors
+        MS->>HR: Submit finalized data to HR
+    end
+```
+
+```mermaid
+graph TB
+    %% Definitions
+    classDef student fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
+    classDef staff fill:#efebe9,stroke:#5d4037,stroke-width:2px;
+    classDef shared fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,stroke-dasharray: 5 5;
+
+    subgraph Process_Working [Process: Working]
+        direction TB
+        
+        subgraph Stage1 [Stage 1: Availability Submission]
+            A[Who: Student Assistant<br>Action: Submit start/end datetime & location]:::student
+        end
+
+        subgraph Stage2 [Stage 2: Confirmation]
+            B[Who: Main Staff<br>Action: Approve, Pending, or Reject schedule]:::staff
+        end
+    end
+
+    %% SHARED PIPELINE
+    subgraph Shared_Stages [Reusable Core Stages]
+        subgraph Stage3 [Stage 3: Execution]
+            C[Who: Student Assistant<br>Action: Tasks, meetings, reservations]:::student
+        end
+
+        subgraph Stage4 [Stage 4: Report]
+            D[Who: Student Assistant<br>Action: Log actual timestamps & text report]:::student
+        end
+
+        subgraph Stage5 [Stage 5: Verification & Submission]
+            E[Who: Main Staff<br>Action: Review, fix errors, submit to HR]:::staff
+        end
+    end
+
+    %% Connections
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+
+    %% Example of another process reusing it
+    %% subgraph Process_Event_Hosting [Process: Event Hosting]
+    %%    X[Stage 1: Setup] --> Y[Stage 2: Check-in] --> C
+    %% end
+
+```
+
+
+```mermaid
+graph LR
+    A[Role: Student Assistant] --> B[Stage 3: Shared Execution]
+    
+    click A call onRoleClick("StudentAssistant") "Click to view all student tasks"
+    click B call onStageClick("Stage3") "Click to see all processes using Stage 3"
+
+```
+
+```mermaid
+graph TB
+    %% Styling Definitions for Roles & Shared Stages
+    classDef student fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
+    classDef staff fill:#efebe9,stroke:#5d4037,stroke-width:2px;
+    classDef hybrid fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
+    classDef shared fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,stroke-dasharray: 5 5;
+
+    %% PROCESS 1: WORKING
+    subgraph Process_Working [Process: Working]
+        direction TB
+        W_Stage1[Stage 1: Availability Submission<br><b>Who:</b> Student Assistant<br>• Submit start/end datetime & location]:::student
+        W_Stage2[Stage 2: Confirmation<br><b>Who:</b> Main Staff<br>• Approve, Pending, or Reject schedule]:::staff
+        
+        W_Stage1 --> W_Stage2
+    end
+
+    %% PROCESS 2: EVENT OR MEETING
+    subgraph Process_Event [Process: Event or Meeting]
+        direction TB
+        E_Stage1[Stage 1: Proposal<br><b>Who:</b> Student or Main Staff<br>• Propose datetime, title, location, agenda, roles<br>• Meetings: forced In-Person & Online]:::hybrid
+        E_Stage2[Stage 2: Approval<br><b>Who:</b> Main Staff<br>• Approve, reject, or edit/comment]:::staff
+        E_Stage3[Stage 3: Notification / Publication<br><b>Who:</b> Main Staff<br>• Create online link for meetings<br>• Post to social media for events]:::staff
+
+        E_Stage1 --> E_Stage2
+        E_Stage2 --> E_Stage3
+    end
+
+    %% SHARED PIPELINE (Reused by both processes)
+    subgraph Shared_Stages [Reusable Core Stages]
+        Core_Stage3[Stage 3/4: Execution<br><b>Who:</b> Student and/or Main Staff<br>• Perform assigned tasks, meetings, events]:::hybrid
+        Core_Stage4[Stage 4/5: Report<br><b>Who:</b> Student Assistant<br>• Log actual timestamps & text report<br>• Upload media if event]:::student
+        Core_Stage5[Stage 5/6: Verification & Submission<br><b>Who:</b> Main Staff<br>• Review, fix errors, submit to HR]:::staff
+
+        Core_Stage3 --> Core_Stage4
+        Core_Stage4 --> Core_Stage5
+    end
+
+    %% Connecting the distinct entry processes into the Shared Pipeline
+    W_Stage2 --> Core_Stage3
+    E_Stage3 --> Core_Stage3
+
+```
+
+```mermaid
+graph TB
+    %% Styling Definitions for Roles & Shared Stages
+    classDef student fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
+    classDef staff fill:#efebe9,stroke:#5d4037,stroke-width:2px;
+    classDef visitor fill:#fff3e0,stroke:#ffb74d,stroke-width:2px;
+    classDef hybrid fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
+
+    %% PROCESS 1: WORKING
+    subgraph Process_Working [Process: Working]
+        direction TB
+        W_Stage1[Stage 1: Availability Submission<br><b>Who:</b> Student Assistant<br>• Submit start/end datetime & location]:::student
+        W_Stage2[Stage 2: Confirmation<br><b>Who:</b> Main Staff<br>• Approve, Pending, or Reject schedule]:::staff
+        
+        W_Stage1 --> W_Stage2
+    end
+
+    %% PROCESS 2: EVENT OR MEETING
+    subgraph Process_Event [Process: Event or Meeting]
+        direction TB
+        E_Stage1[Stage 1: Proposal<br><b>Who:</b> Student or Main Staff<br>• Propose datetime, title, location, agenda, roles<br>• Meetings: forced In-Person & Online]:::hybrid
+        E_Stage2[Stage 2: Approval<br><b>Who:</b> Main Staff<br>• Approve, reject, or edit/comment]:::staff
+        E_Stage3[Stage 3: Notification / Publication<br><b>Who:</b> Main Staff<br>• Create online link for meetings<br>• Post to social media for events]:::staff
+
+        E_Stage1 --> E_Stage2
+        E_Stage2 --> E_Stage3
+    end
+
+    %% PROCESS 3: RESERVATION
+    subgraph Process_Reservation [Process: Reservation]
+        direction TB
+        R_Stage1[Stage 1: Request<br><b>Who:</b> External Visitor / University Staff<br>• Send start/end timestamps, location, purpose<br>• Select target language & report request]:::visitor
+        R_Stage2[Stage 2: Assignation<br><b>Who:</b> Main Staff<br>• Match request with approved Student Availability]:::staff
+
+        R_Stage1 --> R_Stage2
+    end
+
+    %% SHARED PIPELINE (Reused by all three processes)
+    subgraph Shared_Stages [Reusable Core Stages]
+        Core_Stage3[Stage 3: Execution<br><b>Who:</b> Student and/or Main Staff<br>• Perform assigned tasks, meetings, events, or reservation duties]:::hybrid
+        Core_Stage4[Stage 4: Report<br><b>Who:</b> Student Assistant<br>• Log actual timestamps & text report<br>• Upload media if event / generate visitor report if requested]:::student
+        Core_Stage5[Stage 5: Verification & Submission<br><b>Who:</b> Main Staff<br>• Review, fix errors, submit to HR]:::staff
+
+        Core_Stage3 --> Core_Stage4
+        Core_Stage4 --> Core_Stage5
+    end
+
+    %% Connecting all three distinct entry processes into the Shared Pipeline
+    W_Stage2 --> Core_Stage3
+    E_Stage3 --> Core_Stage3
+    R_Stage2 --> Core_Stage3
+
+```
+
+```mermaid
+graph TB
+    %% 高コントラスト・アクセシビリティ対応のスタイリング定義（テキストの視認性を最優先）
+
+    %% プロセス 1: 勤務 (WORKING)
+    subgraph Process_Working [プロセス: 勤務]
+        direction TB
+        W_Stage1[ステージ 1: 勤務可能日時の提出<br><b>担当:</b> 学生アシスタント<br>• 希望開始/終了日時および勤務形態・場所の提出]:::student
+        W_Stage2[ステージ 2: 確定・承認<br><b>担当:</b> メインスタッフ<br>• スケジュールの承認、保留、または却下]:::staff
+        
+        W_Stage1 --> W_Stage2
+    end
+
+    %% プロセス 2: イベントまたは会議 (EVENT OR MEETING)
+    subgraph Process_Event [プロセス: イベントまたは会議]
+        direction TB
+        E_Stage1[ステージ 1: 企画・提案<br><b>担当:</b> 学生またはメインスタッフ<br>• 日時、タイトル、場所、議題、役割の提案<br>• 会議の場合: 区分は常に「対面＆オンライン」両方]:::hybrid
+        E_Stage2[ステージ 2: 承認・審査<br><b>担当:</b> メインスタッフ<br>• 提案の承認、却下、および編集/コメント]:::staff
+        E_Stage3[ステージ 3: 通知・告知<br><b>担当:</b> メインスタッフ<br>• 会議用オンラインリンクの作成<br>• イベント用のSNS告知・掲載]:::staff
+
+        E_Stage1 --> E_Stage2
+        E_Stage2 --> E_Stage3
+    end
+
+    %% プロセス 3: 予約 (RESERVATION)
+    subgraph Process_Reservation [プロセス: 予約]
+        direction TB
+        R_Stage1[ステージ 1: 予約リクエスト<br><b>担当:</b> 外部訪問者 / 学内・社内スタッフ<br>• 希望開始/終了日時、場所、目的の送信<br>• 対象言語の選択およびレポート要求の有無]:::visitor
+        R_Stage2[ステージ 2: 割り当て・マッチング<br><b>担当:</b> メインスタッフ<br>• 承認済みの学生勤務可能データから最適な学生を選定]:::staff
+
+        R_Stage1 --> R_Stage2
+    end
+
+    %% 共通パイプライン (3つのプロセスすべてで再利用)
+    subgraph Shared_Stages [再利用されるコアステージ]
+        Core_Stage3[ステージ 3: 実施・実行<br><b>担当:</b> 学生 および/または メインスタッフ<br>• 割り当てられた業務、会議、イベント、または予約対応の実行]:::hybrid
+        Core_Stage4[ステージ 4: レポート・報告<br><b>担当:</b> 学生アシスタント<br>• 実際の稼働タイムスタンプと詳細テキストの記録<br>• イベント時のメディア適宜アップロード / 要求時の訪問者レポート生成]:::student
+        Core_Stage5[ステージ 5: 確認および提出<br><b>担当:</b> メインスタッフ<br>• 提出されたレポートの確認、エラー修正、人事（HR）への提出]:::staff
+
+        Core_Stage3 --> Core_Stage4
+        Core_Stage4 --> Core_Stage5
+    end
+
+    %% 各プロセスから共通パイプラインへの接続
+    W_Stage2 --> Core_Stage3
+    E_Stage3 --> Core_Stage3
+    R_Stage2 --> Core_Stage3
+```

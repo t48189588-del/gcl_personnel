@@ -795,4 +795,83 @@ class AppLocalizationsEn extends AppLocalizations {
   String logImportedCsvData(String rows) {
     return 'Imported $rows data rows from CSV';
   }
+
+  @override
+  String get calendarOverview => 'Calendar Overview';
+
+  @override
+  String get timeSlot => 'Time Slot';
+
+  @override
+  String get expand => 'Expand';
+
+  @override
+  String get collapse => 'Collapse';
+
+  @override
+  String get allStudents => 'All Students';
+
+  @override
+  String get reportStatus => 'Report Status';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get filterPending => 'Pending';
+
+  @override
+  String get filterCompleted => 'Completed';
+
+  @override
+  String get clearFilters => 'Clear Filters';
+
+  @override
+  String get todaySchedule => 'Today\'s Schedule';
+
+  @override
+  String get deadlineReminder =>
+      'Next month availability must be submitted by day 24 of this month.';
+
+  @override
+  String get deadlinePassedWarning =>
+      'Warning: Next month\'s availability submission deadline (24th) has passed!';
+
+  @override
+  String get noScheduleToday => 'You have no scheduled shifts today.';
+
+  @override
+  String get activeMeetings => 'Meetings';
+
+  @override
+  String get upcomingEvents => 'Events';
+
+  @override
+  String get holidaysLabel => 'Holidays';
+
+  @override
+  String get availabilitySubmissionTitle => 'Submit Next Month\'s Availability';
+
+  @override
+  String assignedMeetingsCount(int count) {
+    return 'Assigned Meetings ($count)';
+  }
+
+  @override
+  String pendingReportsCount(int count) {
+    return 'Pending Reports ($count)';
+  }
+
+  @override
+  String get deadlineDialogTitle => 'Availability Submission Reminder';
+
+  @override
+  String get deadlineDialogContent =>
+      'Please submit your availability for next month as the 24th deadline has arrived or passed.';
+
+  @override
+  String get goToSubmission => 'Go to Submission';
+
+  @override
+  String get skip => 'Skip';
 }
