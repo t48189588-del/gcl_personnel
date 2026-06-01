@@ -339,8 +339,13 @@ class EventProposal {
   String title;
   String description;
   DateTime proposedDate;
-  String status; // proposed, approved, rejected
+  DateTime? endDate;
+  String location;
+  String comments;
+  String status; // proposed, approved, rejected, finished
   String proposerName;
+  String snsSummary;
+  List<String> photos;
 
   EventProposal({
     required this.id,
@@ -348,8 +353,13 @@ class EventProposal {
     required this.title,
     required this.description,
     required this.proposedDate,
+    this.endDate,
+    this.location = 'GCL Room',
+    this.comments = '',
     this.status = 'proposed',
     this.proposerName = '',
+    this.snsSummary = '',
+    this.photos = const [],
   });
 
   factory EventProposal.fromJson(Map<String, dynamic> json) {
@@ -359,8 +369,13 @@ class EventProposal {
       title: json['title'],
       description: json['description'],
       proposedDate: DateTime.parse(json['proposedDate']),
+      endDate: json['endDate'] != null ? DateTime.parse(json['endDate']) : null,
+      location: json['location'] ?? 'GCL Room',
+      comments: json['comments'] ?? '',
       status: json['status'] ?? 'proposed',
       proposerName: json['proposerName'] ?? '',
+      snsSummary: json['snsSummary'] ?? '',
+      photos: List<String>.from(json['photos'] ?? []),
     );
   }
 
@@ -371,8 +386,13 @@ class EventProposal {
       'title': title,
       'description': description,
       'proposedDate': proposedDate.toIso8601String(),
+      'endDate': endDate?.toIso8601String(),
+      'location': location,
+      'comments': comments,
       'status': status,
       'proposerName': proposerName,
+      'snsSummary': snsSummary,
+      'photos': photos,
     };
   }
 }

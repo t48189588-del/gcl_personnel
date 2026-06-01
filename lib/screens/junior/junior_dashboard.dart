@@ -7,6 +7,7 @@ import '../../models/models.dart';
 import '../../services/ics_service.dart';
 import 'package:intl/intl.dart';
 import '../common/app_actions.dart';
+import '../common/responsive_scaffold.dart';
 
 class JuniorDashboard extends StatefulWidget {
   const JuniorDashboard({super.key});
@@ -21,72 +22,51 @@ class _JuniorDashboardState extends State<JuniorDashboard> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
-    return Scaffold(
+    return ResponsiveScaffold(
       appBar: AppBar(
         title: Text(loc.selfServicePortal),
         actions: buildGlobalAppActions(context),
       ),
-      body: Row(
-        children: [
-          NavigationRail(
-            selectedIndex: _selectedIndex,
-            onDestinationSelected: (int index) {
-              setState(() {
-                _selectedIndex = index;
-              });
-            },
-            labelType: NavigationRailLabelType.all,
-            destinations: [
-              NavigationRailDestination(
-                icon: const Icon(Icons.calendar_today_outlined),
-                selectedIcon: const Icon(Icons.calendar_today),
-                label: Text(loc.schedule),
-              ),
-              NavigationRailDestination(
-                icon: const Icon(Icons.event_note_outlined),
-                selectedIcon: const Icon(Icons.event_note),
-                label: Text(loc.eventProposal),
-              ),
-              NavigationRailDestination(
-                icon: const Icon(Icons.person_outline),
-                selectedIcon: const Icon(Icons.person),
-                label: Text(loc.profile),
-              ),
-              NavigationRailDestination(
-                icon: const Icon(Icons.feed_outlined),
-                selectedIcon: const Icon(Icons.feed),
-                label: Text(loc.noticeBoard),
-              ),
-            ],
-          ),
-          const VerticalDivider(thickness: 1, width: 1),
-          Expanded(child: _buildBody()),
-        ],
-      ),
+      selectedIndex: _selectedIndex,
+      onDestinationSelected: (int index) {
+        setState(() {
+          _selectedIndex = index;
+        });
+      },
+      railDestinations: [
+        NavigationRailDestination(icon: const Icon(Icons.dashboard_outlined), selectedIcon: const Icon(Icons.dashboard), label: const Text('Agenda')),
+        NavigationRailDestination(icon: const Icon(Icons.event_note_outlined), selectedIcon: const Icon(Icons.event_note), label: Text(loc.eventProposal)),
+        NavigationRailDestination(icon: const Icon(Icons.person_outline), selectedIcon: const Icon(Icons.person), label: Text(loc.profile)),
+      ],
+      bottomDestinations: [
+        const NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Agenda'),
+        NavigationDestination(icon: const Icon(Icons.event_note_outlined), selectedIcon: const Icon(Icons.event_note), label: loc.eventProposal),
+        NavigationDestination(icon: const Icon(Icons.person_outline), selectedIcon: const Icon(Icons.person), label: loc.profile),
+      ],
+      body: _buildBody(),
     );
   }
 
   Widget _buildBody() {
     switch (_selectedIndex) {
-      case 0: return const _SchedulePainterView();
+      case 0: return const _AgendaView();
       case 1: return const _EventProposalView();
       case 2: return const _ProfileView();
-      case 3: return const _NoticeBoardView();
-      default: return const _SchedulePainterView();
+      default: return const _AgendaView();
     }
   }
 }
 
 enum CalendarViewType { day, week, month }
 
-class _SchedulePainterView extends StatefulWidget {
-  const _SchedulePainterView();
+class _AvailabilitySubmissionScreen extends StatefulWidget {
+  const _AvailabilitySubmissionScreen();
 
   @override
-  State<_SchedulePainterView> createState() => _SchedulePainterViewState();
+  State<_AvailabilitySubmissionScreen> createState() => _AvailabilitySubmissionScreenState();
 }
 
-class _SchedulePainterViewState extends State<_SchedulePainterView> {
+class _AvailabilitySubmissionScreenState extends State<_AvailabilitySubmissionScreen> {
   DateTime _selectedDate = DateTime(DateTime.now().year, DateTime.now().month + 1, 1);
   CalendarViewType _viewType = CalendarViewType.day;
 
@@ -97,101 +77,103 @@ class _SchedulePainterViewState extends State<_SchedulePainterView> {
     final config = provider.operatingHours;
     final staff = provider.currentJuniorStaff;
 
-    if (staff == null) return Center(child: Text(loc.noStaffLoggedIn));
+    if (staff == null) return Scaffold(appBar: AppBar(), body: Center(child: Text(loc.noStaffLoggedIn)));
 
     final dateOnly = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day);
     var holidayCheck = config.holidays.where((h) => h.date == dateOnly);
     final isHoliday = holidayCheck.isNotEmpty;
     final holidayMessage = isHoliday ? holidayCheck.first.message : '';
 
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildAttendanceBanner(loc),
-          const _PendingReportsBanner(),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(loc.nextMonthSchedule, style: Theme.of(context).textTheme.headlineSmall),
-              Row(
-                children: [
-                  OutlinedButton.icon(
-                    onPressed: () => _showFinishEmploymentDialog(context, provider, staff, loc),
-                    icon: const Icon(Icons.exit_to_app, color: Colors.red),
-                    label: Text(loc.finishEmployment, style: const TextStyle(color: Colors.red)),
-                  ),
-                  const SizedBox(width: 16),
-                  IconButton(
-                    icon: const Icon(Icons.download),
-                    tooltip: loc.exportICS,
-                    onPressed: () {
-                      final myBlocks = provider.blocks.where((b) => b.staffId == staff.id).toList();
-                      ICSService.exportToICS(staff, myBlocks);
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  SegmentedButton<CalendarViewType>(
-                    segments: [
-                      ButtonSegment(value: CalendarViewType.month, label: Text(loc.month[0].toUpperCase())),
-                      ButtonSegment(value: CalendarViewType.week, label: Text(loc.week[0].toUpperCase())),
-                      ButtonSegment(value: CalendarViewType.day, label: Text(loc.day[0].toUpperCase())),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(loc.schedule),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(loc.nextMonthSchedule, style: Theme.of(context).textTheme.headlineSmall),
+                Row(
+                  children: [
+                    OutlinedButton.icon(
+                      onPressed: () => _showFinishEmploymentDialog(context, provider, staff, loc),
+                      icon: const Icon(Icons.exit_to_app, color: Colors.red),
+                      label: Text(loc.finishEmployment, style: const TextStyle(color: Colors.red)),
+                    ),
+                    const SizedBox(width: 16),
+                    IconButton(
+                      icon: const Icon(Icons.download),
+                      tooltip: loc.exportICS,
+                      onPressed: () {
+                        final myBlocks = provider.blocks.where((b) => b.staffId == staff.id).toList();
+                        ICSService.exportToICS(staff, myBlocks);
+                      },
+                    ),
+                    const SizedBox(width: 8),
+                    SegmentedButton<CalendarViewType>(
+                      segments: [
+                        ButtonSegment(value: CalendarViewType.month, label: Text(loc.month[0].toUpperCase())),
+                        ButtonSegment(value: CalendarViewType.week, label: Text(loc.week[0].toUpperCase())),
+                        ButtonSegment(value: CalendarViewType.day, label: Text(loc.day[0].toUpperCase())),
+                      ],
+                      selected: {_viewType},
+                      onSelectionChanged: (val) => setState(() => _viewType = val.first),
+                    ),
+                    if (_viewType != CalendarViewType.month) ...[
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back_ios, size: 16),
+                        onPressed: () => setState(() {
+                          _selectedDate = _selectedDate.subtract(Duration(days: _viewType == CalendarViewType.week ? 7 : 1));
+                        }),
+                      ),
                     ],
-                    selected: {_viewType},
-                    onSelectionChanged: (val) => setState(() => _viewType = val.first),
-                  ),
-                  if (_viewType != CalendarViewType.month) ...[
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back_ios, size: 16),
-                      onPressed: () => setState(() {
-                        _selectedDate = _selectedDate.subtract(Duration(days: _viewType == CalendarViewType.week ? 7 : 1));
-                      }),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.calendar_month),
+                      label: Text(DateFormat('yyyy-MM-dd').format(_selectedDate)),
+                      onPressed: () async {
+                        final date = await showDatePicker(
+                          context: context,
+                          initialDate: _selectedDate,
+                          firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                          lastDate: DateTime.now().add(const Duration(days: 365)),
+                        );
+                        if (date != null && mounted) setState(() => _selectedDate = date);
+                      },
                     ),
+                    if (_viewType != CalendarViewType.month) ...[
+                      IconButton(
+                        icon: const Icon(Icons.arrow_forward_ios, size: 16),
+                        onPressed: () => setState(() {
+                          _selectedDate = _selectedDate.add(Duration(days: _viewType == CalendarViewType.week ? 7 : 1));
+                        }),
+                      ),
+                    ],
                   ],
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.calendar_month),
-                    label: Text(DateFormat('yyyy-MM-dd').format(_selectedDate)),
-                    onPressed: () async {
-                      final date = await showDatePicker(
-                        context: context,
-                        initialDate: _selectedDate,
-                        firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                        lastDate: DateTime.now().add(const Duration(days: 365)),
-                      );
-                      if (date != null && mounted) setState(() => _selectedDate = date);
-                    },
-                  ),
-                  if (_viewType != CalendarViewType.month) ...[
-                    IconButton(
-                      icon: const Icon(Icons.arrow_forward_ios, size: 16),
-                      onPressed: () => setState(() {
-                        _selectedDate = _selectedDate.add(Duration(days: _viewType == CalendarViewType.week ? 7 : 1));
-                      }),
-                    ),
-                  ],
-                ],
-              )
-            ],
-          ),
-          const SizedBox(height: 24),
-          if (isHoliday && _viewType == CalendarViewType.day)
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32.0),
-                child: Text(
-                  '${loc.holidayNotice}\n$holidayMessage',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.red),
-                ),
-              ),
-            )
-          else
-            Expanded(
-              child: _buildDynamicCalendar(context, provider, config, staff),
+                )
+              ],
             ),
-        ],
+            const SizedBox(height: 24),
+            if (isHoliday && _viewType == CalendarViewType.day)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(32.0),
+                  child: Text(
+                    '${loc.holidayNotice}\n$holidayMessage',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.red),
+                  ),
+                ),
+              )
+            else
+              Expanded(
+                child: _buildDynamicCalendar(context, provider, config, staff),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -540,6 +522,8 @@ class _EventProposalViewState extends State<_EventProposalView> {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
     final provider = context.watch<AppProvider>();
+    final staff = provider.currentJuniorStaff;
+
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Column(
@@ -547,6 +531,27 @@ class _EventProposalViewState extends State<_EventProposalView> {
         children: [
           Text(loc.eventProposal, style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 24),
+          Expanded(
+            flex: 4,
+            child: _buildProposalForm(context, provider, loc),
+          ),
+          const Divider(height: 32),
+          Text('Proposal History & Post-Approval Details', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 16),
+          Expanded(
+            flex: 6,
+            child: _buildHistory(context, provider, staff?.name ?? '', loc),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProposalForm(BuildContext context, AppProvider provider, AppLocalizations loc) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           TextField(controller: _titleController, decoration: InputDecoration(labelText: loc.proposalTitle, border: const OutlineInputBorder())),
           const SizedBox(height: 16),
           TextField(controller: _descController, maxLines: 3, decoration: InputDecoration(labelText: loc.proposalDescription, border: const OutlineInputBorder())),
@@ -572,7 +577,7 @@ class _EventProposalViewState extends State<_EventProposalView> {
               ),
             ],
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
           ElevatedButton(
             style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 50)),
             onPressed: () {
@@ -585,6 +590,69 @@ class _EventProposalViewState extends State<_EventProposalView> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildHistory(BuildContext context, AppProvider provider, String staffName, AppLocalizations loc) {
+    final myProposals = provider.eventProposals.where((p) => p.proposerName == staffName).toList();
+    if (myProposals.isEmpty) {
+      return Center(child: Text(loc.noEventProposals));
+    }
+    
+    return ListView.builder(
+      itemCount: myProposals.length,
+      itemBuilder: (context, index) {
+        final p = myProposals[index];
+        final isApproved = p.status == 'approved';
+
+        return Card(
+          margin: const EdgeInsets.only(bottom: 16),
+          child: ExpansionTile(
+            title: Text(p.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('Status: ${p.status.toUpperCase()} - ${DateFormat('yyyy-MM-dd').format(p.proposedDate)}'),
+            leading: Icon(
+              isApproved ? Icons.check_circle : (p.status == 'rejected' ? Icons.cancel : Icons.pending),
+              color: isApproved ? Colors.green : (p.status == 'rejected' ? Colors.red : Colors.orange),
+            ),
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Description:', style: const TextStyle(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text(p.description),
+                    const SizedBox(height: 16),
+                    if (isApproved) ...[
+                      const Divider(),
+                      Text('Post-Approval Details (For SNS)', style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor)),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        decoration: const InputDecoration(labelText: 'Event Summary for SNS', border: OutlineInputBorder()),
+                        maxLines: 2,
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          OutlinedButton.icon(icon: const Icon(Icons.camera_alt), label: const Text('Upload Photos'), onPressed: () {}),
+                          const Spacer(),
+                          ElevatedButton(
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Details saved for publication!')));
+                            },
+                            child: const Text('Save Details'),
+                          ),
+                        ],
+                      ),
+                    ]
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -801,21 +869,177 @@ class _ProfileViewState extends State<_ProfileView> {
   }
 }
 
-class _NoticeBoardView extends StatelessWidget {
-  const _NoticeBoardView();
+class _AgendaView extends StatelessWidget {
+  const _AgendaView();
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
+    final provider = context.watch<AppProvider>();
+    final staff = provider.currentJuniorStaff;
+
+    if (staff == null) return Center(child: Text(loc.noStaffLoggedIn));
+
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(loc.noticeBoard, style: Theme.of(context).textTheme.headlineSmall),
+          Text('Agenda & Notice Board', style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 24),
-          Expanded(child: Center(child: Text(loc.noAnnouncements))),
+          // Part 1: Notice Board
+          Expanded(
+            flex: 3,
+            child: _buildNoticeBoard(context, provider, staff, loc),
+          ),
+          const Divider(height: 32),
+          // Part 2: Bento Box Schedule
+          Expanded(
+            flex: 5,
+            child: _buildBentoSchedule(context, provider, staff, loc),
+          ),
+          const SizedBox(height: 24),
+          // Part 3: Submit Availability Button
+          SizedBox(
+            width: double.infinity,
+            height: 60,
+            child: ElevatedButton.icon(
+              icon: const Icon(Icons.calendar_month),
+              label: const Text('Manage Availability & Schedule'),
+              style: ElevatedButton.styleFrom(
+                textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const _AvailabilitySubmissionScreen()));
+              },
+            ),
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildNoticeBoard(BuildContext context, AppProvider provider, StaffMember staff, AppLocalizations loc) {
+    final pendingReports = provider.reports.where((r) => r.staffId == staff.id && !r.isSubmitted && r.scheduledEnd.isBefore(DateTime.now())).toList();
+    final today = DateTime.now();
+    final holidayCheck = provider.operatingHours.holidays.where((h) => h.date.year == today.year && h.date.month == today.month && h.date.day == today.day);
+    final upcomingMeetings = provider.externalMeetingRequests.where((r) => r.assignedStaffId == staff.id && r.status == 'approved' && r.requestedTime.isAfter(today)).toList();
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (holidayCheck.isNotEmpty)
+          Expanded(
+            child: Card(
+              color: Colors.red.shade50,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(children: [Icon(Icons.celebration, color: Colors.red), SizedBox(width: 8), Text('Holiday Notice', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red))]),
+                    const SizedBox(height: 8),
+                    Text(holidayCheck.first.message),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        if (pendingReports.isNotEmpty)
+          Expanded(
+            child: InkWell(
+              onTap: () { /* Future integration: Navigate to reports */ },
+              child: Card(
+                color: Colors.orange.shade50,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(children: [const Icon(Icons.warning_amber, color: Colors.orange), const SizedBox(width: 8), Text('${pendingReports.length} Pending Reports', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.orange))]),
+                      const SizedBox(height: 8),
+                      const Text('Please submit your working reports.'),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        Expanded(
+          child: Card(
+            color: Colors.blue.shade50,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Row(children: [Icon(Icons.meeting_room, color: Colors.blue), SizedBox(width: 8), Text('Upcoming Meetings', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue))]),
+                  const SizedBox(height: 8),
+                  if (upcomingMeetings.isEmpty)
+                    const Text('No upcoming meetings.')
+                  else
+                    ...upcomingMeetings.take(2).map((m) => Text('${m.name} - ${DateFormat('MM/dd HH:mm').format(m.requestedTime)}')),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBentoSchedule(BuildContext context, AppProvider provider, StaffMember staff, AppLocalizations loc) {
+    final today = DateTime.now();
+    final todayBlocks = provider.blocks.where((b) => 
+      b.staffId == staff.id && 
+      b.startTime.year == today.year && 
+      b.startTime.month == today.month && 
+      b.startTime.day == today.day
+    ).toList();
+    todayBlocks.sort((a, b) => a.startTime.compareTo(b.startTime));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Today's Schedule", style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 16),
+        if (todayBlocks.isEmpty)
+          const Expanded(child: Center(child: Text("No shifts scheduled for today.")))
+        else
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: todayBlocks.map((b) {
+                  Color bgColor;
+                  if (b.status == 'approved') bgColor = Colors.green.shade100;
+                  else if (b.status == 'rejected') bgColor = Colors.red.shade100;
+                  else bgColor = Colors.grey.shade200;
+
+                  return Container(
+                    width: 150,
+                    margin: const EdgeInsets.only(right: 16),
+                    decoration: BoxDecoration(
+                      color: bgColor,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.black12),
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(DateFormat('HH:mm').format(b.startTime), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                        Text(DateFormat('HH:mm').format(b.startTime.add(const Duration(minutes: 30))), style: const TextStyle(color: Colors.black54)),
+                        const Spacer(),
+                        Text(b.status.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                        Text(b.modality, style: const TextStyle(fontSize: 12)),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

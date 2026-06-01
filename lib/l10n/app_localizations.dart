@@ -113,13 +113,13 @@ abstract class AppLocalizations {
   /// No description provided for @seniorStaff.
   ///
   /// In en, this message translates to:
-  /// **'Senior Staff'**
+  /// **'Main Staff'**
   String get seniorStaff;
 
   /// No description provided for @juniorStaff.
   ///
   /// In en, this message translates to:
-  /// **'Junior Staff'**
+  /// **'Student Assistant'**
   String get juniorStaff;
 
   /// No description provided for @developer.
@@ -131,7 +131,7 @@ abstract class AppLocalizations {
   /// No description provided for @commanderView.
   ///
   /// In en, this message translates to:
-  /// **'Commander View - Senior Staff'**
+  /// **'Commander View - Main Staff'**
   String get commanderView;
 
   /// No description provided for @metrics.
@@ -257,7 +257,7 @@ abstract class AppLocalizations {
   /// No description provided for @selfServicePortal.
   ///
   /// In en, this message translates to:
-  /// **'Self-Service Portal - Junior Staff'**
+  /// **'Self-Service Portal - Student Assistant'**
   String get selfServicePortal;
 
   /// No description provided for @schedule.
@@ -365,7 +365,7 @@ abstract class AppLocalizations {
   /// No description provided for @upgradeToSenior.
   ///
   /// In en, this message translates to:
-  /// **'Upgrade to Senior'**
+  /// **'Upgrade to Main Staff'**
   String get upgradeToSenior;
 
   /// No description provided for @eventProposal.
@@ -491,13 +491,13 @@ abstract class AppLocalizations {
   /// No description provided for @senior.
   ///
   /// In en, this message translates to:
-  /// **'Senior'**
+  /// **'Main Staff'**
   String get senior;
 
   /// No description provided for @junior.
   ///
   /// In en, this message translates to:
-  /// **'Junior'**
+  /// **'Student Assistant'**
   String get junior;
 
   /// No description provided for @online.
@@ -539,7 +539,7 @@ abstract class AppLocalizations {
   /// No description provided for @selectJuniorProfileTitle.
   ///
   /// In en, this message translates to:
-  /// **'Select Junior Profile'**
+  /// **'Select Student Assistant Profile'**
   String get selectJuniorProfileTitle;
 
   /// No description provided for @proposalSubmitted.
@@ -983,7 +983,7 @@ abstract class AppLocalizations {
   /// No description provided for @logJuniorLogin.
   ///
   /// In en, this message translates to:
-  /// **'Junior Login: {name}'**
+  /// **'Student Assistant Login: {name}'**
   String logJuniorLogin(String name);
 
   /// No description provided for @logInvitedStaff.
@@ -995,7 +995,7 @@ abstract class AppLocalizations {
   /// No description provided for @logUpgradedSenior.
   ///
   /// In en, this message translates to:
-  /// **'Upgraded {name} to Senior'**
+  /// **'Upgraded {name} to Main Staff'**
   String logUpgradedSenior(String name);
 
   /// No description provided for @logFinishedEmployment.
@@ -1463,7 +1463,7 @@ abstract class AppLocalizations {
   /// No description provided for @weeklyLimitDescription.
   ///
   /// In en, this message translates to:
-  /// **'Specify the maximum weekly hours a junior staff member can request (leave empty for no limit).'**
+  /// **'Specify the maximum weekly hours a Student Assistant can request (leave empty for no limit).'**
   String get weeklyLimitDescription;
 
   /// No description provided for @hoursSuffix.
@@ -1531,6 +1531,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Imported {rows} data rows from CSV'**
   String logImportedCsvData(String rows);
+
+  /// No description provided for @calendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get calendar;
+
+  /// No description provided for @tasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks'**
+  String get tasks;
+
+  /// No description provided for @eventStartTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Time'**
+  String get eventStartTime;
+
+  /// No description provided for @eventEndTime.
+  ///
+  /// In en, this message translates to:
+  /// **'End Time'**
+  String get eventEndTime;
+
+  /// No description provided for @eventLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get eventLocation;
+
+  /// No description provided for @eventComments.
+  ///
+  /// In en, this message translates to:
+  /// **'Comments (Optional)'**
+  String get eventComments;
+
+  /// No description provided for @eventDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Details'**
+  String get eventDetails;
+
+  /// No description provided for @eventLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Logs'**
+  String get eventLogs;
+
+  /// No description provided for @pendingApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Approval'**
+  String get pendingApproval;
+
+  /// No description provided for @studentAssistant.
+  ///
+  /// In en, this message translates to:
+  /// **'Student Assistant'**
+  String get studentAssistant;
+
+  /// No description provided for @mainStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Main Staff'**
+  String get mainStaff;
+
+  /// No description provided for @reservation.
+  ///
+  /// In en, this message translates to:
+  /// **'Reservation'**
+  String get reservation;
+
+  /// No description provided for @noReservation.
+  ///
+  /// In en, this message translates to:
+  /// **'No Reservation'**
+  String get noReservation;
+
+  /// No description provided for @todaySchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Schedule'**
+  String get todaySchedule;
+
+  /// No description provided for @agendaNoticeBoard.
+  ///
+  /// In en, this message translates to:
+  /// **'Agenda & Notice Board'**
+  String get agendaNoticeBoard;
+
+  /// No description provided for @manageAvailability.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Availability & Schedule'**
+  String get manageAvailability;
+
+  /// No description provided for @proposalHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Proposal History & Post-Approval Details'**
+  String get proposalHistory;
+
+  /// No description provided for @holidayNoticeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Holiday Notice'**
+  String get holidayNoticeLabel;
+
+  /// No description provided for @pendingReportsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Reports'**
+  String get pendingReportsLabel;
+
+  /// No description provided for @upcomingMeetings.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Meetings'**
+  String get upcomingMeetings;
+
+  /// No description provided for @noUpcomingMeetings.
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming meetings.'**
+  String get noUpcomingMeetings;
+
+  /// No description provided for @noShiftsToday.
+  ///
+  /// In en, this message translates to:
+  /// **'No shifts scheduled for today.'**
+  String get noShiftsToday;
+
+  /// No description provided for @postApprovalSNS.
+  ///
+  /// In en, this message translates to:
+  /// **'Post-Approval Details (For SNS)'**
+  String get postApprovalSNS;
+
+  /// No description provided for @eventSummarySNS.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Summary for SNS'**
+  String get eventSummarySNS;
+
+  /// No description provided for @uploadPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Photos'**
+  String get uploadPhotos;
+
+  /// No description provided for @saveDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Details'**
+  String get saveDetails;
+
+  /// No description provided for @detailsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Details saved for publication!'**
+  String get detailsSaved;
+
+  /// No description provided for @descriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get descriptionLabel;
+
+  /// No description provided for @gclRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'GCL Room'**
+  String get gclRoom;
+
+  /// No description provided for @submittedReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted Reports'**
+  String get submittedReports;
+
+  /// No description provided for @noSubmittedReports.
+  ///
+  /// In en, this message translates to:
+  /// **'No submitted reports yet.'**
+  String get noSubmittedReports;
+
+  /// No description provided for @finished.
+  ///
+  /// In en, this message translates to:
+  /// **'Finished'**
+  String get finished;
+
+  /// No description provided for @weeklyHoursLimitHintShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Set limit (hours/week)'**
+  String get weeklyHoursLimitHintShort;
 }
 
 class _AppLocalizationsDelegate

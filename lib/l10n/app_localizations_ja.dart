@@ -15,16 +15,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get selectYourRole => '役割を選択してください';
 
   @override
-  String get seniorStaff => 'シニアスタッフ';
+  String get seniorStaff => 'メインスタッフ';
 
   @override
-  String get juniorStaff => 'ジュニアスタッフ';
+  String get juniorStaff => '学生アシスタント';
 
   @override
   String get developer => '開発者';
 
   @override
-  String get commanderView => 'コマンダービュー - シニアスタッフ';
+  String get commanderView => 'コマンダービュー - メインスタッフ';
 
   @override
   String get metrics => 'メトリクス';
@@ -87,7 +87,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get emailLabel => 'メールアドレス';
 
   @override
-  String get selfServicePortal => 'セルフサービス - ジュニアスタッフ';
+  String get selfServicePortal => 'セルフサービス - 学生アシスタント';
 
   @override
   String get schedule => 'スケジュール';
@@ -141,7 +141,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get next => '次へ';
 
   @override
-  String get upgradeToSenior => 'シニアに昇進';
+  String get upgradeToSenior => 'メインスタッフに昇進';
 
   @override
   String get eventProposal => 'イベント提案';
@@ -204,10 +204,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get openInviteLink => '招待リンクを開く';
 
   @override
-  String get senior => 'シニア';
+  String get senior => 'メインスタッフ';
 
   @override
-  String get junior => 'ジュニア';
+  String get junior => '学生アシスタント';
 
   @override
   String get online => 'オンライン';
@@ -230,7 +230,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get selectJuniorProfileTitle => 'ジュニアプロファイルを選択';
+  String get selectJuniorProfileTitle => '学生アシスタントプロファイルを選択';
 
   @override
   String get proposalSubmitted => '提案が送信されました！';
@@ -458,7 +458,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String logJuniorLogin(String name) {
-    return 'ジュニアログイン: $name';
+    return '学生アシスタントログイン: $name';
   }
 
   @override
@@ -468,7 +468,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String logUpgradedSenior(String name) {
-    return '$name をシニアにアップグレードしました';
+    return '$name をメインスタッフにアップグレードしました';
   }
 
   @override
@@ -744,7 +744,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get weeklyLimitDescription =>
-      'ジュニアスタッフが申請できる週あたりの最大時間を指定してください（空欄の場合は制限なし）。';
+      '学生アシスタントが申請できる週あたりの最大時間を指定してください（空欄の場合は制限なし）。';
 
   @override
   String get hoursSuffix => '時間';
@@ -785,4 +785,103 @@ class AppLocalizationsJa extends AppLocalizations {
   String logImportedCsvData(String rows) {
     return 'CSVから $rows 行のデータをインポートしました';
   }
+
+  @override
+  String get calendar => 'カレンダー';
+
+  @override
+  String get tasks => 'タスク';
+
+  @override
+  String get eventStartTime => '開始時間';
+
+  @override
+  String get eventEndTime => '終了時間';
+
+  @override
+  String get eventLocation => '場所';
+
+  @override
+  String get eventComments => 'コメント（任意）';
+
+  @override
+  String get eventDetails => 'イベント詳細';
+
+  @override
+  String get eventLogs => 'イベントログ';
+
+  @override
+  String get pendingApproval => '承認待ち';
+
+  @override
+  String get studentAssistant => '学生アシスタント';
+
+  @override
+  String get mainStaff => 'メインスタッフ';
+
+  @override
+  String get reservation => '予約';
+
+  @override
+  String get noReservation => '予約なし';
+
+  @override
+  String get todaySchedule => '本日のスケジュール';
+
+  @override
+  String get agendaNoticeBoard => 'アジェンダ＆掲示板';
+
+  @override
+  String get manageAvailability => 'シフト・スケジュール管理';
+
+  @override
+  String get proposalHistory => '提案履歴と承認後の詳細';
+
+  @override
+  String get holidayNoticeLabel => '休日のお知らせ';
+
+  @override
+  String get pendingReportsLabel => '未提出の報告書';
+
+  @override
+  String get upcomingMeetings => '今後の面談';
+
+  @override
+  String get noUpcomingMeetings => '今後の面談はありません。';
+
+  @override
+  String get noShiftsToday => '本日のシフトはありません。';
+
+  @override
+  String get postApprovalSNS => '承認後の詳細（SNS用）';
+
+  @override
+  String get eventSummarySNS => 'SNS用イベント概要';
+
+  @override
+  String get uploadPhotos => '写真をアップロード';
+
+  @override
+  String get saveDetails => '詳細を保存';
+
+  @override
+  String get detailsSaved => '情報が保存されました！';
+
+  @override
+  String get descriptionLabel => '説明';
+
+  @override
+  String get gclRoom => 'GCL教室';
+
+  @override
+  String get submittedReports => '提出済み報告書';
+
+  @override
+  String get noSubmittedReports => '提出済みの報告書はありません。';
+
+  @override
+  String get finished => '完了';
+
+  @override
+  String get weeklyHoursLimitHintShort => '上限時間（時間/週）を入力';
 }

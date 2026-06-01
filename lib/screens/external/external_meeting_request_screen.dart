@@ -87,6 +87,8 @@ class _ExternalMeetingRequestScreenState extends State<ExternalMeetingRequestScr
     return languages.toList()..sort();
   }
 
+  int _currentStep = 0;
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AppProvider>();
@@ -102,112 +104,137 @@ class _ExternalMeetingRequestScreenState extends State<ExternalMeetingRequestScr
       ),
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 600),
+          constraints: const BoxConstraints(maxWidth: 800),
           child: Card(
             margin: const EdgeInsets.all(24),
             child: Padding(
-              padding: const EdgeInsets.all(32.0),
+              padding: const EdgeInsets.all(16.0),
               child: Form(
                 key: _formKey,
-                child: ListView(
-                  shrinkWrap: true,
-                  children: [
-                    Text(loc.scheduleMeetingWithGCL, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 24),
-                    DropdownButtonFormField<String>(
-                      decoration: InputDecoration(labelText: loc.meetingType, border: const OutlineInputBorder()),
-                      value: _meetingType,
-                      items: [
-                        DropdownMenuItem(value: 'Online', child: Text(loc.onlineTeams)),
-                        DropdownMenuItem(value: 'In Person', child: Text(loc.inPerson)),
-                      ],
-                      onChanged: (val) => setState(() => _meetingType = val!),
+                child: Stepper(
+                  type: StepperType.vertical,
+                  currentStep: _currentStep,
+                  onStepContinue: () {
+                    if (_currentStep < 2) {
+                      setState(() => _currentStep += 1);
+                    } else {
+                      if (_formKey.currentState!.validate()) {
+                        final request = ExternalMeetingRequest(
+                          id: const Uuid().v4(),
+                          meetingType: _meetingType,
+                          name: _nameController.text,
+                          department: _departmentController.text,
+                          studyYear: _studyYear,
+                          purpose: _purpose,
+                          language: _selectedLanguage!,
+                          requestedDate: _selectedDate!,
+                          requestedTime: _selectedTime!,
+                        );
+                        provider.addExternalMeetingRequest(request);
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.meetingSubmittedSuccess)));
+                        Navigator.pop(context);
+                      }
+                    }
+                  },
+                  onStepCancel: () {
+                    if (_currentStep > 0) {
+                      setState(() => _currentStep -= 1);
+                    }
+                  },
+                  steps: [
+                    Step(
+                      title: Text(loc.meetingType),
+                      isActive: _currentStep >= 0,
+                      content: Column(
+                        children: [
+                          DropdownButtonFormField<String>(
+                            decoration: InputDecoration(labelText: loc.meetingType, border: const OutlineInputBorder()),
+                            value: _meetingType,
+                            items: [
+                              DropdownMenuItem(value: 'Online', child: Text(loc.onlineTeams)),
+                              DropdownMenuItem(value: 'In Person', child: Text(loc.inPerson)),
+                            ],
+                            onChanged: (val) => setState(() => _meetingType = val!),
+                          ),
+                          const SizedBox(height: 16),
+                          DropdownButtonFormField<String>(
+                            decoration: InputDecoration(labelText: loc.purpose, border: const OutlineInputBorder()),
+                            value: _purpose,
+                            items: _purposes.map((p) => DropdownMenuItem(value: p, child: Text(_localizePurpose(p, loc)))).toList(),
+                            onChanged: (val) => setState(() => _purpose = val!),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: InputDecoration(labelText: loc.name, border: const OutlineInputBorder()),
-                      validator: (val) => val == null || val.isEmpty ? loc.pleaseEnterName : null,
+                    Step(
+                      title: Text(loc.personalProfile),
+                      isActive: _currentStep >= 1,
+                      content: Column(
+                        children: [
+                          TextFormField(
+                            controller: _nameController,
+                            decoration: InputDecoration(labelText: loc.name, border: const OutlineInputBorder()),
+                            validator: (val) => val == null || val.isEmpty ? loc.pleaseEnterName : null,
+                          ),
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: _departmentController,
+                            decoration: InputDecoration(labelText: loc.department, border: const OutlineInputBorder()),
+                            validator: (val) => val == null || val.isEmpty ? loc.pleaseEnterDepartment : null,
+                          ),
+                          const SizedBox(height: 16),
+                          DropdownButtonFormField<String>(
+                            decoration: InputDecoration(labelText: loc.studyYear, border: const OutlineInputBorder()),
+                            value: _studyYear,
+                            items: _studyYears.map((y) => DropdownMenuItem(value: y, child: Text(_localizeStudyYear(y, loc)))).toList(),
+                            onChanged: (val) => setState(() => _studyYear = val!),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _departmentController,
-                      decoration: InputDecoration(labelText: loc.department, border: const OutlineInputBorder()),
-                      validator: (val) => val == null || val.isEmpty ? loc.pleaseEnterDepartment : null,
-                    ),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<String>(
-                      decoration: InputDecoration(labelText: loc.studyYear, border: const OutlineInputBorder()),
-                      value: _studyYear,
-                      items: _studyYears.map((y) => DropdownMenuItem(value: y, child: Text(_localizeStudyYear(y, loc)))).toList(),
-                      onChanged: (val) => setState(() => _studyYear = val!),
-                    ),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<String>(
-                      decoration: InputDecoration(labelText: loc.purpose, border: const OutlineInputBorder()),
-                      value: _purpose,
-                      items: _purposes.map((p) => DropdownMenuItem(value: p, child: Text(_localizePurpose(p, loc)))).toList(),
-                      onChanged: (val) => setState(() => _purpose = val!),
-                    ),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<DateTime>(
-                      decoration: InputDecoration(labelText: loc.date, border: const OutlineInputBorder()),
-                      value: _selectedDate,
-                      items: availableDates.map((d) => DropdownMenuItem(value: d, child: Text(DateFormat('yyyy-MM-dd').format(d)))).toList(),
-                      onChanged: (val) {
-                        setState(() {
-                          _selectedDate = val;
-                          _selectedTime = null;
-                          _selectedLanguage = null;
-                        });
-                      },
-                      validator: (val) => val == null ? loc.pleaseSelectDate : null,
-                    ),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<DateTime>(
-                      decoration: InputDecoration(labelText: loc.timeBlock, border: const OutlineInputBorder()),
-                      value: _selectedTime,
-                      items: availableTimes.map((t) => DropdownMenuItem(value: t, child: Text('${DateFormat('HH:mm').format(t)} - ${DateFormat('HH:mm').format(t.add(const Duration(minutes: 30)))}'))).toList(),
-                      onChanged: availableTimes.isEmpty ? null : (val) {
-                        setState(() {
-                          _selectedTime = val;
-                          _selectedLanguage = null;
-                        });
-                      },
-                      validator: (val) => val == null ? loc.pleaseSelectTime : null,
-                    ),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<String>(
-                      decoration: InputDecoration(labelText: loc.language, border: const OutlineInputBorder()),
-                      value: _selectedLanguage,
-                      items: availableLanguages.map((l) => DropdownMenuItem(value: l, child: Text(l))).toList(),
-                      onChanged: availableLanguages.isEmpty ? null : (val) {
-                        setState(() => _selectedLanguage = val);
-                      },
-                      validator: (val) => val == null ? loc.pleaseSelectLanguage : null,
-                    ),
-                    const SizedBox(height: 32),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 50)),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          final request = ExternalMeetingRequest(
-                            id: const Uuid().v4(),
-                            meetingType: _meetingType,
-                            name: _nameController.text,
-                            department: _departmentController.text,
-                            studyYear: _studyYear,
-                            purpose: _purpose,
-                            language: _selectedLanguage!,
-                            requestedDate: _selectedDate!,
-                            requestedTime: _selectedTime!,
-                          );
-                          provider.addExternalMeetingRequest(request);
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.meetingSubmittedSuccess)));
-                          Navigator.pop(context);
-                        }
-                      },
-                      child: Text(loc.submitRequest),
+                    Step(
+                      title: Text(loc.schedule),
+                      isActive: _currentStep >= 2,
+                      content: Column(
+                        children: [
+                          DropdownButtonFormField<DateTime>(
+                            decoration: InputDecoration(labelText: loc.date, border: const OutlineInputBorder()),
+                            value: _selectedDate,
+                            items: availableDates.map((d) => DropdownMenuItem(value: d, child: Text(DateFormat('yyyy-MM-dd').format(d)))).toList(),
+                            onChanged: (val) {
+                              setState(() {
+                                _selectedDate = val;
+                                _selectedTime = null;
+                                _selectedLanguage = null;
+                              });
+                            },
+                            validator: (val) => val == null ? loc.pleaseSelectDate : null,
+                          ),
+                          const SizedBox(height: 16),
+                          DropdownButtonFormField<DateTime>(
+                            decoration: InputDecoration(labelText: loc.timeBlock, border: const OutlineInputBorder()),
+                            value: _selectedTime,
+                            items: availableTimes.map((t) => DropdownMenuItem(value: t, child: Text('${DateFormat('HH:mm').format(t)} - ${DateFormat('HH:mm').format(t.add(const Duration(minutes: 30)))}'))).toList(),
+                            onChanged: availableTimes.isEmpty ? null : (val) {
+                              setState(() {
+                                _selectedTime = val;
+                                _selectedLanguage = null;
+                              });
+                            },
+                            validator: (val) => val == null ? loc.pleaseSelectTime : null,
+                          ),
+                          const SizedBox(height: 16),
+                          DropdownButtonFormField<String>(
+                            decoration: InputDecoration(labelText: loc.language, border: const OutlineInputBorder()),
+                            value: _selectedLanguage,
+                            items: availableLanguages.map((l) => DropdownMenuItem(value: l, child: Text(l))).toList(),
+                            onChanged: availableLanguages.isEmpty ? null : (val) {
+                              setState(() => _selectedLanguage = val);
+                            },
+                            validator: (val) => val == null ? loc.pleaseSelectLanguage : null,
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -219,3 +246,4 @@ class _ExternalMeetingRequestScreenState extends State<ExternalMeetingRequestScr
     );
   }
 }
+

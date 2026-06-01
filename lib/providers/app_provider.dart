@@ -189,7 +189,7 @@ class AppProvider with ChangeNotifier {
   }
 
   // --- Junior Methods ---
-  void proposeEvent(String title, String description, DateTime date) {
+  void proposeEvent(String title, String description, DateTime date, {DateTime? endDate, String location = 'GCL Room'}) {
     if (_currentJuniorStaff == null) return;
     var proposal = EventProposal(
       id: const Uuid().v4(),
@@ -197,6 +197,8 @@ class AppProvider with ChangeNotifier {
       title: title,
       description: description,
       proposedDate: date,
+      endDate: endDate,
+      location: location,
       proposerName: _currentJuniorStaff!.name,
     );
     _eventProposals.add(proposal);
@@ -305,10 +307,38 @@ class AppProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void updateEventProposalStatus(String id, String status) {
+  void updateEventProposalStatus(String id, String status, {String? comments}) {
     final index = _eventProposals.indexWhere((p) => p.id == id);
     if (index != -1) {
       _eventProposals[index].status = status;
+      if (comments != null) {
+        _eventProposals[index].comments = comments;
+      }
+      HiveService.saveProposal(_eventProposals[index]);
+      LoggerService.log('Action', 'logUpdatedProposalStatus|id=$id|status=$status');
+      notifyListeners();
+    }
+  }
+
+  void saveEventProposalDetails({
+    required String id,
+    required DateTime proposedDate,
+    required DateTime? endDate,
+    required String location,
+    required String comments,
+    required String status,
+    required String snsSummary,
+    required List<String> photos,
+  }) {
+    final index = _eventProposals.indexWhere((p) => p.id == id);
+    if (index != -1) {
+      _eventProposals[index].proposedDate = proposedDate;
+      _eventProposals[index].endDate = endDate;
+      _eventProposals[index].location = location;
+      _eventProposals[index].comments = comments;
+      _eventProposals[index].status = status;
+      _eventProposals[index].snsSummary = snsSummary;
+      _eventProposals[index].photos = photos;
       HiveService.saveProposal(_eventProposals[index]);
       LoggerService.log('Action', 'logUpdatedProposalStatus|id=$id|status=$status');
       notifyListeners();

@@ -7,6 +7,7 @@ import '../../services/excel_service.dart';
 import 'package:intl/intl.dart';
 import '../common/app_actions.dart';
 import '../common/setup_profile_screen.dart';
+import '../common/responsive_scaffold.dart';
 import 'chart_visualization_tab.dart';
 import '../../services/social_dashboard_tab.dart';
 import '../../services/logger_service.dart';
@@ -28,7 +29,7 @@ class _SeniorDashboardState extends State<SeniorDashboard> {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
     final provider = context.read<AppProvider>();
-    return Scaffold(
+    return ResponsiveScaffold(
       appBar: AppBar(
         title: Text(loc.commanderView),
         actions: [
@@ -63,80 +64,41 @@ class _SeniorDashboardState extends State<SeniorDashboard> {
           const SizedBox(width: 20),
         ],
       ),
-      body: Row(
-        children: [
-          NavigationRail(
-            selectedIndex: _selectedIndex,
-            onDestinationSelected: (int index) {
-              setState(() {
-                _selectedIndex = index;
-              });
-            },
-            labelType: NavigationRailLabelType.all,
-            destinations: [
-              NavigationRailDestination(
-                icon: const Icon(Icons.dashboard_outlined),
-                selectedIcon: const Icon(Icons.dashboard),
-                label: Text(loc.metrics),
-              ),
-              NavigationRailDestination(
-                icon: const Icon(Icons.settings_outlined),
-                selectedIcon: const Icon(Icons.settings),
-                label: Text(loc.guardrails),
-              ),
-              NavigationRailDestination(
-                icon: const Icon(Icons.assignment_outlined),
-                selectedIcon: const Icon(Icons.assignment),
-                label: Text(loc.workingReports),
-              ),
-              NavigationRailDestination(
-                icon: const Icon(Icons.check_circle_outline),
-                selectedIcon: const Icon(Icons.check_circle),
-                label: Text(loc.approve),
-              ),
-              NavigationRailDestination(
-                icon: const Icon(Icons.lightbulb_outline),
-                selectedIcon: const Icon(Icons.lightbulb),
-                label: Text(loc.eventProposal),
-              ),
-              NavigationRailDestination(
-                icon: const Icon(Icons.meeting_room_outlined),
-                selectedIcon: const Icon(Icons.meeting_room),
-                label: Text(loc.meetingRequests),
-              ),
-              NavigationRailDestination(
-                icon: const Icon(Icons.show_chart_outlined),
-                selectedIcon: const Icon(Icons.show_chart),
-                label: Text(loc.charts),
-              ),
-              NavigationRailDestination(
-                icon: const Icon(Icons.bar_chart_outlined),
-                selectedIcon: const Icon(Icons.bar_chart),
-                label: Text(loc.socialMetrics),
-              ),
-            ],
-          ),
-          const VerticalDivider(thickness: 1, width: 1),
-          Expanded(
-            child: _buildBody(),
-          ),
-        ],
-      ),
+      selectedIndex: _selectedIndex,
+      onDestinationSelected: (int index) {
+        setState(() {
+          _selectedIndex = index;
+        });
+      },
+      railDestinations: [
+        NavigationRailDestination(icon: const Icon(Icons.check_circle_outline), selectedIcon: const Icon(Icons.check_circle), label: Text(loc.approve)),
+        NavigationRailDestination(icon: const Icon(Icons.lightbulb_outline), selectedIcon: const Icon(Icons.lightbulb), label: Text(loc.eventProposal)),
+        NavigationRailDestination(icon: const Icon(Icons.assignment_outlined), selectedIcon: const Icon(Icons.assignment), label: Text(loc.workingReports)),
+        NavigationRailDestination(icon: const Icon(Icons.meeting_room_outlined), selectedIcon: const Icon(Icons.meeting_room), label: Text(loc.meetingRequests)),
+        NavigationRailDestination(icon: const Icon(Icons.dashboard_outlined), selectedIcon: const Icon(Icons.dashboard), label: Text(loc.metrics)),
+        const NavigationRailDestination(icon: Icon(Icons.info_outline), selectedIcon: Icon(Icons.info), label: Text('GCL Info')),
+      ],
+      bottomDestinations: [
+        NavigationDestination(icon: const Icon(Icons.check_circle_outline), selectedIcon: const Icon(Icons.check_circle), label: loc.approve),
+        NavigationDestination(icon: const Icon(Icons.lightbulb_outline), selectedIcon: const Icon(Icons.lightbulb), label: loc.eventProposal),
+        NavigationDestination(icon: const Icon(Icons.assignment_outlined), selectedIcon: const Icon(Icons.assignment), label: loc.workingReports),
+        NavigationDestination(icon: const Icon(Icons.meeting_room_outlined), selectedIcon: const Icon(Icons.meeting_room), label: loc.meetingRequests),
+        NavigationDestination(icon: const Icon(Icons.dashboard_outlined), selectedIcon: const Icon(Icons.dashboard), label: loc.metrics),
+        const NavigationDestination(icon: Icon(Icons.info_outline), selectedIcon: Icon(Icons.info), label: 'GCL Info'),
+      ],
+      body: _buildBody(),
     );
   }
 
   Widget _buildBody() {
     switch (_selectedIndex) {
-      case 0: return const _MetricsView();
-      case 1: return const _GuardrailsView();
+      case 0: return const _ApprovalTab();
+      case 1: return const _EventProposalsTab();
       case 2: return const _WorkingReportsView();
-      case 3: return const _ApprovalTab();
-      case 4: return const _EventProposalsTab();
-      case 5: return const _MeetingRequestsTab();
-      case 6: return const ChartVisualizationTab();
-      case 7: return const SocialDashboardTab();
-      case 8: return const _LogView();
-      default: return const _MetricsView();
+      case 3: return const _ExternalMeetingRequestsView();
+      case 4: return const _MetricsView();
+      case 5: return const _GuardrailsView();
+      default: return const _ApprovalTab();
     }
   }
 }
@@ -234,6 +196,8 @@ class _MetricsViewState extends State<_MetricsView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SocialDashboardTab(),
+          const SizedBox(height: 24),
           Row(
             children: [
               Expanded(
@@ -503,6 +467,49 @@ class _GuardrailsViewState extends State<_GuardrailsView> {
                 ),
               ),
             ),
+            const SizedBox(height: 48),
+            Text('GCL Information', style: Theme.of(context).textTheme.headlineSmall),
+            const SizedBox(height: 16),
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(child: TextFormField(decoration: const InputDecoration(labelText: 'Address', prefixIcon: Icon(Icons.location_on), border: OutlineInputBorder()), initialValue: 'Kyushu Institute of Technology, Iizuka')),
+                        const SizedBox(width: 16),
+                        Expanded(child: TextFormField(decoration: const InputDecoration(labelText: 'Phone', prefixIcon: Icon(Icons.phone), border: OutlineInputBorder()), initialValue: '+81-123-456-789')),
+                        const SizedBox(width: 16),
+                        Expanded(child: TextFormField(decoration: const InputDecoration(labelText: 'Email', prefixIcon: Icon(Icons.email), border: OutlineInputBorder()), initialValue: 'contact@gclkyutech.jp')),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(child: TextFormField(decoration: const InputDecoration(labelText: 'YouTube Link', prefixIcon: Icon(Icons.play_circle_filled, color: Colors.red), border: OutlineInputBorder()), initialValue: 'https://youtube.com/c/gclkyutech')),
+                        const SizedBox(width: 16),
+                        Expanded(child: TextFormField(decoration: const InputDecoration(labelText: 'Instagram Link', prefixIcon: Icon(Icons.camera_alt, color: Colors.purple), border: OutlineInputBorder()), initialValue: 'https://instagram.com/gclkyutech')),
+                        const SizedBox(width: 16),
+                        Expanded(child: TextFormField(decoration: const InputDecoration(labelText: 'X (Twitter) Link', prefixIcon: Icon(Icons.alternate_email, color: Colors.black), border: OutlineInputBorder()), initialValue: 'https://x.com/gclkyutech')),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('GCL Information Updated Successfully')));
+                        },
+                        child: const Text('Save Information'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -596,6 +603,44 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
     final provider = context.watch<AppProvider>();
     final juniors = provider.staff.where((s) => !s.isSenior && s.isSetupComplete).toList();
 
+    final pendingReports = <WorkingReport>[];
+    for (var j in juniors) {
+      final unsubmitted = provider.reports.where((r) => r.staffId == j.id && !r.isSubmitted && r.scheduledEnd.isBefore(DateTime.now())).toList();
+      pendingReports.addAll(unsubmitted);
+    }
+    
+    final bool showPendingTab = pendingReports.length > 3;
+
+    if (showPendingTab) {
+      return DefaultTabController(
+        length: 2,
+        child: Column(
+          children: [
+            TabBar(
+              labelColor: Theme.of(context).primaryColor,
+              unselectedLabelColor: Colors.grey,
+              tabs: const [
+                Tab(text: "Calendar View"),
+                Tab(text: "Pending Reports"),
+              ],
+            ),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  _buildCalendarTab(context, provider, juniors, loc),
+                  _buildPendingTab(context, provider, pendingReports, loc),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return _buildCalendarTab(context, provider, juniors, loc);
+    }
+  }
+
+  Widget _buildCalendarTab(BuildContext context, AppProvider provider, List<StaffMember> juniors, AppLocalizations loc) {
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Column(
@@ -605,6 +650,14 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
             children: [
               Text(loc.workingReports, style: Theme.of(context).textTheme.headlineSmall),
               const Spacer(),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.download),
+                label: const Text("Export All Juniors"),
+                onPressed: PlatformHelper.isWeb ? () {
+                  ExcelService.exportAllStaffWorkingReports(juniors, provider.reports, loc);
+                } : null,
+              ),
+              const SizedBox(width: 8),
               if (_selectedStaff != null)
                 ElevatedButton.icon(
                   icon: const Icon(Icons.download),
@@ -632,7 +685,6 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
                 icon: const Icon(Icons.calendar_month),
                 label: Text(DateFormat.yMMMM(Localizations.localeOf(context).toString()).format(_viewMonth)),
                 onPressed: () async {
-                  // Simplified month picker via year picker
                   final d = await showDatePicker(
                     context: context,
                     initialDate: _viewMonth,
@@ -655,6 +707,40 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
     );
   }
 
+  Widget _buildPendingTab(BuildContext context, AppProvider provider, List<WorkingReport> pendingReports, AppLocalizations loc) {
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("Missing Working Reports", style: Theme.of(context).textTheme.headlineSmall),
+          const SizedBox(height: 24),
+          Expanded(
+            child: SingleChildScrollView(
+              child: DataTable(
+                columns: const [
+                  DataColumn(label: Text("Date")),
+                  DataColumn(label: Text("Staff Name")),
+                  DataColumn(label: Text("Scheduled Time")),
+                  DataColumn(label: Text("Action")),
+                ],
+                rows: pendingReports.map((r) {
+                  final staff = provider.staff.firstWhere((s) => s.id == r.staffId, orElse: () => StaffMember(id: '', name: 'Unknown', nativeLanguage: '', degree: '', modalityPreference: '', availabilityRate: 0.0, eventsParticipation: 0, providedAssistance: 0));
+                  return DataRow(cells: [
+                    DataCell(Text(DateFormat.yMd(Localizations.localeOf(context).toString()).format(r.reportDate))),
+                    DataCell(Text(staff.name)),
+                    DataCell(Text('${DateFormat('HH:mm').format(r.scheduledStart)} - ${DateFormat('HH:mm').format(r.scheduledEnd)}')),
+                    DataCell(ElevatedButton(onPressed: () {}, child: const Text("Remind"))),
+                  ]);
+                }).toList(),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildReportCalendar(BuildContext context, AppProvider provider) {
     final loc = AppLocalizations.of(context)!;
     final daysInMonth = DateTime(_viewMonth.year, _viewMonth.month + 1, 0).day;
@@ -671,7 +757,6 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
         final day = index + 1;
         final date = DateTime(_viewMonth.year, _viewMonth.month, day);
         
-        // Find if they had a shift
         final hadShift = provider.blocks.any((b) => 
           b.staffId == _selectedStaff!.id && 
           b.startTime.year == date.year &&
@@ -679,7 +764,6 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
           b.startTime.day == date.day
         );
 
-        // Find if report exists
         final report = provider.reports.where((r) => 
           r.staffId == _selectedStaff!.id && 
           r.reportDate.year == date.year &&
@@ -695,7 +779,6 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
             bgColor = Colors.green.shade100;
             statusText = loc.filledReport;
           } else {
-            // Check if it's in the past
             if (date.isBefore(DateTime.now())) {
               bgColor = Colors.red.shade100;
               statusText = loc.missingReport;
@@ -1087,13 +1170,329 @@ void _showFinishEmploymentDialog(BuildContext context, AppProvider provider, Sta
   );
 }
 
-class _EventProposalsTab extends StatelessWidget {
+class _EventProposalsTab extends StatefulWidget {
   const _EventProposalsTab();
+
+  @override
+  State<_EventProposalsTab> createState() => _EventProposalsTabState();
+}
+
+class _EventProposalsTabState extends State<_EventProposalsTab> {
+  String? _selectedProposalId;
+
+  // Form Fields
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _commentsController = TextEditingController();
+  final _snsController = TextEditingController();
+  DateTime? _startDate;
+  DateTime? _endDate;
+  String _location = 'GCL Room';
+  String _status = 'proposed';
+  List<String> _photos = [];
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _commentsController.dispose();
+    _snsController.dispose();
+    super.dispose();
+  }
+
+  void _selectProposal(EventProposal p) {
+    setState(() {
+      _selectedProposalId = p.id;
+      _titleController.text = p.title;
+      _descriptionController.text = p.description;
+      _commentsController.text = p.comments;
+      _snsController.text = p.snsSummary;
+      _startDate = p.proposedDate;
+      _endDate = p.endDate;
+      _location = p.location;
+      _status = p.status;
+      _photos = List.from(p.photos);
+    });
+  }
+
+  Future<void> _pickDateTime(BuildContext context, bool isStart) async {
+    final initialDate = (isStart ? _startDate : _endDate) ?? DateTime.now();
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+    );
+    if (pickedDate == null || !context.mounted) return;
+
+    final pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(initialDate),
+    );
+    if (pickedTime == null) return;
+
+    setState(() {
+      final newDt = DateTime(
+        pickedDate.year,
+        pickedDate.month,
+        pickedDate.day,
+        pickedTime.hour,
+        pickedTime.minute,
+      );
+      if (isStart) {
+        _startDate = newDt;
+      } else {
+        _endDate = newDt;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
     final provider = context.watch<AppProvider>();
+    
+    if (_selectedProposalId != null) {
+      final index = provider.eventProposals.indexWhere((p) => p.id == _selectedProposalId);
+      if (index == -1) {
+        // Fallback if proposal deleted/not found
+        return Center(
+          child: ElevatedButton(
+            onPressed: () => setState(() => _selectedProposalId = null),
+            child: const Text('Back'),
+          ),
+        );
+      }
+      final proposal = provider.eventProposals[index];
+      
+      return SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => setState(() => _selectedProposalId = null),
+                ),
+                const SizedBox(width: 8),
+                Text(loc.eventDetails, style: Theme.of(context).textTheme.headlineSmall),
+              ],
+            ),
+            const SizedBox(height: 24),
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${loc.proposerName}: ${proposal.proposerName}',
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    const Divider(height: 32),
+                    TextField(
+                      controller: _titleController,
+                      decoration: InputDecoration(
+                        labelText: loc.proposalTitle,
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: _descriptionController,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        labelText: loc.proposalDescription,
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: () => _pickDateTime(context, true),
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                labelText: loc.startTime,
+                                border: const OutlineInputBorder(),
+                              ),
+                              child: Text(
+                                _startDate != null 
+                                    ? DateFormat('yyyy-MM-dd HH:mm').format(_startDate!) 
+                                    : loc.selectDate,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: InkWell(
+                            onTap: () => _pickDateTime(context, false),
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                labelText: loc.endTime,
+                                border: const OutlineInputBorder(),
+                              ),
+                              child: Text(
+                                _endDate != null 
+                                    ? DateFormat('yyyy-MM-dd HH:mm').format(_endDate!) 
+                                    : loc.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DropdownButtonFormField<String>(
+                            value: _location == 'GCL Room' || _location == 'Online' ? _location : 'GCL Room',
+                            decoration: InputDecoration(
+                              labelText: loc.eventLocation,
+                              border: const OutlineInputBorder(),
+                            ),
+                            items: [
+                              DropdownMenuItem(value: 'GCL Room', child: Text(loc.gclRoom)),
+                              DropdownMenuItem(value: 'Online', child: Text(loc.online)),
+                            ],
+                            onChanged: (val) {
+                              if (val != null) setState(() => _location = val);
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: DropdownButtonFormField<String>(
+                            value: _status,
+                            decoration: InputDecoration(
+                              labelText: loc.status,
+                              border: const OutlineInputBorder(),
+                            ),
+                            items: [
+                              DropdownMenuItem(value: 'proposed', child: Text(loc.proposed)),
+                              DropdownMenuItem(value: 'approved', child: Text(loc.approved)),
+                              DropdownMenuItem(value: 'rejected', child: Text(loc.rejected)),
+                              DropdownMenuItem(value: 'finished', child: Text(loc.finished)),
+                            ],
+                            onChanged: (val) {
+                              if (val != null) setState(() => _status = val);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: _commentsController,
+                      maxLines: 2,
+                      decoration: InputDecoration(
+                        labelText: loc.eventComments,
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    if (_status == 'approved') ...[
+                      const Divider(height: 40),
+                      Text(loc.postApprovalSNS, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: _snsController,
+                        maxLines: 3,
+                        decoration: InputDecoration(
+                          labelText: loc.eventSummarySNS,
+                          border: const OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          ElevatedButton.icon(
+                            icon: const Icon(Icons.photo_library),
+                            label: Text(loc.uploadPhotos),
+                            onPressed: () {
+                              // Simulate Photo Upload
+                              setState(() {
+                                int count = _photos.length + 1;
+                                _photos.add('https://picsum.photos/200/300?random=$count');
+                              });
+                            },
+                          ),
+                          const SizedBox(width: 16),
+                          Text('${_photos.length} photos uploaded'),
+                        ],
+                      ),
+                      if (_photos.isNotEmpty) ...[
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          height: 100,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: _photos.length,
+                            itemBuilder: (ctx, i) {
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.network(
+                                    _photos[i],
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) => Container(
+                                      color: Colors.grey.shade300,
+                                      width: 100,
+                                      child: const Icon(Icons.broken_image),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ],
+                    const SizedBox(height: 32),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        onPressed: () {
+                          provider.saveEventProposalDetails(
+                            id: proposal.id,
+                            proposedDate: _startDate ?? DateTime.now(),
+                            endDate: _endDate,
+                            location: _location,
+                            comments: _commentsController.text,
+                            status: _status,
+                            snsSummary: _snsController.text,
+                            photos: _photos,
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(loc.detailsSaved)),
+                          );
+                          setState(() => _selectedProposalId = null);
+                        },
+                        child: Text(loc.saveDetails),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     final proposals = provider.eventProposals;
 
     return Padding(
@@ -1111,32 +1510,22 @@ class _EventProposalsTab extends StatelessWidget {
                 itemCount: proposals.length,
                 itemBuilder: (context, index) {
                   final p = proposals[index];
-                  final isPending = p.status == 'proposed';
                   return Card(
+                    margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
-                      title: Text(p.title),
-                      subtitle: Text("${loc.byAuthorOnDate(p.proposerName, DateFormat.yMd(Localizations.localeOf(context).toString()).format(p.proposedDate))}\n${p.description}"),
-                      trailing: isPending
-                          ? Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.check, color: Colors.green),
-                                  onPressed: () => provider.updateEventProposalStatus(p.id, 'approved'),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.close, color: Colors.red),
-                                  onPressed: () => provider.updateEventProposalStatus(p.id, 'rejected'),
-                                ),
-                              ],
-                            )
-                          : Text(
-                                _localizeStatus(p.status, loc).toUpperCase(),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: p.status == 'approved' ? Colors.green : Colors.red,
-                                ),
-                              ),
+                      onTap: () => _selectProposal(p),
+                      title: Text(p.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Text(
+                        "${loc.byAuthorOnDate(p.proposerName, DateFormat.yMd(Localizations.localeOf(context).toString()).format(p.proposedDate))}\n${p.description}",
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildStatusChip(context, p.status, loc),
+                          const SizedBox(width: 8),
+                          const Icon(Icons.chevron_right),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -1147,11 +1536,35 @@ class _EventProposalsTab extends StatelessWidget {
     );
   }
 
-  String _localizeStatus(String status, AppLocalizations loc) {
-    if (status == 'approved') return loc.approved;
-    if (status == 'rejected') return loc.rejected;
-    if (status == 'proposed') return loc.proposed;
-    return status;
+  Widget _buildStatusChip(BuildContext context, String status, AppLocalizations loc) {
+    Color color;
+    String label;
+    if (status == 'approved') {
+      color = Colors.green;
+      label = loc.approved;
+    } else if (status == 'rejected') {
+      color = Colors.red;
+      label = loc.rejected;
+    } else if (status == 'finished') {
+      color = Colors.blue;
+      label = loc.finished;
+    } else {
+      color = Colors.orange;
+      label = loc.proposed;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12),
+      ),
+    );
   }
 }
 
@@ -1261,8 +1674,16 @@ class _LogView extends StatelessWidget {
   }
 }
 
-class _MeetingRequestsTab extends StatelessWidget {
-  const _MeetingRequestsTab();
+class _ExternalMeetingRequestsView extends StatefulWidget {
+  const _ExternalMeetingRequestsView();
+
+  @override
+  State<_ExternalMeetingRequestsView> createState() => _ExternalMeetingRequestsViewState();
+}
+
+class _ExternalMeetingRequestsViewState extends State<_ExternalMeetingRequestsView> {
+  ExternalMeetingRequest? _selectedRequest;
+  String? _selectedStaffId;
 
   @override
   Widget build(BuildContext context) {
@@ -1275,136 +1696,162 @@ class _MeetingRequestsTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(loc.meetingRequests, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          Text(loc.meetingRequests, style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 24),
           if (pendingRequests.isEmpty)
             Expanded(child: Center(child: Text(loc.noMeetingRequests)))
           else
             Expanded(
-              child: ListView.builder(
-                itemCount: pendingRequests.length,
-                itemBuilder: (context, index) {
-                  final req = pendingRequests[index];
-                  
-                  // Find available staff for this meeting
-                  final availableStaff = provider.staff.where((s) {
-                    if (s.isSenior || !s.isSetupComplete) return false;
-                    final speaksLang = s.nativeLanguage == req.language || s.languageSkills.any((skill) => skill.language == req.language);
-                    if (!speaksLang) return false;
-                    final hasBlock = provider.blocks.any((b) => 
-                      b.staffId == s.id && 
-                      b.status == 'approved' &&
-                      b.startTime.year == req.requestedTime.year &&
-                      b.startTime.month == req.requestedTime.month &&
-                      b.startTime.day == req.requestedTime.day &&
-                      b.startTime.hour == req.requestedTime.hour &&
-                      b.startTime.minute == req.requestedTime.minute
-                    );
-                    return hasBlock;
-                  }).toList();
-
-                  return _MeetingRequestCard(req: req, availableStaff: availableStaff);
-                },
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 6,
+                    child: SingleChildScrollView(
+                      child: DataTable(
+                        showCheckboxColumn: false,
+                        columns: const [
+                          DataColumn(label: Text('Name')),
+                          DataColumn(label: Text('Department')),
+                          DataColumn(label: Text('Purpose')),
+                          DataColumn(label: Text('Date & Time')),
+                          DataColumn(label: Text('Status')),
+                        ],
+                        rows: pendingRequests.map((req) {
+                          return DataRow(
+                            selected: _selectedRequest?.id == req.id,
+                            onSelectChanged: (selected) {
+                              if (selected == true) {
+                                setState(() {
+                                  _selectedRequest = req;
+                                  _selectedStaffId = null;
+                                });
+                              }
+                            },
+                            cells: [
+                              DataCell(Text(req.name)),
+                              DataCell(Text(req.department)),
+                              DataCell(Text(req.purpose)),
+                              DataCell(Text(DateFormat('MMM dd, hh:mm a').format(req.requestedTime))),
+                              DataCell(Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.orange.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: Colors.orange),
+                                ),
+                                child: Text('Pending', style: TextStyle(color: Colors.orange.shade800, fontSize: 12)),
+                              )),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                  if (_selectedRequest != null) ...[
+                    const VerticalDivider(width: 32),
+                    Expanded(
+                      flex: 4,
+                      child: _buildDetailsSidebar(context, provider, loc),
+                    ),
+                  ],
+                ],
               ),
             ),
         ],
       ),
     );
   }
-}
 
-class _MeetingRequestCard extends StatefulWidget {
-  final ExternalMeetingRequest req;
-  final List<StaffMember> availableStaff;
+  Widget _buildDetailsSidebar(BuildContext context, AppProvider provider, AppLocalizations loc) {
+    final req = _selectedRequest!;
+    
+    final availableStaff = provider.staff.where((s) {
+      if (s.isSenior || !s.isSetupComplete) return false;
+      final speaksLang = s.nativeLanguage == req.language || s.languageSkills.any((skill) => skill.language == req.language);
+      if (!speaksLang) return false;
+      final hasBlock = provider.blocks.any((b) => 
+        b.staffId == s.id && 
+        b.status == 'approved' &&
+        b.startTime.year == req.requestedTime.year &&
+        b.startTime.month == req.requestedTime.month &&
+        b.startTime.day == req.requestedTime.day &&
+        b.startTime.hour == req.requestedTime.hour &&
+        b.startTime.minute == req.requestedTime.minute
+      );
+      return hasBlock;
+    }).toList();
 
-  const _MeetingRequestCard({required this.req, required this.availableStaff});
-
-  @override
-  State<_MeetingRequestCard> createState() => _MeetingRequestCardState();
-}
-
-class _MeetingRequestCardState extends State<_MeetingRequestCard> {
-  String? _selectedStaffId;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.availableStaff.isNotEmpty) {
-      _selectedStaffId = widget.availableStaff.first.id;
+    if (_selectedStaffId == null && availableStaff.isNotEmpty) {
+      _selectedStaffId = availableStaff.first.id;
     }
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    final provider = context.read<AppProvider>();
-    final loc = AppLocalizations.of(context)!;
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(widget.req.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Text(widget.req.meetingType == 'Online' ? loc.online : loc.inPerson, style: const TextStyle(color: Colors.grey)),
+                Expanded(child: Text(req.name, style: Theme.of(context).textTheme.headlineSmall)),
+                IconButton(icon: const Icon(Icons.close), onPressed: () => setState(() => _selectedRequest = null)),
               ],
             ),
+            const SizedBox(height: 16),
+            _detailItem(loc.affiliation, '${req.department} (${req.studyYear})'),
+            _detailItem(loc.purpose, req.purpose),
+            _detailItem(loc.nativeLang, req.language),
+            _detailItem(loc.scheduledTime, DateFormat('yyyy-MM-dd HH:mm').format(req.requestedTime)),
+            _detailItem('Type', req.meetingType == 'Online' ? loc.online : loc.inPerson),
+            const Divider(height: 32),
+            Text('Assign Student Assistant', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
-            Text('${loc.affiliation}: ${widget.req.department} (${widget.req.studyYear})'),
-            Text('${loc.purpose}: ${widget.req.purpose}'),
-            Text('${loc.nativeLang}: ${widget.req.language}'),
-            Text('${loc.scheduledTime}: ${DateFormat('yyyy-MM-dd HH:mm').format(widget.req.requestedTime)}'),
-            const Divider(),
-            if (widget.availableStaff.isEmpty)
+            if (availableStaff.isEmpty)
               Text(loc.noAvailableStaff, style: const TextStyle(color: Colors.red))
-            else ...[
-              Row(
-                children: [
-                  Text('${loc.assignStaff}: '),
-                  const SizedBox(width: 8),
-                  DropdownButton<String>(
-                    value: _selectedStaffId,
-                    items: widget.availableStaff.map((s) => DropdownMenuItem(
-                      value: s.id,
-                      child: Text(s.name),
-                    )).toList(),
-                    onChanged: (val) {
-                      setState(() {
-                        _selectedStaffId = val;
-                      });
-                    },
-                  ),
-                ],
+            else
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(border: OutlineInputBorder(), isDense: true),
+                value: _selectedStaffId,
+                items: availableStaff.map((s) => DropdownMenuItem(value: s.id, child: Text(s.name))).toList(),
+                onChanged: (val) {
+                  setState(() {
+                    _selectedStaffId = val;
+                  });
+                },
               ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
-                    onPressed: () {
-                      if (_selectedStaffId != null) {
-                        provider.approveMeetingRequest(widget.req.id, _selectedStaffId!);
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.meetingApprovedSuccess)));
-                      }
+            const SizedBox(height: 32),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 16)),
+                    onPressed: _selectedStaffId == null ? null : () {
+                      provider.approveMeetingRequest(req.id, _selectedStaffId!);
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.meetingApprovedSuccess)));
+                      setState(() => _selectedRequest = null);
                     },
                     child: Text(loc.approve),
                   ),
-                  const SizedBox(width: 8),
-                  OutlinedButton(
-                    style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(foregroundColor: Colors.red, padding: const EdgeInsets.symmetric(vertical: 16)),
                     onPressed: () {
-                      provider.rejectMeetingRequest(widget.req.id);
+                      provider.rejectMeetingRequest(req.id);
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.meetingRejectedSuccess)));
+                      setState(() => _selectedRequest = null);
                     },
                     child: Text(loc.reject),
                   ),
-                ],
-              )
-            ]
+                ),
+              ],
+            )
           ],
         ),
       ),

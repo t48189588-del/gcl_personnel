@@ -15,16 +15,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectYourRole => 'Select Your Role';
 
   @override
-  String get seniorStaff => 'Senior Staff';
+  String get seniorStaff => 'Main Staff';
 
   @override
-  String get juniorStaff => 'Junior Staff';
+  String get juniorStaff => 'Student Assistant';
 
   @override
   String get developer => 'Developer';
 
   @override
-  String get commanderView => 'Commander View - Senior Staff';
+  String get commanderView => 'Commander View - Main Staff';
 
   @override
   String get metrics => 'Metrics';
@@ -87,7 +87,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emailLabel => 'Email Address';
 
   @override
-  String get selfServicePortal => 'Self-Service Portal - Junior Staff';
+  String get selfServicePortal => 'Self-Service Portal - Student Assistant';
 
   @override
   String get schedule => 'Schedule';
@@ -141,7 +141,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get next => 'Next';
 
   @override
-  String get upgradeToSenior => 'Upgrade to Senior';
+  String get upgradeToSenior => 'Upgrade to Main Staff';
 
   @override
   String get eventProposal => 'Event Proposal';
@@ -205,10 +205,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get openInviteLink => 'Open Invite Link';
 
   @override
-  String get senior => 'Senior';
+  String get senior => 'Main Staff';
 
   @override
-  String get junior => 'Junior';
+  String get junior => 'Student Assistant';
 
   @override
   String get online => 'Online';
@@ -231,7 +231,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get selectJuniorProfileTitle => 'Select Junior Profile';
+  String get selectJuniorProfileTitle => 'Select Student Assistant Profile';
 
   @override
   String get proposalSubmitted => 'Proposal Submitted!';
@@ -464,7 +464,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String logJuniorLogin(String name) {
-    return 'Junior Login: $name';
+    return 'Student Assistant Login: $name';
   }
 
   @override
@@ -474,7 +474,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String logUpgradedSenior(String name) {
-    return 'Upgraded $name to Senior';
+    return 'Upgraded $name to Main Staff';
   }
 
   @override
@@ -753,7 +753,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weeklyLimitDescription =>
-      'Specify the maximum weekly hours a junior staff member can request (leave empty for no limit).';
+      'Specify the maximum weekly hours a Student Assistant can request (leave empty for no limit).';
 
   @override
   String get hoursSuffix => 'hrs';
@@ -795,4 +795,103 @@ class AppLocalizationsEn extends AppLocalizations {
   String logImportedCsvData(String rows) {
     return 'Imported $rows data rows from CSV';
   }
+
+  @override
+  String get calendar => 'Calendar';
+
+  @override
+  String get tasks => 'Tasks';
+
+  @override
+  String get eventStartTime => 'Start Time';
+
+  @override
+  String get eventEndTime => 'End Time';
+
+  @override
+  String get eventLocation => 'Location';
+
+  @override
+  String get eventComments => 'Comments (Optional)';
+
+  @override
+  String get eventDetails => 'Event Details';
+
+  @override
+  String get eventLogs => 'Event Logs';
+
+  @override
+  String get pendingApproval => 'Pending Approval';
+
+  @override
+  String get studentAssistant => 'Student Assistant';
+
+  @override
+  String get mainStaff => 'Main Staff';
+
+  @override
+  String get reservation => 'Reservation';
+
+  @override
+  String get noReservation => 'No Reservation';
+
+  @override
+  String get todaySchedule => 'Today\'s Schedule';
+
+  @override
+  String get agendaNoticeBoard => 'Agenda & Notice Board';
+
+  @override
+  String get manageAvailability => 'Manage Availability & Schedule';
+
+  @override
+  String get proposalHistory => 'Proposal History & Post-Approval Details';
+
+  @override
+  String get holidayNoticeLabel => 'Holiday Notice';
+
+  @override
+  String get pendingReportsLabel => 'Pending Reports';
+
+  @override
+  String get upcomingMeetings => 'Upcoming Meetings';
+
+  @override
+  String get noUpcomingMeetings => 'No upcoming meetings.';
+
+  @override
+  String get noShiftsToday => 'No shifts scheduled for today.';
+
+  @override
+  String get postApprovalSNS => 'Post-Approval Details (For SNS)';
+
+  @override
+  String get eventSummarySNS => 'Event Summary for SNS';
+
+  @override
+  String get uploadPhotos => 'Upload Photos';
+
+  @override
+  String get saveDetails => 'Save Details';
+
+  @override
+  String get detailsSaved => 'Details saved for publication!';
+
+  @override
+  String get descriptionLabel => 'Description';
+
+  @override
+  String get gclRoom => 'GCL Room';
+
+  @override
+  String get submittedReports => 'Submitted Reports';
+
+  @override
+  String get noSubmittedReports => 'No submitted reports yet.';
+
+  @override
+  String get finished => 'Finished';
+
+  @override
+  String get weeklyHoursLimitHintShort => 'Set limit (hours/week)';
 }

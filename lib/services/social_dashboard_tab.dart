@@ -13,7 +13,6 @@ class SocialDashboardTab extends StatefulWidget {
 class _SocialDashboardTabState extends State<SocialDashboardTab> {
   final SocialService _socialService = SocialService();
 
-  // Data from README
   final String youtubeChannelId = "UCXeW6dvL52EJgPPNJMlVt0A";
   final String instagramHandle = "gclkyutech";
 
@@ -31,17 +30,17 @@ class _SocialDashboardTabState extends State<SocialDashboardTab> {
     setState(() {
       _youtubeFuture = _socialService.fetchYouTubeMetrics(youtubeChannelId);
       _instagramFuture = _socialService.fetchInstagramMetrics(instagramHandle);
-      _xFuture = _socialService.fetchXMetrics("gclkyutech"); // Mock handle
+      _xFuture = _socialService.fetchXMetrics("gclkyutech"); 
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
-    return RefreshIndicator(
-      onRefresh: () async => _refreshData(),
-      child: ListView(
-        padding: const EdgeInsets.all(16.0),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildMetricCard(
             title: loc.youtubeStats,
@@ -51,7 +50,7 @@ class _SocialDashboardTabState extends State<SocialDashboardTab> {
             metricLabel: loc.subscribers,
             secondaryMetricLabel: loc.views,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(width: 16),
           _buildMetricCard(
             title: loc.instagramStats,
             icon: Icons.camera_alt,
@@ -60,7 +59,7 @@ class _SocialDashboardTabState extends State<SocialDashboardTab> {
             metricLabel: loc.followers,
             secondaryMetricLabel: loc.posts,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(width: 16),
           _buildMetricCard(
             title: loc.xStats,
             icon: Icons.alternate_email,
@@ -68,6 +67,12 @@ class _SocialDashboardTabState extends State<SocialDashboardTab> {
             future: _xFuture,
             metricLabel: loc.followers,
             secondaryMetricLabel: "",
+          ),
+          const SizedBox(width: 16),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Refresh Social Stats',
+            onPressed: _refreshData,
           ),
         ],
       ),
@@ -86,72 +91,77 @@ class _SocialDashboardTabState extends State<SocialDashboardTab> {
     return FutureBuilder<SocialMetrics>(
       future: future,
       builder: (context, snapshot) {
-        final bool isLoading =
-            snapshot.connectionState == ConnectionState.waiting;
+        final bool isLoading = snapshot.connectionState == ConnectionState.waiting;
         final data = snapshot.data;
 
-        return Card(
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(icon, color: iconColor, size: 28),
-                    const SizedBox(width: 8),
-                    Text(title, style: Theme.of(context).textTheme.titleLarge),
-                    const Spacer(),
-                    if (data != null)
-                      Chip(
-                        label: Text(
-                          data.source,
-                          style: const TextStyle(fontSize: 10),
-                        ),
-                        backgroundColor: data.isError
-                            ? Colors.red.shade100
-                            : Colors.green.shade100,
-                      ),
-                  ],
-                ),
-                const Divider(),
-                if (isLoading)
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: CircularProgressIndicator(),
-                    ),
-                  )
-                else if (snapshot.hasError || data == null || data.isError)
-                  Text(
-                    "${loc.error}: ${data?.source ?? snapshot.error}",
-                    style: const TextStyle(color: Colors.red),
-                  )
-                else
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+        return SizedBox(
+          width: 300,
+          child: Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
                     children: [
-                      Text(
-                        data.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      Icon(icon, color: iconColor, size: 28),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(title, style: Theme.of(context).textTheme.titleMedium, overflow: TextOverflow.ellipsis),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "$metricLabel: ${data.count}",
-                        style: Theme.of(context).textTheme.headlineMedium,
-                      ),
-                      if (data.secondaryCount != null)
-                        Text(
-                          "${data.secondaryCount} $secondaryMetricLabel",
-                          style: Theme.of(context).textTheme.bodySmall,
+                      if (data != null)
+                        Chip(
+                          label: Text(
+                            data.source,
+                            style: const TextStyle(fontSize: 10),
+                          ),
+                          backgroundColor: data.isError
+                              ? Colors.red.shade100
+                              : Colors.green.shade100,
                         ),
                     ],
                   ),
-              ],
+                  const Divider(),
+                  if (isLoading)
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+                  else if (snapshot.hasError || data == null || data.isError)
+                    Text(
+                      "${loc.error}: ${data?.source ?? snapshot.error}",
+                      style: const TextStyle(color: Colors.red),
+                    )
+                  else
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          data.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "$metricLabel: ${data.count}",
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        if (data.secondaryCount != null && secondaryMetricLabel.isNotEmpty)
+                          Text(
+                            "${data.secondaryCount} $secondaryMetricLabel",
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                      ],
+                    ),
+                ],
+              ),
             ),
           ),
         );
