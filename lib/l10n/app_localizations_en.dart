@@ -797,101 +797,81 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get calendar => 'Calendar';
+  String get calendarOverview => 'Calendar Overview';
 
   @override
-  String get tasks => 'Tasks';
+  String get timeSlot => 'Time Slot';
 
   @override
-  String get eventStartTime => 'Start Time';
+  String get expand => 'Expand';
 
   @override
-  String get eventEndTime => 'End Time';
+  String get collapse => 'Collapse';
 
   @override
-  String get eventLocation => 'Location';
+  String get allStudents => 'All Students';
 
   @override
-  String get eventComments => 'Comments (Optional)';
+  String get reportStatus => 'Report Status';
 
   @override
-  String get eventDetails => 'Event Details';
+  String get filterAll => 'All';
 
   @override
-  String get eventLogs => 'Event Logs';
+  String get filterPending => 'Pending';
 
   @override
-  String get pendingApproval => 'Pending Approval';
+  String get filterCompleted => 'Completed';
 
   @override
-  String get studentAssistant => 'Student Assistant';
-
-  @override
-  String get mainStaff => 'Main Staff';
-
-  @override
-  String get reservation => 'Reservation';
-
-  @override
-  String get noReservation => 'No Reservation';
+  String get clearFilters => 'Clear Filters';
 
   @override
   String get todaySchedule => 'Today\'s Schedule';
 
   @override
-  String get agendaNoticeBoard => 'Agenda & Notice Board';
+  String get deadlineReminder =>
+      'Next month availability must be submitted by day 24 of this month.';
 
   @override
-  String get manageAvailability => 'Manage Availability & Schedule';
+  String get deadlinePassedWarning =>
+      'Warning: Next month\'s availability submission deadline (24th) has passed!';
 
   @override
-  String get proposalHistory => 'Proposal History & Post-Approval Details';
+  String get noScheduleToday => 'You have no scheduled shifts today.';
 
   @override
-  String get holidayNoticeLabel => 'Holiday Notice';
+  String get activeMeetings => 'Meetings';
 
   @override
-  String get pendingReportsLabel => 'Pending Reports';
+  String get upcomingEvents => 'Events';
 
   @override
-  String get upcomingMeetings => 'Upcoming Meetings';
+  String get holidaysLabel => 'Holidays';
 
   @override
-  String get noUpcomingMeetings => 'No upcoming meetings.';
+  String get availabilitySubmissionTitle => 'Submit Next Month\'s Availability';
 
   @override
-  String get noShiftsToday => 'No shifts scheduled for today.';
+  String assignedMeetingsCount(int count) {
+    return 'Assigned Meetings ($count)';
+  }
 
   @override
-  String get postApprovalSNS => 'Post-Approval Details (For SNS)';
+  String pendingReportsCount(int count) {
+    return 'Pending Reports ($count)';
+  }
 
   @override
-  String get eventSummarySNS => 'Event Summary for SNS';
+  String get deadlineDialogTitle => 'Availability Submission Reminder';
 
   @override
-  String get uploadPhotos => 'Upload Photos';
+  String get deadlineDialogContent =>
+      'Please submit your availability for next month as the 24th deadline has arrived or passed.';
 
   @override
-  String get saveDetails => 'Save Details';
+  String get goToSubmission => 'Go to Submission';
 
   @override
-  String get detailsSaved => 'Details saved for publication!';
-
-  @override
-  String get descriptionLabel => 'Description';
-
-  @override
-  String get gclRoom => 'GCL Room';
-
-  @override
-  String get submittedReports => 'Submitted Reports';
-
-  @override
-  String get noSubmittedReports => 'No submitted reports yet.';
-
-  @override
-  String get finished => 'Finished';
-
-  @override
-  String get weeklyHoursLimitHintShort => 'Set limit (hours/week)';
+  String get skip => 'Skip';
 }

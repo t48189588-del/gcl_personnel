@@ -1532,83 +1532,65 @@ abstract class AppLocalizations {
   /// **'Imported {rows} data rows from CSV'**
   String logImportedCsvData(String rows);
 
-  /// No description provided for @calendar.
+  /// No description provided for @calendarOverview.
   ///
   /// In en, this message translates to:
-  /// **'Calendar'**
-  String get calendar;
+  /// **'Calendar Overview'**
+  String get calendarOverview;
 
-  /// No description provided for @tasks.
+  /// No description provided for @timeSlot.
   ///
   /// In en, this message translates to:
-  /// **'Tasks'**
-  String get tasks;
+  /// **'Time Slot'**
+  String get timeSlot;
 
-  /// No description provided for @eventStartTime.
+  /// No description provided for @expand.
   ///
   /// In en, this message translates to:
-  /// **'Start Time'**
-  String get eventStartTime;
+  /// **'Expand'**
+  String get expand;
 
-  /// No description provided for @eventEndTime.
+  /// No description provided for @collapse.
   ///
   /// In en, this message translates to:
-  /// **'End Time'**
-  String get eventEndTime;
+  /// **'Collapse'**
+  String get collapse;
 
-  /// No description provided for @eventLocation.
+  /// No description provided for @allStudents.
   ///
   /// In en, this message translates to:
-  /// **'Location'**
-  String get eventLocation;
+  /// **'All Students'**
+  String get allStudents;
 
-  /// No description provided for @eventComments.
+  /// No description provided for @reportStatus.
   ///
   /// In en, this message translates to:
-  /// **'Comments (Optional)'**
-  String get eventComments;
+  /// **'Report Status'**
+  String get reportStatus;
 
-  /// No description provided for @eventDetails.
+  /// No description provided for @filterAll.
   ///
   /// In en, this message translates to:
-  /// **'Event Details'**
-  String get eventDetails;
+  /// **'All'**
+  String get filterAll;
 
-  /// No description provided for @eventLogs.
+  /// No description provided for @filterPending.
   ///
   /// In en, this message translates to:
-  /// **'Event Logs'**
-  String get eventLogs;
+  /// **'Pending'**
+  String get filterPending;
 
-  /// No description provided for @pendingApproval.
+  /// No description provided for @filterCompleted.
   ///
   /// In en, this message translates to:
-  /// **'Pending Approval'**
-  String get pendingApproval;
+  /// **'Completed'**
+  String get filterCompleted;
 
-  /// No description provided for @studentAssistant.
+  /// No description provided for @clearFilters.
   ///
   /// In en, this message translates to:
-  /// **'Student Assistant'**
-  String get studentAssistant;
-
-  /// No description provided for @mainStaff.
-  ///
-  /// In en, this message translates to:
-  /// **'Main Staff'**
-  String get mainStaff;
-
-  /// No description provided for @reservation.
-  ///
-  /// In en, this message translates to:
-  /// **'Reservation'**
-  String get reservation;
-
-  /// No description provided for @noReservation.
-  ///
-  /// In en, this message translates to:
-  /// **'No Reservation'**
-  String get noReservation;
+  /// **'Clear Filters'**
+  String get clearFilters;
 
   /// No description provided for @todaySchedule.
   ///
@@ -1616,119 +1598,83 @@ abstract class AppLocalizations {
   /// **'Today\'s Schedule'**
   String get todaySchedule;
 
-  /// No description provided for @agendaNoticeBoard.
+  /// No description provided for @deadlineReminder.
   ///
   /// In en, this message translates to:
-  /// **'Agenda & Notice Board'**
-  String get agendaNoticeBoard;
+  /// **'Next month availability must be submitted by day 24 of this month.'**
+  String get deadlineReminder;
 
-  /// No description provided for @manageAvailability.
+  /// No description provided for @deadlinePassedWarning.
   ///
   /// In en, this message translates to:
-  /// **'Manage Availability & Schedule'**
-  String get manageAvailability;
+  /// **'Warning: Next month\'s availability submission deadline (24th) has passed!'**
+  String get deadlinePassedWarning;
 
-  /// No description provided for @proposalHistory.
+  /// No description provided for @noScheduleToday.
   ///
   /// In en, this message translates to:
-  /// **'Proposal History & Post-Approval Details'**
-  String get proposalHistory;
+  /// **'You have no scheduled shifts today.'**
+  String get noScheduleToday;
 
-  /// No description provided for @holidayNoticeLabel.
+  /// No description provided for @activeMeetings.
   ///
   /// In en, this message translates to:
-  /// **'Holiday Notice'**
-  String get holidayNoticeLabel;
+  /// **'Meetings'**
+  String get activeMeetings;
 
-  /// No description provided for @pendingReportsLabel.
+  /// No description provided for @upcomingEvents.
   ///
   /// In en, this message translates to:
-  /// **'Pending Reports'**
-  String get pendingReportsLabel;
+  /// **'Events'**
+  String get upcomingEvents;
 
-  /// No description provided for @upcomingMeetings.
+  /// No description provided for @holidaysLabel.
   ///
   /// In en, this message translates to:
-  /// **'Upcoming Meetings'**
-  String get upcomingMeetings;
+  /// **'Holidays'**
+  String get holidaysLabel;
 
-  /// No description provided for @noUpcomingMeetings.
+  /// No description provided for @availabilitySubmissionTitle.
   ///
   /// In en, this message translates to:
-  /// **'No upcoming meetings.'**
-  String get noUpcomingMeetings;
+  /// **'Submit Next Month\'s Availability'**
+  String get availabilitySubmissionTitle;
 
-  /// No description provided for @noShiftsToday.
+  /// No description provided for @assignedMeetingsCount.
   ///
   /// In en, this message translates to:
-  /// **'No shifts scheduled for today.'**
-  String get noShiftsToday;
+  /// **'Assigned Meetings ({count})'**
+  String assignedMeetingsCount(int count);
 
-  /// No description provided for @postApprovalSNS.
+  /// No description provided for @pendingReportsCount.
   ///
   /// In en, this message translates to:
-  /// **'Post-Approval Details (For SNS)'**
-  String get postApprovalSNS;
+  /// **'Pending Reports ({count})'**
+  String pendingReportsCount(int count);
 
-  /// No description provided for @eventSummarySNS.
+  /// No description provided for @deadlineDialogTitle.
   ///
   /// In en, this message translates to:
-  /// **'Event Summary for SNS'**
-  String get eventSummarySNS;
+  /// **'Availability Submission Reminder'**
+  String get deadlineDialogTitle;
 
-  /// No description provided for @uploadPhotos.
+  /// No description provided for @deadlineDialogContent.
   ///
   /// In en, this message translates to:
-  /// **'Upload Photos'**
-  String get uploadPhotos;
+  /// **'Please submit your availability for next month as the 24th deadline has arrived or passed.'**
+  String get deadlineDialogContent;
 
-  /// No description provided for @saveDetails.
+  /// No description provided for @goToSubmission.
   ///
   /// In en, this message translates to:
-  /// **'Save Details'**
-  String get saveDetails;
+  /// **'Go to Submission'**
+  String get goToSubmission;
 
-  /// No description provided for @detailsSaved.
+  /// No description provided for @skip.
   ///
   /// In en, this message translates to:
-  /// **'Details saved for publication!'**
-  String get detailsSaved;
-
-  /// No description provided for @descriptionLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Description'**
-  String get descriptionLabel;
-
-  /// No description provided for @gclRoom.
-  ///
-  /// In en, this message translates to:
-  /// **'GCL Room'**
-  String get gclRoom;
-
-  /// No description provided for @submittedReports.
-  ///
-  /// In en, this message translates to:
-  /// **'Submitted Reports'**
-  String get submittedReports;
-
-  /// No description provided for @noSubmittedReports.
-  ///
-  /// In en, this message translates to:
-  /// **'No submitted reports yet.'**
-  String get noSubmittedReports;
-
-  /// No description provided for @finished.
-  ///
-  /// In en, this message translates to:
-  /// **'Finished'**
-  String get finished;
-
-  /// No description provided for @weeklyHoursLimitHintShort.
-  ///
-  /// In en, this message translates to:
-  /// **'Set limit (hours/week)'**
-  String get weeklyHoursLimitHintShort;
+  /// **'Skip'**
+  String get skip;
 }
 
 class _AppLocalizationsDelegate

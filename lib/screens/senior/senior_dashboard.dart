@@ -36,74 +36,1098 @@ class _SeniorDashboardState extends State<SeniorDashboard> {
           IconButton(
             icon: const Icon(Icons.calendar_month),
             tooltip: loc.masterCalendarExport,
-            onPressed: PlatformHelper.isWeb ? () async {
-              final DateTime? month = await _selectMonthDialog(context, loc);
-              if (month != null && context.mounted) {
-                final juniors = provider.staff.where((s) => !s.isSenior && s.isSetupComplete).toList();
-                ExcelService.exportMasterCalendarMonthly(month, juniors, provider.blocks, loc);
-              }
-            } : null,
+            onPressed: PlatformHelper.isWeb
+                ? () async {
+                    final DateTime? month = await _selectMonthDialog(
+                      context,
+                      loc,
+                    );
+                    if (month != null && context.mounted) {
+                      final juniors = provider.staff
+                          .where((s) => !s.isSenior && s.isSetupComplete)
+                          .toList();
+                      ExcelService.exportMasterCalendarMonthly(
+                        month,
+                        juniors,
+                        provider.blocks,
+                        loc,
+                      );
+                    }
+                  }
+                : null,
           ),
           IconButton(
             icon: const Icon(Icons.download),
             tooltip: loc.exportExcel,
-            onPressed: PlatformHelper.isWeb ? () {
-              final staff = provider.staff;
-              ExcelService.exportStaffData(staff, loc);
-            } : null,
+            onPressed: PlatformHelper.isWeb
+                ? () {
+                    final staff = provider.staff;
+                    ExcelService.exportStaffData(staff, loc);
+                  }
+                : null,
           ),
           IconButton(
             icon: const Icon(Icons.folder_zip_outlined),
             tooltip: loc.exportAllReportsTooltip,
-            onPressed: PlatformHelper.isWeb ? () {
-              final juniors = provider.staff.where((s) => !s.isSenior && s.isSetupComplete).toList();
-              ExcelService.exportAllStaffWorkingReports(juniors, provider.reports, loc);
-            } : null,
+            onPressed: PlatformHelper.isWeb
+                ? () {
+                    final juniors = provider.staff
+                        .where((s) => !s.isSenior && s.isSetupComplete)
+                        .toList();
+                    ExcelService.exportAllStaffWorkingReports(
+                      juniors,
+                      provider.reports,
+                      loc,
+                    );
+                  }
+                : null,
           ),
           ...buildGlobalAppActions(context),
           const SizedBox(width: 20),
         ],
       ),
-      selectedIndex: _selectedIndex,
-      onDestinationSelected: (int index) {
-        setState(() {
-          _selectedIndex = index;
-        });
-      },
-      railDestinations: [
-        NavigationRailDestination(icon: const Icon(Icons.check_circle_outline), selectedIcon: const Icon(Icons.check_circle), label: Text(loc.approve)),
-        NavigationRailDestination(icon: const Icon(Icons.lightbulb_outline), selectedIcon: const Icon(Icons.lightbulb), label: Text(loc.eventProposal)),
-        NavigationRailDestination(icon: const Icon(Icons.assignment_outlined), selectedIcon: const Icon(Icons.assignment), label: Text(loc.workingReports)),
-        NavigationRailDestination(icon: const Icon(Icons.meeting_room_outlined), selectedIcon: const Icon(Icons.meeting_room), label: Text(loc.meetingRequests)),
-        NavigationRailDestination(icon: const Icon(Icons.dashboard_outlined), selectedIcon: const Icon(Icons.dashboard), label: Text(loc.metrics)),
-        const NavigationRailDestination(icon: Icon(Icons.info_outline), selectedIcon: Icon(Icons.info), label: Text('GCL Info')),
-      ],
-      bottomDestinations: [
-        NavigationDestination(icon: const Icon(Icons.check_circle_outline), selectedIcon: const Icon(Icons.check_circle), label: loc.approve),
-        NavigationDestination(icon: const Icon(Icons.lightbulb_outline), selectedIcon: const Icon(Icons.lightbulb), label: loc.eventProposal),
-        NavigationDestination(icon: const Icon(Icons.assignment_outlined), selectedIcon: const Icon(Icons.assignment), label: loc.workingReports),
-        NavigationDestination(icon: const Icon(Icons.meeting_room_outlined), selectedIcon: const Icon(Icons.meeting_room), label: loc.meetingRequests),
-        NavigationDestination(icon: const Icon(Icons.dashboard_outlined), selectedIcon: const Icon(Icons.dashboard), label: loc.metrics),
-        const NavigationDestination(icon: Icon(Icons.info_outline), selectedIcon: Icon(Icons.info), label: 'GCL Info'),
-      ],
-      body: _buildBody(),
+      body: Row(
+        children: [
+          NavigationRail(
+            selectedIndex: _selectedIndex,
+            onDestinationSelected: (int index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
+            labelType: NavigationRailLabelType.all,
+            destinations: [
+              NavigationRailDestination(
+                icon: const Icon(Icons.calendar_today_outlined),
+                selectedIcon: const Icon(Icons.calendar_today),
+                label: Text(loc.calendarOverview),
+              ),
+              NavigationRailDestination(
+                icon: const Icon(Icons.dashboard_outlined),
+                selectedIcon: const Icon(Icons.dashboard),
+                label: Text(loc.metrics),
+              ),
+              NavigationRailDestination(
+                icon: const Icon(Icons.settings_outlined),
+                selectedIcon: const Icon(Icons.settings),
+                label: Text(loc.guardrails),
+              ),
+              NavigationRailDestination(
+                icon: const Icon(Icons.assignment_outlined),
+                selectedIcon: const Icon(Icons.assignment),
+                label: Text(loc.workingReports),
+              ),
+              NavigationRailDestination(
+                icon: const Icon(Icons.check_circle_outline),
+                selectedIcon: const Icon(Icons.check_circle),
+                label: Text(loc.approve),
+              ),
+              NavigationRailDestination(
+                icon: const Icon(Icons.lightbulb_outline),
+                selectedIcon: const Icon(Icons.lightbulb),
+                label: Text(loc.eventProposal),
+              ),
+              NavigationRailDestination(
+                icon: const Icon(Icons.meeting_room_outlined),
+                selectedIcon: const Icon(Icons.meeting_room),
+                label: Text(loc.meetingRequests),
+              ),
+              NavigationRailDestination(
+                icon: const Icon(Icons.show_chart_outlined),
+                selectedIcon: const Icon(Icons.show_chart),
+                label: Text(loc.charts),
+              ),
+              NavigationRailDestination(
+                icon: const Icon(Icons.bar_chart_outlined),
+                selectedIcon: const Icon(Icons.bar_chart),
+                label: Text(loc.socialMetrics),
+              ),
+            ],
+          ),
+          const VerticalDivider(thickness: 1, width: 1),
+          Expanded(child: _buildBody()),
+        ],
+      ),
     );
   }
 
   Widget _buildBody() {
     switch (_selectedIndex) {
-      case 0: return const _ApprovalTab();
-      case 1: return const _EventProposalsTab();
-      case 2: return const _WorkingReportsView();
-      case 3: return const _ExternalMeetingRequestsView();
-      case 4: return const _MetricsView();
-      case 5: return const _GuardrailsView();
-      default: return const _ApprovalTab();
+      case 0:
+        return const _OverviewCalendarTab();
+      case 1:
+        return const _MetricsView();
+      case 2:
+        return const _GuardrailsView();
+      case 3:
+        return const _WorkingReportsView();
+      case 4:
+        return const _ApprovalTab();
+      case 5:
+        return const _EventProposalsTab();
+      case 6:
+        return const _MeetingRequestsTab();
+      case 7:
+        return const ChartVisualizationTab();
+      case 8:
+        return const SocialDashboardTab();
+      case 9:
+        return const _LogView();
+      default:
+        return const _OverviewCalendarTab();
     }
   }
 }
 
-Future<DateTime?> _selectMonthDialog(BuildContext context, AppLocalizations loc) async {
+class _OverviewCalendarTab extends StatefulWidget {
+  const _OverviewCalendarTab();
+
+  @override
+  State<_OverviewCalendarTab> createState() => _OverviewCalendarTabState();
+}
+
+class _OverviewCalendarTabState extends State<_OverviewCalendarTab> {
+  DateTime _selectedDate = DateTime.now();
+  String? _selectedTimeSlot;
+  bool _isExpanded = false;
+
+  // Working Reports Filter State
+  DateTime? _reportDateFilter;
+  String? _reportStaffIdFilter;
+  String _reportStatusFilter = 'All'; // 'All', 'Pending', 'Completed'
+
+  List<DateTime> _generateTimeSlots(AppProvider provider, DateTime date) {
+    final daySchedule = provider.operatingHours.weeklySchedule.firstWhere(
+      (ds) => ds.weekday == date.weekday,
+      orElse: () => DaySchedule(weekday: date.weekday),
+    );
+    if (daySchedule.isClosed) return [];
+
+    final startParts = daySchedule.startHour.split(':');
+    final endParts = daySchedule.endHour.split(':');
+    if (startParts.length != 2 || endParts.length != 2) return [];
+
+    final startHour = int.tryParse(startParts[0]) ?? 9;
+    final startMin = int.tryParse(startParts[1]) ?? 0;
+    final endHour = int.tryParse(endParts[0]) ?? 17;
+    final endMin = int.tryParse(endParts[1]) ?? 0;
+
+    final startTime = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      startHour,
+      startMin,
+    );
+    final endTime = DateTime(date.year, date.month, date.day, endHour, endMin);
+
+    List<DateTime> slots = [];
+    var temp = startTime;
+    while (temp.isBefore(endTime)) {
+      slots.add(temp);
+      temp = temp.add(const Duration(minutes: 30));
+    }
+    return slots;
+  }
+
+  // Group past approved blocks into shifts for reports calculation
+  List<WorkingReport> _getAllReportsAcrossStaff(AppProvider provider) {
+    final juniors = provider.staff
+        .where((s) => !s.isSenior && s.isSetupComplete)
+        .toList();
+    final now = DateTime.now();
+    List<WorkingReport> allReports = [];
+
+    for (var junior in juniors) {
+      // 1. Get all past approved blocks for this junior
+      final pastBlocks = provider.blocks
+          .where(
+            (b) =>
+                b.staffId == junior.id &&
+                b.status == 'approved' &&
+                b.startTime.add(const Duration(minutes: 30)).isBefore(now),
+          )
+          .toList();
+
+      if (pastBlocks.isEmpty) continue;
+
+      pastBlocks.sort((a, b) => a.startTime.compareTo(b.startTime));
+
+      // 2. Group into contiguous shifts
+      List<List<AvailabilityBlock>> shifts = [];
+      List<AvailabilityBlock> currentShift = [pastBlocks.first];
+      for (int i = 1; i < pastBlocks.length; i++) {
+        final prev = pastBlocks[i - 1];
+        final curr = pastBlocks[i];
+
+        if (curr.startTime.difference(prev.startTime).inMinutes == 30 &&
+            curr.startTime.day == prev.startTime.day) {
+          currentShift.add(curr);
+        } else {
+          shifts.add(currentShift);
+          currentShift = [curr];
+        }
+      }
+      shifts.add(currentShift);
+
+      // 3. For each shift, see if there is a matching submitted report
+      for (var shiftBlocks in shifts) {
+        final start = shiftBlocks.first.startTime;
+        final end = shiftBlocks.last.startTime.add(const Duration(minutes: 30));
+        final dateOnly = DateTime(start.year, start.month, start.day);
+
+        // Find existing submitted report
+        final existingReport = provider.reports.firstWhere(
+          (r) =>
+              r.staffId == junior.id &&
+              DateTime(
+                    r.reportDate.year,
+                    r.reportDate.month,
+                    r.reportDate.day,
+                  ) ==
+                  dateOnly &&
+              r.scheduledStart == start &&
+              r.isSubmitted,
+          orElse: () {
+            // Check if there are meetings in this shift for a default message
+            final meetingsStr = provider.externalMeetingRequests
+                .where(
+                  (m) =>
+                      m.assignedStaffId == junior.id &&
+                      m.status == 'approved' &&
+                      m.requestedDate == dateOnly &&
+                      !m.requestedTime.isBefore(start) &&
+                      m.requestedTime.isBefore(end),
+                )
+                .map(
+                  (m) => 'Meeting: ${m.name} (${m.meetingType}, ${m.purpose})',
+                )
+                .join('\\n');
+
+            return WorkingReport(
+              id: '',
+              staffId: junior.id,
+              reportDate: dateOnly,
+              scheduledStart: start,
+              scheduledEnd: end,
+              confirmedStart: start,
+              confirmedEnd: end,
+              workDone: meetingsStr,
+              isSubmitted: false,
+            );
+          },
+        );
+        allReports.add(existingReport);
+      }
+    }
+
+    // Sort all reports by date descending
+    allReports.sort((a, b) => b.reportDate.compareTo(a.reportDate));
+    return allReports;
+  }
+
+  String _localizeModality(String val, AppLocalizations loc) {
+    if (val == 'Online') return loc.online;
+    if (val == 'In Person' || val == 'In-Person') return loc.inPerson;
+    if (val == 'Both') return loc.both;
+    return val;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+    final provider = context.watch<AppProvider>();
+    final locale = Localizations.localeOf(context).toString();
+
+    final slots = _generateTimeSlots(provider, _selectedDate);
+    if (_selectedTimeSlot == null && slots.isNotEmpty) {
+      _selectedTimeSlot = DateFormat('HH:mm').format(slots.first);
+    } else if (slots.isNotEmpty &&
+        !slots.any((s) => DateFormat('HH:mm').format(s) == _selectedTimeSlot)) {
+      _selectedTimeSlot = DateFormat('HH:mm').format(slots.first);
+    }
+
+    final dateOnlyStr = DateFormat.yMMMMd(locale).format(_selectedDate);
+
+    // Get holiday if any
+    final dateOnly = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+    );
+    final holiday = provider.operatingHours.holidays.firstWhere(
+      (h) => DateTime(h.date.year, h.date.month, h.date.day) == dateOnly,
+      orElse: () => Holiday(date: DateTime(1970), message: ''),
+    );
+    final hasHoliday = holiday.message.isNotEmpty;
+
+    // Filtered reports
+    final allReports = _getAllReportsAcrossStaff(provider);
+    final filteredReports = allReports.where((r) {
+      if (_reportDateFilter != null) {
+        final d1 = DateTime(
+          r.reportDate.year,
+          r.reportDate.month,
+          r.reportDate.day,
+        );
+        final d2 = DateTime(
+          _reportDateFilter!.year,
+          _reportDateFilter!.month,
+          _reportDateFilter!.day,
+        );
+        if (d1 != d2) return false;
+      }
+      if (_reportStaffIdFilter != null && _reportStaffIdFilter != 'All') {
+        if (r.staffId != _reportStaffIdFilter) return false;
+      }
+      if (_reportStatusFilter != 'All') {
+        final isSub = _reportStatusFilter == 'Completed';
+        if (r.isSubmitted != isSub) return false;
+      }
+      return true;
+    }).toList();
+
+    Widget reportsSection = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              loc.workingReports,
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const Spacer(),
+            // Date Filter Button
+            OutlinedButton.icon(
+              icon: const Icon(Icons.calendar_today, size: 16),
+              label: Text(
+                _reportDateFilter == null
+                    ? loc.selectDate
+                    : DateFormat.yMd(locale).format(_reportDateFilter!),
+              ),
+              onPressed: () async {
+                final d = await showDatePicker(
+                  context: context,
+                  initialDate: _reportDateFilter ?? DateTime.now(),
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime(2030),
+                );
+                if (d != null) {
+                  setState(() => _reportDateFilter = d);
+                }
+              },
+            ),
+            if (_reportDateFilter != null)
+              IconButton(
+                icon: const Icon(Icons.clear),
+                tooltip: loc.clearFilters,
+                onPressed: () => setState(() => _reportDateFilter = null),
+              ),
+            const SizedBox(width: 8),
+            // Staff Filter Dropdown
+            DropdownButton<String>(
+              value: _reportStaffIdFilter ?? 'All',
+              items: [
+                DropdownMenuItem(value: 'All', child: Text(loc.allStudents)),
+                ...provider.staff
+                    .where((s) => !s.isSenior && s.isSetupComplete)
+                    .map(
+                      (s) => DropdownMenuItem(value: s.id, child: Text(s.name)),
+                    ),
+              ],
+              onChanged: (val) {
+                setState(
+                  () => _reportStaffIdFilter = val == 'All' ? null : val,
+                );
+              },
+            ),
+            const SizedBox(width: 16),
+            // Status Filter SegmentedButton
+            SegmentedButton<String>(
+              segments: [
+                ButtonSegment(value: 'All', label: Text(loc.filterAll)),
+                ButtonSegment(value: 'Pending', label: Text(loc.filterPending)),
+                ButtonSegment(
+                  value: 'Completed',
+                  label: Text(loc.filterCompleted),
+                ),
+              ],
+              selected: {_reportStatusFilter},
+              onSelectionChanged: (val) =>
+                  setState(() => _reportStatusFilter = val.first),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Expanded(
+          child: filteredReports.isEmpty
+              ? Center(child: Text(loc.noData))
+              : ListView(
+                  children: [
+                    PaginatedDataTable(
+                      showCheckboxColumn: false,
+                      columns: [
+                        DataColumn(label: Text(loc.date)),
+                        DataColumn(label: Text(loc.name)),
+                        DataColumn(label: Text(loc.scheduledTime)),
+                        DataColumn(label: Text(loc.confirmedStartTime)),
+                        DataColumn(label: Text(loc.workedHours)),
+                        DataColumn(label: Text(loc.status)),
+                      ],
+                      source: _ReportsTableSource(
+                        filteredReports,
+                        provider,
+                        context,
+                        loc,
+                      ),
+                      rowsPerPage: filteredReports.length < 5
+                          ? (filteredReports.isEmpty
+                                ? 1
+                                : filteredReports.length)
+                          : 5,
+                    ),
+                  ],
+                ),
+        ),
+      ],
+    );
+
+    if (_isExpanded) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("$dateOnlyStr - ${loc.calendarOverview}"),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => setState(() => _isExpanded = false),
+          ),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    loc.todaySchedule,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  const Spacer(),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.close_fullscreen),
+                    label: Text(loc.collapse),
+                    onPressed: () => setState(() => _isExpanded = false),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              if (hasHoliday)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade100,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    "${loc.holidayNotice}: ${holiday.message}",
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              Expanded(
+                child: slots.isEmpty
+                    ? Center(child: Text(loc.noPendingShifts))
+                    : SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: DataTable(
+                            columns: [
+                              DataColumn(label: Text(loc.date)),
+                              DataColumn(label: Text(loc.timeSlot)),
+                              DataColumn(label: Text(loc.allStudents)),
+                            ],
+                            rows: slots.map((slot) {
+                              final slotTimeStr = DateFormat(
+                                'HH:mm',
+                              ).format(slot);
+                              final slotEndTimeStr = DateFormat(
+                                'HH:mm',
+                              ).format(slot.add(const Duration(minutes: 30)));
+
+                              // Get and sort blocks
+                              final slotBlocks = provider.blocks
+                                  .where(
+                                    (b) =>
+                                        b.startTime.year ==
+                                            _selectedDate.year &&
+                                        b.startTime.month ==
+                                            _selectedDate.month &&
+                                        b.startTime.day == _selectedDate.day &&
+                                        DateFormat(
+                                              'HH:mm',
+                                            ).format(b.startTime) ==
+                                            slotTimeStr,
+                                  )
+                                  .toList();
+
+                              final approvedBlocks = slotBlocks
+                                  .where((b) => b.status == 'approved')
+                                  .toList();
+                              final pendingBlocks = slotBlocks
+                                  .where((b) => b.status == 'proposed')
+                                  .toList();
+                              final sortedBlocks = [
+                                ...approvedBlocks,
+                                ...pendingBlocks,
+                              ];
+
+                              return DataRow(
+                                cells: [
+                                  DataCell(
+                                    Text(
+                                      DateFormat.yMMMd(
+                                        locale,
+                                      ).format(_selectedDate),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Text("$slotTimeStr - $slotEndTimeStr"),
+                                  ),
+                                  DataCell(
+                                    Wrap(
+                                      spacing: 8,
+                                      runSpacing: 4,
+                                      children: sortedBlocks.isEmpty
+                                          ? [Text(loc.none)]
+                                          : sortedBlocks.map((b) {
+                                              final student = provider.staff
+                                                  .firstWhere(
+                                                    (s) => s.id == b.staffId,
+                                                    orElse: () => StaffMember(
+                                                      id: '',
+                                                      name: 'Unknown',
+                                                      nativeLanguage: '',
+                                                      degree: '',
+                                                      modalityPreference: '',
+                                                      availabilityRate: 0,
+                                                      eventsParticipation: 0,
+                                                      providedAssistance: 0,
+                                                    ),
+                                                  );
+                                              final isApp =
+                                                  b.status == 'approved';
+                                              final cellColor = isApp
+                                                  ? (Theme.of(
+                                                              context,
+                                                            ).brightness ==
+                                                            Brightness.light
+                                                        ? Colors.amber.shade100
+                                                        : Colors.amber.shade800)
+                                                  : (Theme.of(
+                                                              context,
+                                                            ).brightness ==
+                                                            Brightness.light
+                                                        ? Colors.grey.shade200
+                                                        : Colors.grey.shade700);
+
+                                              return _buildStudentChip(
+                                                context,
+                                                provider,
+                                                b,
+                                                student,
+                                                cellColor,
+                                              );
+                                            }).toList(),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Collapsed View (2 rows)
+    final slotTimeStr =
+        _selectedTimeSlot ??
+        (slots.isNotEmpty ? DateFormat('HH:mm').format(slots.first) : '');
+    final activeBlocks = slots.isEmpty
+        ? <AvailabilityBlock>[]
+        : provider.blocks
+              .where(
+                (b) =>
+                    b.startTime.year == _selectedDate.year &&
+                    b.startTime.month == _selectedDate.month &&
+                    b.startTime.day == _selectedDate.day &&
+                    DateFormat('HH:mm').format(b.startTime) == slotTimeStr,
+              )
+              .toList();
+    final approvedActive = activeBlocks
+        .where((b) => b.status == 'approved')
+        .toList();
+    final pendingActive = activeBlocks
+        .where((b) => b.status == 'proposed')
+        .toList();
+    final sortedActive = [...approvedActive, ...pendingActive];
+
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        children: [
+          // Row 1: Daily Schedule Block
+          Card(
+            margin: const EdgeInsets.only(bottom: 24),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        loc.calendarOverview,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Spacer(),
+                      // Date Selector
+                      IconButton(
+                        icon: const Icon(Icons.chevron_left),
+                        onPressed: () => setState(() {
+                          _selectedDate = _selectedDate.subtract(
+                            const Duration(days: 1),
+                          );
+                          _selectedTimeSlot = null;
+                        }),
+                      ),
+                      TextButton.icon(
+                        icon: const Icon(Icons.calendar_month),
+                        label: Text(dateOnlyStr),
+                        onPressed: () async {
+                          final d = await showDatePicker(
+                            context: context,
+                            initialDate: _selectedDate,
+                            firstDate: DateTime(2020),
+                            lastDate: DateTime(2030),
+                          );
+                          if (d != null) {
+                            setState(() {
+                              _selectedDate = d;
+                              _selectedTimeSlot = null;
+                            });
+                          }
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.chevron_right),
+                        onPressed: () => setState(() {
+                          _selectedDate = _selectedDate.add(
+                            const Duration(days: 1),
+                          );
+                          _selectedTimeSlot = null;
+                        }),
+                      ),
+                      const SizedBox(width: 16),
+                      // Time Slot Dropdown selector
+                      if (slots.isNotEmpty) ...[
+                        Text('${loc.timeSlot}: '),
+                        DropdownButton<String>(
+                          value: slotTimeStr,
+                          items: slots.map((s) {
+                            final sStr = DateFormat('HH:mm').format(s);
+                            return DropdownMenuItem(
+                              value: sStr,
+                              child: Text(sStr),
+                            );
+                          }).toList(),
+                          onChanged: (val) =>
+                              setState(() => _selectedTimeSlot = val),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  if (hasHoliday)
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(8),
+                      margin: const EdgeInsets.only(bottom: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade100,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        "${loc.holidayNotice}: ${holiday.message}",
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  // Table (1 header, 1 value row)
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: slots.isEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 24.0),
+                            child: Text(loc.noPendingShifts),
+                          )
+                        : DataTable(
+                            columns: [
+                              DataColumn(label: Text(loc.date)),
+                              DataColumn(label: Text(loc.timeSlot)),
+                              DataColumn(label: Text(loc.allStudents)),
+                            ],
+                            rows: [
+                              DataRow(
+                                cells: [
+                                  DataCell(
+                                    Text(
+                                      DateFormat.yMMMd(
+                                        locale,
+                                      ).format(_selectedDate),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Text(
+                                      "$slotTimeStr - ${DateFormat('HH:mm').format(DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, int.parse(slotTimeStr.split(':')[0]), int.parse(slotTimeStr.split(':')[1])).add(const Duration(minutes: 30)))}",
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Wrap(
+                                      spacing: 8,
+                                      runSpacing: 4,
+                                      children: sortedActive.isEmpty
+                                          ? [Text(loc.none)]
+                                          : sortedActive.map((b) {
+                                              final student = provider.staff
+                                                  .firstWhere(
+                                                    (s) => s.id == b.staffId,
+                                                    orElse: () => StaffMember(
+                                                      id: '',
+                                                      name: 'Unknown',
+                                                      nativeLanguage: '',
+                                                      degree: '',
+                                                      modalityPreference: '',
+                                                      availabilityRate: 0,
+                                                      eventsParticipation: 0,
+                                                      providedAssistance: 0,
+                                                    ),
+                                                  );
+                                              final isApp =
+                                                  b.status == 'approved';
+                                              final cellColor = isApp
+                                                  ? (Theme.of(
+                                                              context,
+                                                            ).brightness ==
+                                                            Brightness.light
+                                                        ? Colors.amber.shade100
+                                                        : Colors.amber.shade800)
+                                                  : (Theme.of(
+                                                              context,
+                                                            ).brightness ==
+                                                            Brightness.light
+                                                        ? Colors.grey.shade200
+                                                        : Colors.grey.shade700);
+
+                                              return _buildStudentChip(
+                                                context,
+                                                provider,
+                                                b,
+                                                student,
+                                                cellColor,
+                                              );
+                                            }).toList(),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.open_in_full),
+                        label: Text(loc.expand),
+                        onPressed: () => setState(() => _isExpanded = true),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Row 2: Working Reports status
+          Expanded(
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: reportsSection,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStudentChip(
+    BuildContext context,
+    AppProvider provider,
+    AvailabilityBlock b,
+    StaffMember student,
+    Color cellColor,
+  ) {
+    final loc = AppLocalizations.of(context)!;
+    return Tooltip(
+      message:
+          "Status: ${b.status.toUpperCase()}\nModality: ${b.modality}\nClick to change status",
+      child: InkWell(
+        onTap: () {
+          // Show popup menu to change status
+          final RenderBox button = context.findRenderObject() as RenderBox;
+          final RenderBox overlay =
+              Navigator.of(context).overlay!.context.findRenderObject()
+                  as RenderBox;
+          final RelativeRect position = RelativeRect.fromRect(
+            Rect.fromPoints(
+              button.localToGlobal(Offset.zero, ancestor: overlay),
+              button.localToGlobal(
+                button.size.bottomRight(Offset.zero),
+                ancestor: overlay,
+              ),
+            ),
+            Offset.zero & overlay.size,
+          );
+          showMenu<String>(
+            context: context,
+            position: position,
+            items: [
+              PopupMenuItem(value: 'approve', child: Text(loc.approve)),
+              PopupMenuItem(value: 'reject', child: Text(loc.reject)),
+            ],
+          ).then((value) {
+            if (value == 'approve') {
+              provider.approveBlocks([b.id]);
+            } else if (value == 'reject') {
+              provider.rejectBlocks([b.id]);
+            }
+          });
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: cellColor,
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: Colors.grey.shade400, width: 0.5),
+          ),
+          child: Text(
+            "${student.name} (${_localizeModality(b.modality, loc).toLowerCase()})",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Colors.black87
+                  : Colors.white,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ReportsTableSource extends DataTableSource {
+  final List<WorkingReport> reports;
+  final AppProvider provider;
+  final BuildContext context;
+  final AppLocalizations loc;
+
+  _ReportsTableSource(this.reports, this.provider, this.context, this.loc);
+
+  @override
+  DataRow? getRow(int index) {
+    if (index >= reports.length) return null;
+    final r = reports[index];
+    final student = provider.staff.firstWhere(
+      (s) => s.id == r.staffId,
+      orElse: () => StaffMember(
+        id: '',
+        name: 'Unknown',
+        nativeLanguage: '',
+        degree: '',
+        modalityPreference: '',
+        availabilityRate: 0,
+        eventsParticipation: 0,
+        providedAssistance: 0,
+      ),
+    );
+
+    final locale = Localizations.localeOf(context).toString();
+    final dateStr = DateFormat.yMMMd(locale).format(r.reportDate);
+    final timeStr =
+        "${DateFormat('HH:mm').format(r.scheduledStart)} - ${DateFormat('HH:mm').format(r.scheduledEnd)}";
+
+    Widget statusBadge;
+    if (r.isSubmitted) {
+      statusBadge = Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.green.shade100,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Text(
+          loc.filledReport,
+          style: TextStyle(
+            color: Colors.green.shade800,
+            fontWeight: FontWeight.bold,
+            fontSize: 11,
+          ),
+        ),
+      );
+    } else {
+      statusBadge = Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.red.shade100,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Text(
+          loc.missingReport,
+          style: TextStyle(
+            color: Colors.red.shade800,
+            fontWeight: FontWeight.bold,
+            fontSize: 11,
+          ),
+        ),
+      );
+    }
+
+    return DataRow(
+      onSelectChanged: (_) {
+        if (r.isSubmitted) {
+          _showReportDetail(r);
+        } else {
+          showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: Text(loc.missingReport),
+              content: Text(loc.pendingReportsNotice),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: Text(loc.proceed),
+                ),
+              ],
+            ),
+          );
+        }
+      },
+      cells: [
+        DataCell(Text(dateStr)),
+        DataCell(Text(student.name)),
+        DataCell(Text(timeStr)),
+        DataCell(
+          Text(
+            r.isSubmitted
+                ? DateFormat('HH:mm').format(r.confirmedStart)
+                : 'N/A',
+          ),
+        ),
+        DataCell(
+          Text(r.isSubmitted ? r.workedHours.toStringAsFixed(2) : 'N/A'),
+        ),
+        DataCell(statusBadge),
+      ],
+    );
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => reports.length;
+
+  @override
+  int get selectedRowCount => 0;
+
+  void _showReportDetail(WorkingReport report) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          '${loc.workingReports} - ${DateFormat.yMd(Localizations.localeOf(context).toString()).format(report.reportDate)}',
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _detailItem(
+              loc.scheduledTime,
+              '${DateFormat('HH:mm').format(report.scheduledStart)} - ${DateFormat('HH:mm').format(report.scheduledEnd)}',
+            ),
+            _detailItem(
+              loc.confirmedStartTime,
+              DateFormat('HH:mm').format(report.confirmedStart),
+            ),
+            _detailItem(
+              loc.confirmedEndTime,
+              DateFormat('HH:mm').format(report.confirmedEnd),
+            ),
+            _detailItem(loc.workedHours, report.workedHours.toStringAsFixed(2)),
+            const Divider(),
+            Text(
+              loc.workDoneLabel,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            Text(report.workDone),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(loc.proceed),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _detailItem(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        children: [
+          Text('$label: ', style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(value),
+        ],
+      ),
+    );
+  }
+}
+
+Future<DateTime?> _selectMonthDialog(
+  BuildContext context,
+  AppLocalizations loc,
+) async {
   DateTime now = DateTime.now();
   return await showDatePicker(
     context: context,
@@ -141,18 +1165,30 @@ class _MetricsViewState extends State<_MetricsView> {
 
   String _translateModelValue(String value, AppLocalizations loc) {
     switch (value) {
-      case 'English': return 'English';
-      case 'Japanese': return 'Japanese';
-      case 'Bachelors': return loc.bachelors;
-      case 'Masters': return loc.masters;
-      case 'PhD': return loc.phd;
-      case 'Research': return loc.research;
-      case 'Online': return loc.online;
-      case 'In-Person': return loc.inPerson;
-      case 'Both': return loc.both;
-      case 'Senior': return loc.senior;
-      case 'Junior': return loc.junior;
-      default: return value;
+      case 'English':
+        return 'English';
+      case 'Japanese':
+        return 'Japanese';
+      case 'Bachelors':
+        return loc.bachelors;
+      case 'Masters':
+        return loc.masters;
+      case 'PhD':
+        return loc.phd;
+      case 'Research':
+        return loc.research;
+      case 'Online':
+        return loc.online;
+      case 'In-Person':
+        return loc.inPerson;
+      case 'Both':
+        return loc.both;
+      case 'Senior':
+        return loc.senior;
+      case 'Junior':
+        return loc.junior;
+      default:
+        return value;
     }
   }
 
@@ -175,17 +1211,21 @@ class _MetricsViewState extends State<_MetricsView> {
 
     var filteredStaff = staffList.where((s) {
       return s.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-             s.nativeLanguage.toLowerCase().contains(_searchQuery.toLowerCase());
+          s.nativeLanguage.toLowerCase().contains(_searchQuery.toLowerCase());
     }).toList();
 
     filteredStaff.sort((s1, s2) {
       int cmp = 0;
       if (_sortColumnIndex == 0) cmp = s1.name.compareTo(s2.name);
-      if (_sortColumnIndex == 1) cmp = s1.nativeLanguage.compareTo(s2.nativeLanguage);
+      if (_sortColumnIndex == 1)
+        cmp = s1.nativeLanguage.compareTo(s2.nativeLanguage);
       if (_sortColumnIndex == 2) cmp = s1.degree.compareTo(s2.degree);
-      if (_sortColumnIndex == 3) cmp = s1.availabilityRate.compareTo(s2.availabilityRate);
-      if (_sortColumnIndex == 4) cmp = s1.eventsParticipation.compareTo(s2.eventsParticipation);
-      if (_sortColumnIndex == 5) cmp = s1.providedAssistance.compareTo(s2.providedAssistance);
+      if (_sortColumnIndex == 3)
+        cmp = s1.availabilityRate.compareTo(s2.availabilityRate);
+      if (_sortColumnIndex == 4)
+        cmp = s1.eventsParticipation.compareTo(s2.eventsParticipation);
+      if (_sortColumnIndex == 5)
+        cmp = s1.providedAssistance.compareTo(s2.providedAssistance);
       return _isAscending ? cmp : -cmp;
     });
 
@@ -235,15 +1275,24 @@ class _MetricsViewState extends State<_MetricsView> {
                             context: context,
                             builder: (ctx) => AlertDialog(
                               title: Text(loc.mockEmailTitle),
-                              content: Text(loc.mockEmailContent(emailController.text)),
+                              content: Text(
+                                loc.mockEmailContent(emailController.text),
+                              ),
                               actions: [
                                 ElevatedButton(
                                   onPressed: () {
                                     Navigator.pop(ctx);
-                                    Navigator.push(context, MaterialPageRoute(builder: (_) => SetupProfileScreen(applicant: mockApplicant)));
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => SetupProfileScreen(
+                                          applicant: mockApplicant,
+                                        ),
+                                      ),
+                                    );
                                   },
                                   child: Text(loc.openInviteLink),
-                                )
+                                ),
                               ],
                             ),
                           );
@@ -266,7 +1315,9 @@ class _MetricsViewState extends State<_MetricsView> {
                             );
                           } catch (e) {
                             messenger.showSnackBar(
-                              SnackBar(content: Text(loc.importError(e.toString()))),
+                              SnackBar(
+                                content: Text(loc.importError(e.toString())),
+                              ),
                             );
                           }
                         }
@@ -274,7 +1325,7 @@ class _MetricsViewState extends State<_MetricsView> {
                     ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -287,57 +1338,153 @@ class _MetricsViewState extends State<_MetricsView> {
                   sortColumnIndex: _sortColumnIndex,
                   sortAscending: _isAscending,
                   columns: [
-                    DataColumn(label: _sortableHeader(loc.name), onSort: (index, asc) => setState(() { _sortColumnIndex = index; _isAscending = asc; })),
-                    DataColumn(label: _sortableHeader(loc.nativeLang), onSort: (index, asc) => setState(() { _sortColumnIndex = index; _isAscending = asc; })),
+                    DataColumn(
+                      label: _sortableHeader(loc.name),
+                      onSort: (index, asc) => setState(() {
+                        _sortColumnIndex = index;
+                        _isAscending = asc;
+                      }),
+                    ),
+                    DataColumn(
+                      label: _sortableHeader(loc.nativeLang),
+                      onSort: (index, asc) => setState(() {
+                        _sortColumnIndex = index;
+                        _isAscending = asc;
+                      }),
+                    ),
                     DataColumn(label: Text(loc.otherLanguages)),
-                    DataColumn(label: _sortableHeader(loc.currentlyStudying), onSort: (index, asc) => setState(() { _sortColumnIndex = index; _isAscending = asc; })),
-                    DataColumn(label: _sortableHeader(loc.availRate), onSort: (index, asc) => setState(() { _sortColumnIndex = index; _isAscending = asc; })),
-                    DataColumn(label: _sortableHeader(loc.eventsPart), onSort: (index, asc) => setState(() { _sortColumnIndex = index; _isAscending = asc; })),
-                    DataColumn(label: _sortableHeader(loc.assistance), onSort: (index, asc) => setState(() { _sortColumnIndex = index; _isAscending = asc; })),
+                    DataColumn(
+                      label: _sortableHeader(loc.currentlyStudying),
+                      onSort: (index, asc) => setState(() {
+                        _sortColumnIndex = index;
+                        _isAscending = asc;
+                      }),
+                    ),
+                    DataColumn(
+                      label: _sortableHeader(loc.availRate),
+                      onSort: (index, asc) => setState(() {
+                        _sortColumnIndex = index;
+                        _isAscending = asc;
+                      }),
+                    ),
+                    DataColumn(
+                      label: _sortableHeader(loc.eventsPart),
+                      onSort: (index, asc) => setState(() {
+                        _sortColumnIndex = index;
+                        _isAscending = asc;
+                      }),
+                    ),
+                    DataColumn(
+                      label: _sortableHeader(loc.assistance),
+                      onSort: (index, asc) => setState(() {
+                        _sortColumnIndex = index;
+                        _isAscending = asc;
+                      }),
+                    ),
                     DataColumn(label: Text(loc.alerts)),
                     DataColumn(label: Text(loc.employment)),
                     DataColumn(label: Text(loc.role)),
                   ],
                   rows: filteredStaff.map((s) {
-                    final needsReplaceBlocks = blocks.where((b) => b.staffId == s.id && b.needsReplacement).length;
-                    return DataRow(cells: [
-                      DataCell(Row(children: [
-                        CircleAvatar(child: Text(s.name[0])), 
-                        const SizedBox(width: 8), 
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
+                    final needsReplaceBlocks = blocks
+                        .where((b) => b.staffId == s.id && b.needsReplacement)
+                        .length;
+                    return DataRow(
+                      cells: [
+                        DataCell(
+                          Row(
                             children: [
-                              Text(s.name, style: const TextStyle(fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
-                              if (s.kanaName.isNotEmpty) Text(s.kanaName, style: const TextStyle(fontSize: 10, color: Colors.grey), overflow: TextOverflow.ellipsis),
+                              CircleAvatar(child: Text(s.name[0])),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      s.name,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    if (s.kanaName.isNotEmpty)
+                                      Text(
+                                        s.kanaName,
+                                        style: const TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.grey,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
-                        )
-                      ])),
-                      DataCell(Text(_translateModelValue(s.nativeLanguage, loc))),
-                      DataCell(Text(s.languageSkills.map((e) => '${e.language} (${e.proficiency})').join(', '))),
-                      DataCell(Text(_translateModelValue(s.degree, loc))),
-                      DataCell(Text('${(s.availabilityRate * 100).toStringAsFixed(1)}%')),
-                      DataCell(Text(s.eventsParticipation.toString())),
-                      DataCell(Text(s.providedAssistance.toString())),
-                      DataCell(needsReplaceBlocks > 0 
-                        ? Text('$needsReplaceBlocks ${loc.alerts}', style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)) 
-                        : Text(loc.none)),
-                      DataCell(s.isSenior 
-                        ? const Text("-") 
-                        : IconButton(
-                            icon: const Icon(Icons.exit_to_app, color: Colors.red),
-                            tooltip: loc.finishEmployment,
-                            onPressed: () => _showFinishEmploymentDialog(context, provider, s, loc),
-                          )),
-                      DataCell(s.isSenior ? Text(loc.senior) : ElevatedButton(onPressed: () => provider.upgradeToSenior(s.id), child: Text(loc.upgradeToSenior))),
-                    ]);
+                        ),
+                        DataCell(
+                          Text(_translateModelValue(s.nativeLanguage, loc)),
+                        ),
+                        DataCell(
+                          Text(
+                            s.languageSkills
+                                .map((e) => '${e.language} (${e.proficiency})')
+                                .join(', '),
+                          ),
+                        ),
+                        DataCell(Text(_translateModelValue(s.degree, loc))),
+                        DataCell(
+                          Text(
+                            '${(s.availabilityRate * 100).toStringAsFixed(1)}%',
+                          ),
+                        ),
+                        DataCell(Text(s.eventsParticipation.toString())),
+                        DataCell(Text(s.providedAssistance.toString())),
+                        DataCell(
+                          needsReplaceBlocks > 0
+                              ? Text(
+                                  '$needsReplaceBlocks ${loc.alerts}',
+                                  style: const TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
+                              : Text(loc.none),
+                        ),
+                        DataCell(
+                          s.isSenior
+                              ? const Text("-")
+                              : IconButton(
+                                  icon: const Icon(
+                                    Icons.exit_to_app,
+                                    color: Colors.red,
+                                  ),
+                                  tooltip: loc.finishEmployment,
+                                  onPressed: () => _showFinishEmploymentDialog(
+                                    context,
+                                    provider,
+                                    s,
+                                    loc,
+                                  ),
+                                ),
+                        ),
+                        DataCell(
+                          s.isSenior
+                              ? Text(loc.senior)
+                              : ElevatedButton(
+                                  onPressed: () =>
+                                      provider.upgradeToSenior(s.id),
+                                  child: Text(loc.upgradeToSenior),
+                                ),
+                        ),
+                      ],
+                    );
                   }).toList(),
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -359,7 +1506,9 @@ class _GuardrailsViewState extends State<_GuardrailsView> {
     super.initState();
     final provider = context.read<AppProvider>();
     final currentLimit = provider.operatingHours.maxWeeklyHours;
-    _limitController = TextEditingController(text: currentLimit?.toString() ?? '');
+    _limitController = TextEditingController(
+      text: currentLimit?.toString() ?? '',
+    );
   }
 
   @override
@@ -373,7 +1522,15 @@ class _GuardrailsViewState extends State<_GuardrailsView> {
     final loc = AppLocalizations.of(context)!;
     final provider = context.watch<AppProvider>();
     final config = provider.operatingHours;
-    final List<String> weekdays = [loc.mon, loc.tue, loc.wed, loc.thu, loc.fri, loc.sat, loc.sun];
+    final List<String> weekdays = [
+      loc.mon,
+      loc.tue,
+      loc.wed,
+      loc.thu,
+      loc.fri,
+      loc.sat,
+      loc.sun,
+    ];
 
     return Padding(
       padding: const EdgeInsets.all(24.0),
@@ -381,7 +1538,10 @@ class _GuardrailsViewState extends State<_GuardrailsView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(loc.operatingHours, style: Theme.of(context).textTheme.headlineSmall),
+            Text(
+              loc.operatingHours,
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
             const SizedBox(height: 16),
             DataTable(
               columns: [
@@ -391,39 +1551,127 @@ class _GuardrailsViewState extends State<_GuardrailsView> {
                 DataColumn(label: Text(loc.closed)),
               ],
               rows: config.weeklySchedule.map((ds) {
-                return DataRow(cells: [
-                  DataCell(Text(weekdays[ds.weekday - 1])),
-                  DataCell(DropdownButton<String>(
-                    value: ds.startHour,
-                    items: List.generate(24, (index) => '${index.toString().padLeft(2, '0')}:00').map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
-                    onChanged: ds.isClosed ? null : (val) { if (val != null) provider.updateDaySchedule(ds.weekday, val, ds.endHour, ds.isClosed); },
-                  )),
-                  DataCell(DropdownButton<String>(
-                    value: ds.endHour,
-                    items: List.generate(24, (index) => '${index.toString().padLeft(2, '0')}:00').map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
-                    onChanged: ds.isClosed ? null : (val) { if (val != null) provider.updateDaySchedule(ds.weekday, ds.startHour, val, ds.isClosed); },
-                  )),
-                  DataCell(Switch(value: ds.isClosed, onChanged: (val) => provider.updateDaySchedule(ds.weekday, ds.startHour, ds.endHour, val)))
-                ]);
+                return DataRow(
+                  cells: [
+                    DataCell(Text(weekdays[ds.weekday - 1])),
+                    DataCell(
+                      DropdownButton<String>(
+                        value: ds.startHour,
+                        items:
+                            List.generate(
+                                  24,
+                                  (index) =>
+                                      '${index.toString().padLeft(2, '0')}:00',
+                                )
+                                .map(
+                                  (t) => DropdownMenuItem(
+                                    value: t,
+                                    child: Text(t),
+                                  ),
+                                )
+                                .toList(),
+                        onChanged: ds.isClosed
+                            ? null
+                            : (val) {
+                                if (val != null)
+                                  provider.updateDaySchedule(
+                                    ds.weekday,
+                                    val,
+                                    ds.endHour,
+                                    ds.isClosed,
+                                  );
+                              },
+                      ),
+                    ),
+                    DataCell(
+                      DropdownButton<String>(
+                        value: ds.endHour,
+                        items:
+                            List.generate(
+                                  24,
+                                  (index) =>
+                                      '${index.toString().padLeft(2, '0')}:00',
+                                )
+                                .map(
+                                  (t) => DropdownMenuItem(
+                                    value: t,
+                                    child: Text(t),
+                                  ),
+                                )
+                                .toList(),
+                        onChanged: ds.isClosed
+                            ? null
+                            : (val) {
+                                if (val != null)
+                                  provider.updateDaySchedule(
+                                    ds.weekday,
+                                    ds.startHour,
+                                    val,
+                                    ds.isClosed,
+                                  );
+                              },
+                      ),
+                    ),
+                    DataCell(
+                      Switch(
+                        value: ds.isClosed,
+                        onChanged: (val) => provider.updateDaySchedule(
+                          ds.weekday,
+                          ds.startHour,
+                          ds.endHour,
+                          val,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
               }).toList(),
             ),
             const SizedBox(height: 48),
-            Text(loc.holidays, style: Theme.of(context).textTheme.headlineSmall),
+            Text(
+              loc.holidays,
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
             const SizedBox(height: 16),
-            ElevatedButton.icon(icon: const Icon(Icons.calendar_month), label: Text(loc.addHoliday), onPressed: () => _showAddHolidayDialog(context, provider, loc)),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.calendar_month),
+              label: Text(loc.addHoliday),
+              onPressed: () => _showAddHolidayDialog(context, provider, loc),
+            ),
             const SizedBox(height: 16),
-            Wrap(spacing: 8, children: config.holidays.map((h) => Chip(label: Text('${DateFormat.yMd(Localizations.localeOf(context).toString()).format(h.date)}: ${h.message}' + (h.isAllDay ? '' : ' (${h.startTime}-${h.endTime})')), onDeleted: () => provider.removeHoliday(h.date))).toList()),
+            Wrap(
+              spacing: 8,
+              children: config.holidays
+                  .map(
+                    (h) => Chip(
+                      label: Text(
+                        '${DateFormat.yMd(Localizations.localeOf(context).toString()).format(h.date)}: ${h.message}${h.isAllDay ? '' : ' (${h.startTime}-${h.endTime})'}',
+                      ),
+                      onDeleted: () => provider.removeHoliday(h.date),
+                    ),
+                  )
+                  .toList(),
+            ),
             const SizedBox(height: 48),
-            Text(loc.weeklyHoursLimit, style: Theme.of(context).textTheme.headlineSmall),
+            Text(
+              loc.weeklyHoursLimit,
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
             const SizedBox(height: 16),
             Card(
               elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
                   children: [
-                    const Icon(Icons.hourglass_bottom, color: Colors.blue, size: 28),
+                    const Icon(
+                      Icons.hourglass_bottom,
+                      color: Colors.blue,
+                      size: 28,
+                    ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
@@ -431,12 +1679,18 @@ class _GuardrailsViewState extends State<_GuardrailsView> {
                         children: [
                           Text(
                             loc.weeklyHoursLimit,
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             loc.weeklyLimitDescription,
-                            style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 12,
+                            ),
                           ),
                         ],
                       ),
@@ -468,32 +1722,101 @@ class _GuardrailsViewState extends State<_GuardrailsView> {
               ),
             ),
             const SizedBox(height: 48),
-            Text('GCL Information', style: Theme.of(context).textTheme.headlineSmall),
+            Text(
+              'GCL Information',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
             const SizedBox(height: 16),
             Card(
               elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
                   children: [
                     Row(
                       children: [
-                        Expanded(child: TextFormField(decoration: const InputDecoration(labelText: 'Address', prefixIcon: Icon(Icons.location_on), border: OutlineInputBorder()), initialValue: 'Kyushu Institute of Technology, Iizuka')),
+                        Expanded(
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: 'Address',
+                              prefixIcon: Icon(Icons.location_on),
+                              border: OutlineInputBorder(),
+                            ),
+                            initialValue:
+                                'Kyushu Institute of Technology, Iizuka',
+                          ),
+                        ),
                         const SizedBox(width: 16),
-                        Expanded(child: TextFormField(decoration: const InputDecoration(labelText: 'Phone', prefixIcon: Icon(Icons.phone), border: OutlineInputBorder()), initialValue: '+81-123-456-789')),
+                        Expanded(
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: 'Phone',
+                              prefixIcon: Icon(Icons.phone),
+                              border: OutlineInputBorder(),
+                            ),
+                            initialValue: '+81-123-456-789',
+                          ),
+                        ),
                         const SizedBox(width: 16),
-                        Expanded(child: TextFormField(decoration: const InputDecoration(labelText: 'Email', prefixIcon: Icon(Icons.email), border: OutlineInputBorder()), initialValue: 'contact@gclkyutech.jp')),
+                        Expanded(
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: 'Email',
+                              prefixIcon: Icon(Icons.email),
+                              border: OutlineInputBorder(),
+                            ),
+                            initialValue: 'contact@gclkyutech.jp',
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 16),
                     Row(
                       children: [
-                        Expanded(child: TextFormField(decoration: const InputDecoration(labelText: 'YouTube Link', prefixIcon: Icon(Icons.play_circle_filled, color: Colors.red), border: OutlineInputBorder()), initialValue: 'https://youtube.com/c/gclkyutech')),
+                        Expanded(
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: 'YouTube Link',
+                              prefixIcon: Icon(
+                                Icons.play_circle_filled,
+                                color: Colors.red,
+                              ),
+                              border: OutlineInputBorder(),
+                            ),
+                            initialValue: 'https://youtube.com/c/gclkyutech',
+                          ),
+                        ),
                         const SizedBox(width: 16),
-                        Expanded(child: TextFormField(decoration: const InputDecoration(labelText: 'Instagram Link', prefixIcon: Icon(Icons.camera_alt, color: Colors.purple), border: OutlineInputBorder()), initialValue: 'https://instagram.com/gclkyutech')),
+                        Expanded(
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: 'Instagram Link',
+                              prefixIcon: Icon(
+                                Icons.camera_alt,
+                                color: Colors.purple,
+                              ),
+                              border: OutlineInputBorder(),
+                            ),
+                            initialValue: 'https://instagram.com/gclkyutech',
+                          ),
+                        ),
                         const SizedBox(width: 16),
-                        Expanded(child: TextFormField(decoration: const InputDecoration(labelText: 'X (Twitter) Link', prefixIcon: Icon(Icons.alternate_email, color: Colors.black), border: OutlineInputBorder()), initialValue: 'https://x.com/gclkyutech')),
+                        Expanded(
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: 'X (Twitter) Link',
+                              prefixIcon: Icon(
+                                Icons.alternate_email,
+                                color: Colors.black,
+                              ),
+                              border: OutlineInputBorder(),
+                            ),
+                            initialValue: 'https://x.com/gclkyutech',
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -501,7 +1824,13 @@ class _GuardrailsViewState extends State<_GuardrailsView> {
                       alignment: Alignment.centerRight,
                       child: ElevatedButton(
                         onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('GCL Information Updated Successfully')));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'GCL Information Updated Successfully',
+                              ),
+                            ),
+                          );
                         },
                         child: const Text('Save Information'),
                       ),
@@ -516,7 +1845,11 @@ class _GuardrailsViewState extends State<_GuardrailsView> {
     );
   }
 
-  void _showAddHolidayDialog(BuildContext context, AppProvider provider, AppLocalizations loc) {
+  void _showAddHolidayDialog(
+    BuildContext context,
+    AppProvider provider,
+    AppLocalizations loc,
+  ) {
     Set<DateTime> selectedDates = {DateTime.now()};
     bool isAllDay = true;
     String start = '09:00';
@@ -532,7 +1865,10 @@ class _GuardrailsViewState extends State<_GuardrailsView> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(loc.selectDaysPrompt, style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  loc.selectDaysPrompt,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 8),
                 SizedBox(
                   width: 300,
@@ -545,7 +1881,8 @@ class _GuardrailsViewState extends State<_GuardrailsView> {
                       setState(() {
                         final dateOnly = DateTime(val.year, val.month, val.day);
                         if (selectedDates.contains(dateOnly)) {
-                          if (selectedDates.length > 1) selectedDates.remove(dateOnly);
+                          if (selectedDates.length > 1)
+                            selectedDates.remove(dateOnly);
                         } else {
                           selectedDates.add(dateOnly);
                         }
@@ -556,29 +1893,109 @@ class _GuardrailsViewState extends State<_GuardrailsView> {
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 4,
-                  children: selectedDates.map((d) => Chip(
-                    label: Text(DateFormat('MM/dd').format(d), style: const TextStyle(fontSize: 10)),
-                    onDeleted: selectedDates.length > 1 ? () => setState(() => selectedDates.remove(d)) : null,
-                  )).toList(),
+                  children: selectedDates
+                      .map(
+                        (d) => Chip(
+                          label: Text(
+                            DateFormat('MM/dd').format(d),
+                            style: const TextStyle(fontSize: 10),
+                          ),
+                          onDeleted: selectedDates.length > 1
+                              ? () => setState(() => selectedDates.remove(d))
+                              : null,
+                        ),
+                      )
+                      .toList(),
                 ),
                 const SizedBox(height: 16),
-                TextField(controller: msgController, decoration: InputDecoration(labelText: loc.holidayMessagePrompt, border: const OutlineInputBorder())),
+                TextField(
+                  controller: msgController,
+                  decoration: InputDecoration(
+                    labelText: loc.holidayMessagePrompt,
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
                 const SizedBox(height: 16),
-                Row(children: [Text(loc.allDay), const Spacer(), Switch(value: isAllDay, onChanged: (val) => setState(() => isAllDay = val))]),
+                Row(
+                  children: [
+                    Text(loc.allDay),
+                    const Spacer(),
+                    Switch(
+                      value: isAllDay,
+                      onChanged: (val) => setState(() => isAllDay = val),
+                    ),
+                  ],
+                ),
                 if (!isAllDay) ...[
                   const SizedBox(height: 8),
-                  Row(children: [
-                    Expanded(child: DropdownButton<String>(value: start, isExpanded: true, items: List.generate(24, (i) => '${i.toString().padLeft(2, '0')}:00').map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(), onChanged: (v) => setState(() => start = v!))),
-                    const Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: Text('-')),
-                    Expanded(child: DropdownButton<String>(value: end, isExpanded: true, items: List.generate(24, (i) => '${i.toString().padLeft(2, '0')}:00').map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(), onChanged: (v) => setState(() => end = v!))),
-                  ]),
-                ]
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DropdownButton<String>(
+                          value: start,
+                          isExpanded: true,
+                          items:
+                              List.generate(
+                                    24,
+                                    (i) => '${i.toString().padLeft(2, '0')}:00',
+                                  )
+                                  .map(
+                                    (t) => DropdownMenuItem(
+                                      value: t,
+                                      child: Text(t),
+                                    ),
+                                  )
+                                  .toList(),
+                          onChanged: (v) => setState(() => start = v!),
+                        ),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        child: Text('-'),
+                      ),
+                      Expanded(
+                        child: DropdownButton<String>(
+                          value: end,
+                          isExpanded: true,
+                          items:
+                              List.generate(
+                                    24,
+                                    (i) => '${i.toString().padLeft(2, '0')}:00',
+                                  )
+                                  .map(
+                                    (t) => DropdownMenuItem(
+                                      value: t,
+                                      child: Text(t),
+                                    ),
+                                  )
+                                  .toList(),
+                          onChanged: (v) => setState(() => end = v!),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(dContext), child: Text(loc.cancel)),
-            ElevatedButton(onPressed: () { provider.addHolidays(selectedDates.toList(), msgController.text, isAllDay: isAllDay, start: start, end: end); Navigator.pop(dContext); }, child: Text(loc.saveHoliday)),
+            TextButton(
+              onPressed: () => Navigator.pop(dContext),
+              child: Text(loc.cancel),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                provider.addHolidays(
+                  selectedDates.toList(),
+                  msgController.text,
+                  isAllDay: isAllDay,
+                  start: start,
+                  end: end,
+                );
+                Navigator.pop(dContext);
+              },
+              child: Text(loc.saveHoliday),
+            ),
           ],
         ),
       ),
@@ -601,14 +2018,23 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
     final provider = context.watch<AppProvider>();
-    final juniors = provider.staff.where((s) => !s.isSenior && s.isSetupComplete).toList();
+    final juniors = provider.staff
+        .where((s) => !s.isSenior && s.isSetupComplete)
+        .toList();
 
     final pendingReports = <WorkingReport>[];
     for (var j in juniors) {
-      final unsubmitted = provider.reports.where((r) => r.staffId == j.id && !r.isSubmitted && r.scheduledEnd.isBefore(DateTime.now())).toList();
+      final unsubmitted = provider.reports
+          .where(
+            (r) =>
+                r.staffId == j.id &&
+                !r.isSubmitted &&
+                r.scheduledEnd.isBefore(DateTime.now()),
+          )
+          .toList();
       pendingReports.addAll(unsubmitted);
     }
-    
+
     final bool showPendingTab = pendingReports.length > 3;
 
     if (showPendingTab) {
@@ -640,7 +2066,12 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
     }
   }
 
-  Widget _buildCalendarTab(BuildContext context, AppProvider provider, List<StaffMember> juniors, AppLocalizations loc) {
+  Widget _buildCalendarTab(
+    BuildContext context,
+    AppProvider provider,
+    List<StaffMember> juniors,
+    AppLocalizations loc,
+  ) {
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Column(
@@ -648,24 +2079,41 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
         children: [
           Row(
             children: [
-              Text(loc.workingReports, style: Theme.of(context).textTheme.headlineSmall),
+              Text(
+                loc.workingReports,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
               const Spacer(),
               ElevatedButton.icon(
                 icon: const Icon(Icons.download),
                 label: const Text("Export All Juniors"),
-                onPressed: PlatformHelper.isWeb ? () {
-                  ExcelService.exportAllStaffWorkingReports(juniors, provider.reports, loc);
-                } : null,
+                onPressed: PlatformHelper.isWeb
+                    ? () {
+                        ExcelService.exportAllStaffWorkingReports(
+                          juniors,
+                          provider.reports,
+                          loc,
+                        );
+                      }
+                    : null,
               ),
               const SizedBox(width: 8),
               if (_selectedStaff != null)
                 ElevatedButton.icon(
                   icon: const Icon(Icons.download),
                   label: Text(loc.exportExcel),
-                  onPressed: PlatformHelper.isWeb ? () {
-                    final staffReports = provider.reports.where((r) => r.staffId == _selectedStaff!.id).toList();
-                    ExcelService.exportWorkingReports(_selectedStaff!, staffReports, loc);
-                  } : null,
+                  onPressed: PlatformHelper.isWeb
+                      ? () {
+                          final staffReports = provider.reports
+                              .where((r) => r.staffId == _selectedStaff!.id)
+                              .toList();
+                          ExcelService.exportWorkingReports(
+                            _selectedStaff!,
+                            staffReports,
+                            loc,
+                          );
+                        }
+                      : null,
                 ),
             ],
           ),
@@ -674,16 +2122,27 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
             children: [
               Expanded(
                 child: DropdownButtonFormField<StaffMember>(
-                  decoration: InputDecoration(labelText: loc.juniorStaff, border: const OutlineInputBorder()),
+                  decoration: InputDecoration(
+                    labelText: loc.juniorStaff,
+                    border: const OutlineInputBorder(),
+                  ),
                   initialValue: _selectedStaff,
-                  items: juniors.map((s) => DropdownMenuItem(value: s, child: Text(s.name))).toList(),
+                  items: juniors
+                      .map(
+                        (s) => DropdownMenuItem(value: s, child: Text(s.name)),
+                      )
+                      .toList(),
                   onChanged: (val) => setState(() => _selectedStaff = val),
                 ),
               ),
               const SizedBox(width: 16),
               OutlinedButton.icon(
                 icon: const Icon(Icons.calendar_month),
-                label: Text(DateFormat.yMMMM(Localizations.localeOf(context).toString()).format(_viewMonth)),
+                label: Text(
+                  DateFormat.yMMMM(
+                    Localizations.localeOf(context).toString(),
+                  ).format(_viewMonth),
+                ),
                 onPressed: () async {
                   final d = await showDatePicker(
                     context: context,
@@ -707,13 +2166,21 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
     );
   }
 
-  Widget _buildPendingTab(BuildContext context, AppProvider provider, List<WorkingReport> pendingReports, AppLocalizations loc) {
+  Widget _buildPendingTab(
+    BuildContext context,
+    AppProvider provider,
+    List<WorkingReport> pendingReports,
+    AppLocalizations loc,
+  ) {
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Missing Working Reports", style: Theme.of(context).textTheme.headlineSmall),
+          Text(
+            "Missing Working Reports",
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
           const SizedBox(height: 24),
           Expanded(
             child: SingleChildScrollView(
@@ -725,13 +2192,42 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
                   DataColumn(label: Text("Action")),
                 ],
                 rows: pendingReports.map((r) {
-                  final staff = provider.staff.firstWhere((s) => s.id == r.staffId, orElse: () => StaffMember(id: '', name: 'Unknown', nativeLanguage: '', degree: '', modalityPreference: '', availabilityRate: 0.0, eventsParticipation: 0, providedAssistance: 0));
-                  return DataRow(cells: [
-                    DataCell(Text(DateFormat.yMd(Localizations.localeOf(context).toString()).format(r.reportDate))),
-                    DataCell(Text(staff.name)),
-                    DataCell(Text('${DateFormat('HH:mm').format(r.scheduledStart)} - ${DateFormat('HH:mm').format(r.scheduledEnd)}')),
-                    DataCell(ElevatedButton(onPressed: () {}, child: const Text("Remind"))),
-                  ]);
+                  final staff = provider.staff.firstWhere(
+                    (s) => s.id == r.staffId,
+                    orElse: () => StaffMember(
+                      id: '',
+                      name: 'Unknown',
+                      nativeLanguage: '',
+                      degree: '',
+                      modalityPreference: '',
+                      availabilityRate: 0.0,
+                      eventsParticipation: 0,
+                      providedAssistance: 0,
+                    ),
+                  );
+                  return DataRow(
+                    cells: [
+                      DataCell(
+                        Text(
+                          DateFormat.yMd(
+                            Localizations.localeOf(context).toString(),
+                          ).format(r.reportDate),
+                        ),
+                      ),
+                      DataCell(Text(staff.name)),
+                      DataCell(
+                        Text(
+                          '${DateFormat('HH:mm').format(r.scheduledStart)} - ${DateFormat('HH:mm').format(r.scheduledEnd)}',
+                        ),
+                      ),
+                      DataCell(
+                        ElevatedButton(
+                          onPressed: () {},
+                          child: const Text("Remind"),
+                        ),
+                      ),
+                    ],
+                  );
                 }).toList(),
               ),
             ),
@@ -744,7 +2240,7 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
   Widget _buildReportCalendar(BuildContext context, AppProvider provider) {
     final loc = AppLocalizations.of(context)!;
     final daysInMonth = DateTime(_viewMonth.year, _viewMonth.month + 1, 0).day;
-    
+
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
@@ -756,21 +2252,25 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
       itemBuilder: (context, index) {
         final day = index + 1;
         final date = DateTime(_viewMonth.year, _viewMonth.month, day);
-        
-        final hadShift = provider.blocks.any((b) => 
-          b.staffId == _selectedStaff!.id && 
-          b.startTime.year == date.year &&
-          b.startTime.month == date.month &&
-          b.startTime.day == date.day
+
+        final hadShift = provider.blocks.any(
+          (b) =>
+              b.staffId == _selectedStaff!.id &&
+              b.startTime.year == date.year &&
+              b.startTime.month == date.month &&
+              b.startTime.day == date.day,
         );
 
-        final report = provider.reports.where((r) => 
-          r.staffId == _selectedStaff!.id && 
-          r.reportDate.year == date.year &&
-          r.reportDate.month == date.month &&
-          r.reportDate.day == date.day &&
-          r.isSubmitted
-        ).firstOrNull;
+        final report = provider.reports
+            .where(
+              (r) =>
+                  r.staffId == _selectedStaff!.id &&
+                  r.reportDate.year == date.year &&
+                  r.reportDate.month == date.month &&
+                  r.reportDate.day == date.day &&
+                  r.isSubmitted,
+            )
+            .firstOrNull;
 
         Color bgColor = Colors.grey.shade100;
         String statusText = '';
@@ -790,7 +2290,9 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
         }
 
         return InkWell(
-          onTap: report != null ? () => _showReportDetail(context, report) : null,
+          onTap: report != null
+              ? () => _showReportDetail(context, report)
+              : null,
           child: Container(
             decoration: BoxDecoration(
               color: bgColor,
@@ -800,9 +2302,18 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(day.toString(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                Text(
+                  day.toString(),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
                 if (statusText.isNotEmpty)
-                  Text(statusText, style: TextStyle(fontSize: 10, color: Colors.grey.shade700)),
+                  Text(
+                    statusText,
+                    style: TextStyle(fontSize: 10, color: Colors.grey.shade700),
+                  ),
               ],
             ),
           ),
@@ -816,23 +2327,40 @@ class _WorkingReportsViewState extends State<_WorkingReportsView> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('${loc.workingReports} - ${DateFormat.yMd(Localizations.localeOf(context).toString()).format(report.reportDate)}'),
+        title: Text(
+          '${loc.workingReports} - ${DateFormat.yMd(Localizations.localeOf(context).toString()).format(report.reportDate)}',
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _detailItem(loc.scheduledTime, '${DateFormat('HH:mm').format(report.scheduledStart)} - ${DateFormat('HH:mm').format(report.scheduledEnd)}'),
-            _detailItem(loc.confirmedStartTime, DateFormat('HH:mm').format(report.confirmedStart)),
-            _detailItem(loc.confirmedEndTime, DateFormat('HH:mm').format(report.confirmedEnd)),
+            _detailItem(
+              loc.scheduledTime,
+              '${DateFormat('HH:mm').format(report.scheduledStart)} - ${DateFormat('HH:mm').format(report.scheduledEnd)}',
+            ),
+            _detailItem(
+              loc.confirmedStartTime,
+              DateFormat('HH:mm').format(report.confirmedStart),
+            ),
+            _detailItem(
+              loc.confirmedEndTime,
+              DateFormat('HH:mm').format(report.confirmedEnd),
+            ),
             _detailItem(loc.workedHours, report.workedHours.toStringAsFixed(2)),
             const Divider(),
-            Text(loc.workDoneLabel, style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              loc.workDoneLabel,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 4),
             Text(report.workDone),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(loc.cancel)),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(loc.cancel),
+          ),
         ],
       ),
     );
@@ -844,7 +2372,12 @@ class Shift {
   final List<AvailabilityBlock> blocks;
   final DateTime start;
   final DateTime end;
-  Shift({required this.staff, required this.blocks, required this.start, required this.end});
+  Shift({
+    required this.staff,
+    required this.blocks,
+    required this.start,
+    required this.end,
+  });
 }
 
 enum CalendarViewType { day, week, month }
@@ -868,7 +2401,11 @@ class _ApprovalTabState extends State<_ApprovalTab> {
       } else if (_viewType == CalendarViewType.week) {
         _currentDate = _currentDate.add(Duration(days: delta * 7));
       } else {
-        _currentDate = DateTime(_currentDate.year, _currentDate.month + delta, 1);
+        _currentDate = DateTime(
+          _currentDate.year,
+          _currentDate.month + delta,
+          1,
+        );
       }
     });
   }
@@ -885,16 +2422,29 @@ class _ApprovalTabState extends State<_ApprovalTab> {
         children: [
           Row(
             children: [
-              Text(loc.nextMonthSchedule, style: Theme.of(context).textTheme.headlineSmall),
+              Text(
+                loc.nextMonthSchedule,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
               const Spacer(),
               SegmentedButton<CalendarViewType>(
                 segments: [
-                  ButtonSegment(value: CalendarViewType.day, label: Text(loc.day)),
-                  ButtonSegment(value: CalendarViewType.week, label: Text(loc.week)),
-                  ButtonSegment(value: CalendarViewType.month, label: Text(loc.month)),
+                  ButtonSegment(
+                    value: CalendarViewType.day,
+                    label: Text(loc.day),
+                  ),
+                  ButtonSegment(
+                    value: CalendarViewType.week,
+                    label: Text(loc.week),
+                  ),
+                  ButtonSegment(
+                    value: CalendarViewType.month,
+                    label: Text(loc.month),
+                  ),
                 ],
                 selected: {_viewType},
-                onSelectionChanged: (val) => setState(() => _viewType = val.first),
+                onSelectionChanged: (val) =>
+                    setState(() => _viewType = val.first),
               ),
               const SizedBox(width: 16),
               OutlinedButton.icon(
@@ -944,13 +2494,19 @@ class _ApprovalTabState extends State<_ApprovalTab> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(icon: const Icon(Icons.chevron_left), onPressed: () => _navigate(-1)),
+              IconButton(
+                icon: const Icon(Icons.chevron_left),
+                onPressed: () => _navigate(-1),
+              ),
               const SizedBox(width: 16),
               Column(
                 children: [
                   Text(
                     _getFormattedDateRange(),
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   InkWell(
                     onTap: () async {
@@ -962,12 +2518,21 @@ class _ApprovalTabState extends State<_ApprovalTab> {
                       );
                       if (d != null) setState(() => _currentDate = d);
                     },
-                    child: Text(loc.selectDate, style: TextStyle(fontSize: 12, color: Theme.of(context).primaryColor)),
+                    child: Text(
+                      loc.selectDate,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
                   ),
                 ],
               ),
               const SizedBox(width: 16),
-              IconButton(icon: const Icon(Icons.chevron_right), onPressed: () => _navigate(1)),
+              IconButton(
+                icon: const Icon(Icons.chevron_right),
+                onPressed: () => _navigate(1),
+              ),
             ],
           ),
           const SizedBox(height: 24),
@@ -979,7 +2544,9 @@ class _ApprovalTabState extends State<_ApprovalTab> {
                   ElevatedButton.icon(
                     icon: const Icon(Icons.check_circle, color: Colors.white),
                     label: Text(loc.approve),
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                    ),
                     onPressed: () {
                       provider.approveBlocks(_selectedBlockIds);
                       setState(() => _selectedBlockIds.clear());
@@ -989,7 +2556,9 @@ class _ApprovalTabState extends State<_ApprovalTab> {
                   ElevatedButton.icon(
                     icon: const Icon(Icons.cancel, color: Colors.white),
                     label: Text(loc.reject),
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
                     onPressed: () {
                       provider.rejectBlocks(_selectedBlockIds);
                       setState(() => _selectedBlockIds.clear());
@@ -1009,7 +2578,9 @@ class _ApprovalTabState extends State<_ApprovalTab> {
     if (_viewType == CalendarViewType.day) {
       return DateFormat.yMMMMEEEEd(locale).format(_currentDate);
     } else if (_viewType == CalendarViewType.week) {
-      final start = _currentDate.subtract(Duration(days: _currentDate.weekday - 1));
+      final start = _currentDate.subtract(
+        Duration(days: _currentDate.weekday - 1),
+      );
       final end = start.add(const Duration(days: 6));
       return '${DateFormat.yMMMd(locale).format(start)} - ${DateFormat.yMMMd(locale).format(end)}';
     } else {
@@ -1017,18 +2588,36 @@ class _ApprovalTabState extends State<_ApprovalTab> {
     }
   }
 
-  Widget _buildApprovalTimeline(BuildContext context, AppProvider provider, AppLocalizations loc) {
+  Widget _buildApprovalTimeline(
+    BuildContext context,
+    AppProvider provider,
+    AppLocalizations loc,
+  ) {
     final blocks = provider.blocks.where((b) {
-      final bDate = DateTime(b.startTime.year, b.startTime.month, b.startTime.day);
+      final bDate = DateTime(
+        b.startTime.year,
+        b.startTime.month,
+        b.startTime.day,
+      );
       if (_viewType == CalendarViewType.day) {
-        final dDate = DateTime(_currentDate.year, _currentDate.month, _currentDate.day);
+        final dDate = DateTime(
+          _currentDate.year,
+          _currentDate.month,
+          _currentDate.day,
+        );
         return bDate.isAtSameMomentAs(dDate);
       } else if (_viewType == CalendarViewType.week) {
-        final start = _currentDate.subtract(Duration(days: _currentDate.weekday - 1));
+        final start = _currentDate.subtract(
+          Duration(days: _currentDate.weekday - 1),
+        );
         final end = start.add(const Duration(days: 7));
-        return b.startTime.isAfter(start.subtract(const Duration(seconds: 1))) && b.startTime.isBefore(end);
+        return b.startTime.isAfter(
+              start.subtract(const Duration(seconds: 1)),
+            ) &&
+            b.startTime.isBefore(end);
       } else {
-        return b.startTime.year == _currentDate.year && b.startTime.month == _currentDate.month;
+        return b.startTime.year == _currentDate.year &&
+            b.startTime.month == _currentDate.month;
       }
     }).toList();
 
@@ -1047,8 +2636,9 @@ class _ApprovalTabState extends State<_ApprovalTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: sortedDays.map((day) {
-          final dayBlocks = blocksByDay[day]!..sort((a, b) => a.startTime.compareTo(b.startTime));
-          
+          final dayBlocks = blocksByDay[day]!
+            ..sort((a, b) => a.startTime.compareTo(b.startTime));
+
           Map<String, List<AvailabilityBlock>> blocksBySlot = {};
           for (var b in dayBlocks) {
             final slot = DateFormat('HH:mm').format(b.startTime);
@@ -1064,8 +2654,19 @@ class _ApprovalTabState extends State<_ApprovalTab> {
               children: [
                 Container(
                   padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(color: Theme.of(context).primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
-                  child: Text(DateFormat('EEEE, MMM d, yyyy').format(day), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  decoration: BoxDecoration(
+                    color: Theme.of(
+                      context,
+                    ).primaryColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    DateFormat('EEEE, MMM d, yyyy').format(day),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Wrap(
@@ -1083,46 +2684,100 @@ class _ApprovalTabState extends State<_ApprovalTab> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(slot, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                          Text(
+                            slot,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
                           const Divider(),
                           ...slotBlocks.map((b) {
-                            final staff = provider.staff.firstWhere((s) => s.id == b.staffId, orElse: () => StaffMember(id: '', name: 'Unknown', nativeLanguage: '', degree: '', modalityPreference: '', availabilityRate: 0.0, eventsParticipation: 0, providedAssistance: 0));
+                            final staff = provider.staff.firstWhere(
+                              (s) => s.id == b.staffId,
+                              orElse: () => StaffMember(
+                                id: '',
+                                name: 'Unknown',
+                                nativeLanguage: '',
+                                degree: '',
+                                modalityPreference: '',
+                                availabilityRate: 0.0,
+                                eventsParticipation: 0,
+                                providedAssistance: 0,
+                              ),
+                            );
                             Color bgColor;
                             if (b.status == 'approved') {
                               bgColor = Colors.green.shade100;
                             } else if (b.status == 'rejected') {
                               bgColor = Colors.red.shade100;
                             } else {
-                              bgColor = Colors.grey.shade200; 
+                              bgColor = Colors.grey.shade200;
                             }
-                            
+
                             return Container(
                               margin: const EdgeInsets.only(bottom: 8),
                               padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(8)),
+                              decoration: BoxDecoration(
+                                color: bgColor,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                               child: Row(
                                 children: [
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text(staff.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                                        Text("${DateFormat('HH:mm').format(b.startTime)} - ${DateFormat('HH:mm').format(b.startTime.add(const Duration(minutes: 30)))}", style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
-                                        Text(_localizeModality(b.modality, loc), style: const TextStyle(fontSize: 11)),
-                                        Text(b.status.toUpperCase(), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black54)),
+                                        Text(
+                                          staff.name,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                        Text(
+                                          "${DateFormat('HH:mm').format(b.startTime)} - ${DateFormat('HH:mm').format(b.startTime.add(const Duration(minutes: 30)))}",
+                                          style: const TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        Text(
+                                          _localizeModality(b.modality, loc),
+                                          style: const TextStyle(fontSize: 11),
+                                        ),
+                                        Text(
+                                          b.status.toUpperCase(),
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black54,
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.check, color: Colors.green, size: 20),
-                                    onPressed: () => provider.approveBlocks([b.id]),
+                                    icon: const Icon(
+                                      Icons.check,
+                                      color: Colors.green,
+                                      size: 20,
+                                    ),
+                                    onPressed: () =>
+                                        provider.approveBlocks([b.id]),
                                     padding: EdgeInsets.zero,
                                     constraints: const BoxConstraints(),
                                   ),
                                   const SizedBox(width: 4),
                                   IconButton(
-                                    icon: const Icon(Icons.close, color: Colors.red, size: 20),
-                                    onPressed: () => provider.rejectBlocks([b.id]),
+                                    icon: const Icon(
+                                      Icons.close,
+                                      color: Colors.red,
+                                      size: 20,
+                                    ),
+                                    onPressed: () =>
+                                        provider.rejectBlocks([b.id]),
                                     padding: EdgeInsets.zero,
                                     constraints: const BoxConstraints(),
                                   ),
@@ -1134,7 +2789,7 @@ class _ApprovalTabState extends State<_ApprovalTab> {
                       ),
                     );
                   }).toList(),
-                )
+                ),
               ],
             ),
           );
@@ -1149,20 +2804,33 @@ class _ApprovalTabState extends State<_ApprovalTab> {
     if (val == 'Both') return loc.both;
     return val;
   }
-
 }
 
-void _showFinishEmploymentDialog(BuildContext context, AppProvider provider, StaffMember staff, AppLocalizations loc) {
+void _showFinishEmploymentDialog(
+  BuildContext context,
+  AppProvider provider,
+  StaffMember staff,
+  AppLocalizations loc,
+) {
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
       title: Text(loc.finishEmploymentConfirmTitle(staff.name)),
       content: Text(loc.finishEmploymentConfirmContent),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: Text(loc.cancel)),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(loc.cancel),
+        ),
         ElevatedButton(
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
-          onPressed: () { provider.finishEmployment(staff.id); Navigator.pop(context); },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            foregroundColor: Colors.white,
+          ),
+          onPressed: () {
+            provider.finishEmployment(staff.id);
+            Navigator.pop(context);
+          },
           child: Text(loc.finishImmediately),
         ),
       ],
@@ -1251,9 +2919,11 @@ class _EventProposalsTabState extends State<_EventProposalsTab> {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
     final provider = context.watch<AppProvider>();
-    
+
     if (_selectedProposalId != null) {
-      final index = provider.eventProposals.indexWhere((p) => p.id == _selectedProposalId);
+      final index = provider.eventProposals.indexWhere(
+        (p) => p.id == _selectedProposalId,
+      );
       if (index == -1) {
         // Fallback if proposal deleted/not found
         return Center(
@@ -1264,7 +2934,7 @@ class _EventProposalsTabState extends State<_EventProposalsTab> {
         );
       }
       final proposal = provider.eventProposals[index];
-      
+
       return SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -1277,13 +2947,18 @@ class _EventProposalsTabState extends State<_EventProposalsTab> {
                   onPressed: () => setState(() => _selectedProposalId = null),
                 ),
                 const SizedBox(width: 8),
-                Text(loc.eventDetails, style: Theme.of(context).textTheme.headlineSmall),
+                Text(
+                  loc.eventDetails,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
               ],
             ),
             const SizedBox(height: 24),
             Card(
               elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
@@ -1291,7 +2966,10 @@ class _EventProposalsTabState extends State<_EventProposalsTab> {
                   children: [
                     Text(
                       '${loc.proposerName}: ${proposal.proposerName}',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
                     const Divider(height: 32),
                     TextField(
@@ -1322,8 +3000,10 @@ class _EventProposalsTabState extends State<_EventProposalsTab> {
                                 border: const OutlineInputBorder(),
                               ),
                               child: Text(
-                                _startDate != null 
-                                    ? DateFormat('yyyy-MM-dd HH:mm').format(_startDate!) 
+                                _startDate != null
+                                    ? DateFormat(
+                                        'yyyy-MM-dd HH:mm',
+                                      ).format(_startDate!)
                                     : loc.selectDate,
                               ),
                             ),
@@ -1339,8 +3019,10 @@ class _EventProposalsTabState extends State<_EventProposalsTab> {
                                 border: const OutlineInputBorder(),
                               ),
                               child: Text(
-                                _endDate != null 
-                                    ? DateFormat('yyyy-MM-dd HH:mm').format(_endDate!) 
+                                _endDate != null
+                                    ? DateFormat(
+                                        'yyyy-MM-dd HH:mm',
+                                      ).format(_endDate!)
                                     : loc.none,
                               ),
                             ),
@@ -1353,14 +3035,23 @@ class _EventProposalsTabState extends State<_EventProposalsTab> {
                       children: [
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            value: _location == 'GCL Room' || _location == 'Online' ? _location : 'GCL Room',
+                            value:
+                                _location == 'GCL Room' || _location == 'Online'
+                                ? _location
+                                : 'GCL Room',
                             decoration: InputDecoration(
                               labelText: loc.eventLocation,
                               border: const OutlineInputBorder(),
                             ),
                             items: [
-                              DropdownMenuItem(value: 'GCL Room', child: Text(loc.gclRoom)),
-                              DropdownMenuItem(value: 'Online', child: Text(loc.online)),
+                              DropdownMenuItem(
+                                value: 'GCL Room',
+                                child: Text(loc.gclRoom),
+                              ),
+                              DropdownMenuItem(
+                                value: 'Online',
+                                child: Text(loc.online),
+                              ),
                             ],
                             onChanged: (val) {
                               if (val != null) setState(() => _location = val);
@@ -1376,10 +3067,22 @@ class _EventProposalsTabState extends State<_EventProposalsTab> {
                               border: const OutlineInputBorder(),
                             ),
                             items: [
-                              DropdownMenuItem(value: 'proposed', child: Text(loc.proposed)),
-                              DropdownMenuItem(value: 'approved', child: Text(loc.approved)),
-                              DropdownMenuItem(value: 'rejected', child: Text(loc.rejected)),
-                              DropdownMenuItem(value: 'finished', child: Text(loc.finished)),
+                              DropdownMenuItem(
+                                value: 'proposed',
+                                child: Text(loc.proposed),
+                              ),
+                              DropdownMenuItem(
+                                value: 'approved',
+                                child: Text(loc.approved),
+                              ),
+                              DropdownMenuItem(
+                                value: 'rejected',
+                                child: Text(loc.rejected),
+                              ),
+                              DropdownMenuItem(
+                                value: 'finished',
+                                child: Text(loc.finished),
+                              ),
                             ],
                             onChanged: (val) {
                               if (val != null) setState(() => _status = val);
@@ -1399,7 +3102,13 @@ class _EventProposalsTabState extends State<_EventProposalsTab> {
                     ),
                     if (_status == 'approved') ...[
                       const Divider(height: 40),
-                      Text(loc.postApprovalSNS, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      Text(
+                        loc.postApprovalSNS,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
                       const SizedBox(height: 16),
                       TextField(
                         controller: _snsController,
@@ -1419,7 +3128,9 @@ class _EventProposalsTabState extends State<_EventProposalsTab> {
                               // Simulate Photo Upload
                               setState(() {
                                 int count = _photos.length + 1;
-                                _photos.add('https://picsum.photos/200/300?random=$count');
+                                _photos.add(
+                                  'https://picsum.photos/200/300?random=$count',
+                                );
                               });
                             },
                           ),
@@ -1444,11 +3155,15 @@ class _EventProposalsTabState extends State<_EventProposalsTab> {
                                     width: 100,
                                     height: 100,
                                     fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) => Container(
-                                      color: Colors.grey.shade300,
-                                      width: 100,
-                                      child: const Icon(Icons.broken_image),
-                                    ),
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            Container(
+                                              color: Colors.grey.shade300,
+                                              width: 100,
+                                              child: const Icon(
+                                                Icons.broken_image,
+                                              ),
+                                            ),
                                   ),
                                 ),
                               );
@@ -1463,7 +3178,9 @@ class _EventProposalsTabState extends State<_EventProposalsTab> {
                       height: 50,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                         onPressed: () {
                           provider.saveEventProposalDetails(
@@ -1500,7 +3217,10 @@ class _EventProposalsTabState extends State<_EventProposalsTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(loc.eventProposal, style: Theme.of(context).textTheme.headlineSmall),
+          Text(
+            loc.eventProposal,
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
           const SizedBox(height: 24),
           if (proposals.isEmpty)
             Expanded(child: Center(child: Text(loc.noEventProposals)))
@@ -1514,7 +3234,10 @@ class _EventProposalsTabState extends State<_EventProposalsTab> {
                     margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
                       onTap: () => _selectProposal(p),
-                      title: Text(p.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      title: Text(
+                        p.title,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       subtitle: Text(
                         "${loc.byAuthorOnDate(p.proposerName, DateFormat.yMd(Localizations.localeOf(context).toString()).format(p.proposedDate))}\n${p.description}",
                       ),
@@ -1536,7 +3259,11 @@ class _EventProposalsTabState extends State<_EventProposalsTab> {
     );
   }
 
-  Widget _buildStatusChip(BuildContext context, String status, AppLocalizations loc) {
+  Widget _buildStatusChip(
+    BuildContext context,
+    String status,
+    AppLocalizations loc,
+  ) {
     Color color;
     String label;
     if (status == 'approved') {
@@ -1562,7 +3289,11 @@ class _EventProposalsTabState extends State<_EventProposalsTab> {
       ),
       child: Text(
         label,
-        style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12),
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
+        ),
       ),
     );
   }
@@ -1574,9 +3305,10 @@ class _LogView extends StatelessWidget {
   void _exportCSV(List<LogEntry> logs) {
     String csv = "Timestamp,Type,Description\n";
     for (var log in logs) {
-      csv += "${log.timestamp},${log.eventType},\"${log.description.replaceAll('"', '""')}\"\n";
+      csv +=
+          "${log.timestamp},${log.eventType},\"${log.description.replaceAll('"', '""')}\"\n";
     }
-    
+
     final bytes = utf8.encode(csv);
     PlatformHelper.downloadFile(bytes, "GCL_System_Logs.csv", "text/csv");
   }
@@ -1607,7 +3339,10 @@ class _LogView extends StatelessWidget {
                 label: Text(loc.clearLogs),
                 onPressed: () {
                   LoggerService.clearLogs();
-                  Provider.of<AppProvider>(context, listen: false).addLog('Action', 'logClearedLogs');
+                  Provider.of<AppProvider>(
+                    context,
+                    listen: false,
+                  ).addLog('Action', 'logClearedLogs');
                 },
               ),
             ],
@@ -1619,9 +3354,15 @@ class _LogView extends StatelessWidget {
               itemBuilder: (context, index) {
                 final l = logs[index];
                 return ListTile(
-                  leading: Icon(l.eventType == 'Action' ? Icons.settings : Icons.info_outline),
+                  leading: Icon(
+                    l.eventType == 'Action'
+                        ? Icons.settings
+                        : Icons.info_outline,
+                  ),
                   title: Text(_translateLog(l.description, loc)),
-                  subtitle: Text(DateFormat('yyyy-MM-dd HH:mm:ss').format(l.timestamp)),
+                  subtitle: Text(
+                    DateFormat('yyyy-MM-dd HH:mm:ss').format(l.timestamp),
+                  ),
                 );
               },
             ),
@@ -1645,31 +3386,79 @@ class _LogView extends StatelessWidget {
     }
 
     switch (key) {
-      case 'logLocaleSwitched': return loc.logLocaleSwitched(params['locale'] ?? '');
-      case 'logThemeSwitched': return loc.logThemeSwitched(params['mode'] ?? '');
-      case 'logJuniorLogin': return loc.logJuniorLogin(params['name'] ?? '');
-      case 'logInvitedStaff': return loc.logInvitedStaff(params['email'] ?? '');
-      case 'logUpgradedSenior': return loc.logUpgradedSenior(params['name'] ?? '');
-      case 'logFinishedEmployment': return loc.logFinishedEmployment(params['name'] ?? '', params['date'] ?? '');
-      case 'logUpdatedDaySchedule': return loc.logUpdatedDaySchedule(params['day'] ?? '', params['range'] ?? '', params['closed'] == 'true');
-      case 'logAddedHolidays': return loc.logAddedHolidays(int.tryParse(params['count'] ?? '0') ?? 0);
-      case 'logRemovedHoliday': return loc.logRemovedHoliday(params['date'] ?? '');
-      case 'logEventProposal': return loc.logEventProposal(params['title'] ?? '', params['name'] ?? '');
-      case 'logCompletedSetup': return loc.logCompletedSetup(params['name'] ?? '');
-      case 'logUpdatedProfile': return loc.logUpdatedProfile(params['name'] ?? '');
-      case 'logAddedBlock': return loc.logAddedBlock(params['staffId'] ?? '', params['time'] ?? '');
-      case 'logRemovedBlock': return loc.logRemovedBlock(params['id'] ?? '');
-      case 'logEmergencyReschedule': return loc.logEmergencyReschedule(params['id'] ?? '');
-      case 'logUpdatedBlockModality': return loc.logUpdatedBlockModality(params['id'] ?? '', params['modality'] ?? '');
-      case 'logApprovedBlock': return loc.logApprovedBlock(params['id'] ?? '');
-      case 'logApprovedMultipleBlocks': return loc.logApprovedMultipleBlocks(int.tryParse(params['count'] ?? '0') ?? 0);
-      case 'logRejectedMultipleBlocks': return loc.logRejectedMultipleBlocks(int.tryParse(params['count'] ?? '0') ?? 0);
-      case 'logUpdatedProposalStatus': return loc.logUpdatedProposalStatus(params['id'] ?? '', params['status'] ?? '');
-      case 'logApprovedAllBlocks': return loc.logApprovedAllBlocks(params['staffId'] ?? '', params['month'] ?? '');
-      case 'logSubmittedReport': return loc.logSubmittedReport(params['date'] ?? '');
-      case 'logImportedStaff': return loc.logImportedStaff(params['count'] ?? '0');
-      case 'logImportedCsvData': return loc.logImportedCsvData(params['rows'] ?? '0');
-      default: return description;
+      case 'logLocaleSwitched':
+        return loc.logLocaleSwitched(params['locale'] ?? '');
+      case 'logThemeSwitched':
+        return loc.logThemeSwitched(params['mode'] ?? '');
+      case 'logJuniorLogin':
+        return loc.logJuniorLogin(params['name'] ?? '');
+      case 'logInvitedStaff':
+        return loc.logInvitedStaff(params['email'] ?? '');
+      case 'logUpgradedSenior':
+        return loc.logUpgradedSenior(params['name'] ?? '');
+      case 'logFinishedEmployment':
+        return loc.logFinishedEmployment(
+          params['name'] ?? '',
+          params['date'] ?? '',
+        );
+      case 'logUpdatedDaySchedule':
+        return loc.logUpdatedDaySchedule(
+          params['day'] ?? '',
+          params['range'] ?? '',
+          params['closed'] == 'true',
+        );
+      case 'logAddedHolidays':
+        return loc.logAddedHolidays(int.tryParse(params['count'] ?? '0') ?? 0);
+      case 'logRemovedHoliday':
+        return loc.logRemovedHoliday(params['date'] ?? '');
+      case 'logEventProposal':
+        return loc.logEventProposal(
+          params['title'] ?? '',
+          params['name'] ?? '',
+        );
+      case 'logCompletedSetup':
+        return loc.logCompletedSetup(params['name'] ?? '');
+      case 'logUpdatedProfile':
+        return loc.logUpdatedProfile(params['name'] ?? '');
+      case 'logAddedBlock':
+        return loc.logAddedBlock(params['staffId'] ?? '', params['time'] ?? '');
+      case 'logRemovedBlock':
+        return loc.logRemovedBlock(params['id'] ?? '');
+      case 'logEmergencyReschedule':
+        return loc.logEmergencyReschedule(params['id'] ?? '');
+      case 'logUpdatedBlockModality':
+        return loc.logUpdatedBlockModality(
+          params['id'] ?? '',
+          params['modality'] ?? '',
+        );
+      case 'logApprovedBlock':
+        return loc.logApprovedBlock(params['id'] ?? '');
+      case 'logApprovedMultipleBlocks':
+        return loc.logApprovedMultipleBlocks(
+          int.tryParse(params['count'] ?? '0') ?? 0,
+        );
+      case 'logRejectedMultipleBlocks':
+        return loc.logRejectedMultipleBlocks(
+          int.tryParse(params['count'] ?? '0') ?? 0,
+        );
+      case 'logUpdatedProposalStatus':
+        return loc.logUpdatedProposalStatus(
+          params['id'] ?? '',
+          params['status'] ?? '',
+        );
+      case 'logApprovedAllBlocks':
+        return loc.logApprovedAllBlocks(
+          params['staffId'] ?? '',
+          params['month'] ?? '',
+        );
+      case 'logSubmittedReport':
+        return loc.logSubmittedReport(params['date'] ?? '');
+      case 'logImportedStaff':
+        return loc.logImportedStaff(params['count'] ?? '0');
+      case 'logImportedCsvData':
+        return loc.logImportedCsvData(params['rows'] ?? '0');
+      default:
+        return description;
     }
   }
 }
@@ -1678,17 +3467,21 @@ class _ExternalMeetingRequestsView extends StatefulWidget {
   const _ExternalMeetingRequestsView();
 
   @override
-  State<_ExternalMeetingRequestsView> createState() => _ExternalMeetingRequestsViewState();
+  State<_ExternalMeetingRequestsView> createState() =>
+      _ExternalMeetingRequestsViewState();
 }
 
-class _ExternalMeetingRequestsViewState extends State<_ExternalMeetingRequestsView> {
+class _ExternalMeetingRequestsViewState
+    extends State<_ExternalMeetingRequestsView> {
   ExternalMeetingRequest? _selectedRequest;
   String? _selectedStaffId;
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AppProvider>();
-    final pendingRequests = provider.externalMeetingRequests.where((r) => r.status == 'pending').toList();
+    final pendingRequests = provider.externalMeetingRequests
+        .where((r) => r.status == 'pending')
+        .toList();
     final loc = AppLocalizations.of(context)!;
 
     return Padding(
@@ -1696,7 +3489,10 @@ class _ExternalMeetingRequestsViewState extends State<_ExternalMeetingRequestsVi
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(loc.meetingRequests, style: Theme.of(context).textTheme.headlineSmall),
+          Text(
+            loc.meetingRequests,
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
           const SizedBox(height: 24),
           if (pendingRequests.isEmpty)
             Expanded(child: Center(child: Text(loc.noMeetingRequests)))
@@ -1732,16 +3528,33 @@ class _ExternalMeetingRequestsViewState extends State<_ExternalMeetingRequestsVi
                               DataCell(Text(req.name)),
                               DataCell(Text(req.department)),
                               DataCell(Text(req.purpose)),
-                              DataCell(Text(DateFormat('MMM dd, hh:mm a').format(req.requestedTime))),
-                              DataCell(Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: Colors.orange.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: Colors.orange),
+                              DataCell(
+                                Text(
+                                  DateFormat(
+                                    'MMM dd, hh:mm a',
+                                  ).format(req.requestedTime),
                                 ),
-                                child: Text('Pending', style: TextStyle(color: Colors.orange.shade800, fontSize: 12)),
-                              )),
+                              ),
+                              DataCell(
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.orange.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: Colors.orange),
+                                  ),
+                                  child: Text(
+                                    'Pending',
+                                    style: TextStyle(
+                                      color: Colors.orange.shade800,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           );
                         }).toList(),
@@ -1763,21 +3576,28 @@ class _ExternalMeetingRequestsViewState extends State<_ExternalMeetingRequestsVi
     );
   }
 
-  Widget _buildDetailsSidebar(BuildContext context, AppProvider provider, AppLocalizations loc) {
+  Widget _buildDetailsSidebar(
+    BuildContext context,
+    AppProvider provider,
+    AppLocalizations loc,
+  ) {
     final req = _selectedRequest!;
-    
+
     final availableStaff = provider.staff.where((s) {
       if (s.isSenior || !s.isSetupComplete) return false;
-      final speaksLang = s.nativeLanguage == req.language || s.languageSkills.any((skill) => skill.language == req.language);
+      final speaksLang =
+          s.nativeLanguage == req.language ||
+          s.languageSkills.any((skill) => skill.language == req.language);
       if (!speaksLang) return false;
-      final hasBlock = provider.blocks.any((b) => 
-        b.staffId == s.id && 
-        b.status == 'approved' &&
-        b.startTime.year == req.requestedTime.year &&
-        b.startTime.month == req.requestedTime.month &&
-        b.startTime.day == req.requestedTime.day &&
-        b.startTime.hour == req.requestedTime.hour &&
-        b.startTime.minute == req.requestedTime.minute
+      final hasBlock = provider.blocks.any(
+        (b) =>
+            b.staffId == s.id &&
+            b.status == 'approved' &&
+            b.startTime.year == req.requestedTime.year &&
+            b.startTime.month == req.requestedTime.month &&
+            b.startTime.day == req.requestedTime.day &&
+            b.startTime.hour == req.requestedTime.hour &&
+            b.startTime.minute == req.requestedTime.minute,
       );
       return hasBlock;
     }).toList();
@@ -1798,26 +3618,56 @@ class _ExternalMeetingRequestsViewState extends State<_ExternalMeetingRequestsVi
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(child: Text(req.name, style: Theme.of(context).textTheme.headlineSmall)),
-                IconButton(icon: const Icon(Icons.close), onPressed: () => setState(() => _selectedRequest = null)),
+                Expanded(
+                  child: Text(
+                    req.name,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => setState(() => _selectedRequest = null),
+                ),
               ],
             ),
             const SizedBox(height: 16),
-            _detailItem(loc.affiliation, '${req.department} (${req.studyYear})'),
+            _detailItem(
+              loc.affiliation,
+              '${req.department} (${req.studyYear})',
+            ),
             _detailItem(loc.purpose, req.purpose),
             _detailItem(loc.nativeLang, req.language),
-            _detailItem(loc.scheduledTime, DateFormat('yyyy-MM-dd HH:mm').format(req.requestedTime)),
-            _detailItem('Type', req.meetingType == 'Online' ? loc.online : loc.inPerson),
+            _detailItem(
+              loc.scheduledTime,
+              DateFormat('yyyy-MM-dd HH:mm').format(req.requestedTime),
+            ),
+            _detailItem(
+              'Type',
+              req.meetingType == 'Online' ? loc.online : loc.inPerson,
+            ),
             const Divider(height: 32),
-            Text('Assign Student Assistant', style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              'Assign Student Assistant',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 8),
             if (availableStaff.isEmpty)
-              Text(loc.noAvailableStaff, style: const TextStyle(color: Colors.red))
+              Text(
+                loc.noAvailableStaff,
+                style: const TextStyle(color: Colors.red),
+              )
             else
               DropdownButtonFormField<String>(
-                decoration: const InputDecoration(border: OutlineInputBorder(), isDense: true),
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  isDense: true,
+                ),
                 value: _selectedStaffId,
-                items: availableStaff.map((s) => DropdownMenuItem(value: s.id, child: Text(s.name))).toList(),
+                items: availableStaff
+                    .map(
+                      (s) => DropdownMenuItem(value: s.id, child: Text(s.name)),
+                    )
+                    .toList(),
                 onChanged: (val) {
                   setState(() {
                     _selectedStaffId = val;
@@ -1829,33 +3679,50 @@ class _ExternalMeetingRequestsViewState extends State<_ExternalMeetingRequestsVi
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 16)),
-                    onPressed: _selectedStaffId == null ? null : () {
-                      provider.approveMeetingRequest(req.id, _selectedStaffId!);
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.meetingApprovedSuccess)));
-                      setState(() => _selectedRequest = null);
-                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    onPressed: _selectedStaffId == null
+                        ? null
+                        : () {
+                            provider.approveMeetingRequest(
+                              req.id,
+                              _selectedStaffId!,
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(loc.meetingApprovedSuccess),
+                              ),
+                            );
+                            setState(() => _selectedRequest = null);
+                          },
                     child: Text(loc.approve),
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(foregroundColor: Colors.red, padding: const EdgeInsets.symmetric(vertical: 16)),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.red,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
                     onPressed: () {
                       provider.rejectMeetingRequest(req.id);
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.meetingRejectedSuccess)));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(loc.meetingRejectedSuccess)),
+                      );
                       setState(() => _selectedRequest = null);
                     },
                     child: Text(loc.reject),
                   ),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),
     );
   }
 }
-

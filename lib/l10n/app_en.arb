@@ -303,38 +303,42 @@
       }
     }
   },
-  "calendar": "Calendar",
-  "tasks": "Tasks",
-  "eventStartTime": "Start Time",
-  "eventEndTime": "End Time",
-  "eventLocation": "Location",
-  "eventComments": "Comments (Optional)",
-  "eventDetails": "Event Details",
-  "eventLogs": "Event Logs",
-  "pendingApproval": "Pending Approval",
-  "studentAssistant": "Student Assistant",
-  "mainStaff": "Main Staff",
-  "reservation": "Reservation",
-  "noReservation": "No Reservation",
+  "calendarOverview": "Calendar Overview",
+  "timeSlot": "Time Slot",
+  "expand": "Expand",
+  "collapse": "Collapse",
+  "allStudents": "All Students",
+  "reportStatus": "Report Status",
+  "filterAll": "All",
+  "filterPending": "Pending",
+  "filterCompleted": "Completed",
+  "clearFilters": "Clear Filters",
   "todaySchedule": "Today's Schedule",
-  "agendaNoticeBoard": "Agenda & Notice Board",
-  "manageAvailability": "Manage Availability & Schedule",
-  "proposalHistory": "Proposal History & Post-Approval Details",
-  "holidayNoticeLabel": "Holiday Notice",
-  "pendingReportsLabel": "Pending Reports",
-  "upcomingMeetings": "Upcoming Meetings",
-  "noUpcomingMeetings": "No upcoming meetings.",
-  "noShiftsToday": "No shifts scheduled for today.",
-  "postApprovalSNS": "Post-Approval Details (For SNS)",
-  "eventSummarySNS": "Event Summary for SNS",
-  "uploadPhotos": "Upload Photos",
-  "saveDetails": "Save Details",
-  "detailsSaved": "Details saved for publication!",
-  "descriptionLabel": "Description",
-  "gclRoom": "GCL Room",
-  "submittedReports": "Submitted Reports",
-  "noSubmittedReports": "No submitted reports yet.",
-  "finished": "Finished",
-  "inPerson": "In Person",
-  "weeklyHoursLimitHintShort": "Set limit (hours/week)"
+  "deadlineReminder": "Next month availability must be submitted by day 24 of this month.",
+  "deadlinePassedWarning": "Warning: Next month's availability submission deadline (24th) has passed!",
+  "noScheduleToday": "You have no scheduled shifts today.",
+  "activeMeetings": "Meetings",
+  "upcomingEvents": "Events",
+  "holidaysLabel": "Holidays",
+  "availabilitySubmissionTitle": "Submit Next Month's Availability",
+  "assignedMeetingsCount": "Assigned Meetings ({count})",
+  "@assignedMeetingsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pendingReportsCount": "Pending Reports ({count})",
+  "@pendingReportsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deadlineDialogTitle": "Availability Submission Reminder",
+  "deadlineDialogContent": "Please submit your availability for next month as the 24th deadline has arrived or passed.",
+  "goToSubmission": "Go to Submission",
+  "skip": "Skip"
 }

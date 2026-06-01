@@ -787,101 +787,78 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get calendar => 'カレンダー';
+  String get calendarOverview => 'カレンダー概要';
 
   @override
-  String get tasks => 'タスク';
+  String get timeSlot => 'タイムスロット';
 
   @override
-  String get eventStartTime => '開始時間';
+  String get expand => '展開';
 
   @override
-  String get eventEndTime => '終了時間';
+  String get collapse => '折りたたむ';
 
   @override
-  String get eventLocation => '場所';
+  String get allStudents => 'すべての学生';
 
   @override
-  String get eventComments => 'コメント（任意）';
+  String get reportStatus => 'レポートステータス';
 
   @override
-  String get eventDetails => 'イベント詳細';
+  String get filterAll => 'すべて';
 
   @override
-  String get eventLogs => 'イベントログ';
+  String get filterPending => '未提出';
 
   @override
-  String get pendingApproval => '承認待ち';
+  String get filterCompleted => '提出済';
 
   @override
-  String get studentAssistant => '学生アシスタント';
+  String get clearFilters => 'フィルタークリア';
 
   @override
-  String get mainStaff => 'メインスタッフ';
+  String get todaySchedule => '今日のスケジュール';
 
   @override
-  String get reservation => '予約';
+  String get deadlineReminder => '来月のシフト希望は今月の24日までに提出してください。';
 
   @override
-  String get noReservation => '予約なし';
+  String get deadlinePassedWarning => '警告：来月のシフト希望提出期限（24日）を過ぎています！';
 
   @override
-  String get todaySchedule => '本日のスケジュール';
+  String get noScheduleToday => '今日のシフトはありません。';
 
   @override
-  String get agendaNoticeBoard => 'アジェンダ＆掲示板';
+  String get activeMeetings => 'ミーティング';
 
   @override
-  String get manageAvailability => 'シフト・スケジュール管理';
+  String get upcomingEvents => 'イベント';
 
   @override
-  String get proposalHistory => '提案履歴と承認後の詳細';
+  String get holidaysLabel => '祝日';
 
   @override
-  String get holidayNoticeLabel => '休日のお知らせ';
+  String get availabilitySubmissionTitle => '来月のシフト希望提出';
 
   @override
-  String get pendingReportsLabel => '未提出の報告書';
+  String assignedMeetingsCount(int count) {
+    return '割り当てられたミーティング ($count)';
+  }
 
   @override
-  String get upcomingMeetings => '今後の面談';
+  String pendingReportsCount(int count) {
+    return '未提出レポート ($count)';
+  }
 
   @override
-  String get noUpcomingMeetings => '今後の面談はありません。';
+  String get deadlineDialogTitle => 'シフト提出のリマインダー';
 
   @override
-  String get noShiftsToday => '本日のシフトはありません。';
+  String get deadlineDialogContent => '24日の締め切りになりました。来月のシフト希望を提出してください。';
 
   @override
-  String get postApprovalSNS => '承認後の詳細（SNS用）';
+  String get goToSubmission => 'シフト入力へ';
 
   @override
-  String get eventSummarySNS => 'SNS用イベント概要';
-
-  @override
-  String get uploadPhotos => '写真をアップロード';
-
-  @override
-  String get saveDetails => '詳細を保存';
-
-  @override
-  String get detailsSaved => '情報が保存されました！';
-
-  @override
-  String get descriptionLabel => '説明';
-
-  @override
-  String get gclRoom => 'GCL教室';
-
-  @override
-  String get submittedReports => '提出済み報告書';
-
-  @override
-  String get noSubmittedReports => '提出済みの報告書はありません。';
-
-  @override
-  String get finished => '完了';
-
-  @override
-  String get weeklyHoursLimitHintShort => '上限時間（時間/週）を入力';
+  String get skip => 'スキップ';
 }

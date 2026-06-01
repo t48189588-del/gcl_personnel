@@ -281,37 +281,42 @@
       }
     }
   },
-  "calendar": "カレンダー",
-  "tasks": "タスク",
-  "eventStartTime": "開始時間",
-  "eventEndTime": "終了時間",
-  "eventLocation": "場所",
-  "eventComments": "コメント（任意）",
-  "eventDetails": "イベント詳細",
-  "eventLogs": "イベントログ",
-  "pendingApproval": "承認待ち",
-  "studentAssistant": "学生アシスタント",
-  "mainStaff": "メインスタッフ",
-  "reservation": "予約",
-  "noReservation": "予約なし",
-  "todaySchedule": "本日のスケジュール",
-  "agendaNoticeBoard": "アジェンダ＆掲示板",
-  "manageAvailability": "シフト・スケジュール管理",
-  "proposalHistory": "提案履歴と承認後の詳細",
-  "holidayNoticeLabel": "休日のお知らせ",
-  "pendingReportsLabel": "未提出の報告書",
-  "upcomingMeetings": "今後の面談",
-  "noUpcomingMeetings": "今後の面談はありません。",
-  "noShiftsToday": "本日のシフトはありません。",
-  "postApprovalSNS": "承認後の詳細（SNS用）",
-  "eventSummarySNS": "SNS用イベント概要",
-  "uploadPhotos": "写真をアップロード",
-  "saveDetails": "詳細を保存",
-  "detailsSaved": "情報が保存されました！",
-  "descriptionLabel": "説明",
-  "gclRoom": "GCL教室",
-  "submittedReports": "提出済み報告書",
-  "noSubmittedReports": "提出済みの報告書はありません。",
-  "finished": "完了",
-  "weeklyHoursLimitHintShort": "上限時間（時間/週）を入力"
+  "calendarOverview": "カレンダー概要",
+  "timeSlot": "タイムスロット",
+  "expand": "展開",
+  "collapse": "折りたたむ",
+  "allStudents": "すべての学生",
+  "reportStatus": "レポートステータス",
+  "filterAll": "すべて",
+  "filterPending": "未提出",
+  "filterCompleted": "提出済",
+  "clearFilters": "フィルタークリア",
+  "todaySchedule": "今日のスケジュール",
+  "deadlineReminder": "来月のシフト希望は今月の24日までに提出してください。",
+  "deadlinePassedWarning": "警告：来月のシフト希望提出期限（24日）を過ぎています！",
+  "noScheduleToday": "今日のシフトはありません。",
+  "activeMeetings": "ミーティング",
+  "upcomingEvents": "イベント",
+  "holidaysLabel": "祝日",
+  "availabilitySubmissionTitle": "来月のシフト希望提出",
+  "assignedMeetingsCount": "割り当てられたミーティング ({count})",
+  "@assignedMeetingsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pendingReportsCount": "未提出レポート ({count})",
+  "@pendingReportsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deadlineDialogTitle": "シフト提出のリマインダー",
+  "deadlineDialogContent": "24日の締め切りになりました。来月のシフト希望を提出してください。",
+  "goToSubmission": "シフト入力へ",
+  "skip": "スキップ"
 }
