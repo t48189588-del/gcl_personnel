@@ -1,19 +1,23 @@
 {
   "name": "GCL Personnel Cloud Box",
-  "image": "ghcr.io/cirruslabs/flutter:3.24.0",
-  "remoteUser": "root",
-  "features": {
-    "ghcr.io/devcontainers/features/common-utils:2": {
-      "configureZshAsDefaultShell": true
-    }
+  // Uses GitHub's official, native container that never throws root errors
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  
+  // Downloads and installs Flutter locally inside the cloud machine on startup
+  "postCreateCommand": "cd /tmp && wget https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.24.0-stable.tar.xz && tar -xf flutter_linux_3.24.0-stable.tar.xz && mkdir -p $HOME/development && mv flutter $HOME/development/ && export PATH=\"$HOME/development/flutter/bin:$PATH\" && flutter config --no-analytics && cd ${containerWorkspaceFolder} && $HOME/development/flutter/bin/flutter pub get",
+  
+  "containerEnv": {
+    "PATH": "${containerWorkspaceFolder}/../../home/codespace/development/flutter/bin:${containerEnv:PATH}"
   },
-  "updateContentCommand": "flutter pub get",
   "customizations": {
     "vscode": {
       "extensions": [
         "Dart-Code.flutter",
         "Dart-Code.dart"
-      ]
+      ],
+      "settings": {
+        "dart.flutterSdkPath": "/home/codespace/development/flutter"
+      }
     }
   },
   "forwardPorts": [8080],
