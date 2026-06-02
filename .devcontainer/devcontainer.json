@@ -1,20 +1,21 @@
 {
   "name": "GCL Personnel Cloud Box",
-  // Forces the container to use the exact Flutter release containing your SDK target
-  "image": "ghcr.io/cirruslabs/flutter:3.27.0", 
+  "image": "ghcr.io/cirruslabs/flutter:3.24.0",
+  "remoteUser": "root",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "configureZshAsDefaultShell": true
+    }
+  },
   "updateContentCommand": "flutter pub get",
   "customizations": {
     "vscode": {
       "extensions": [
         "Dart-Code.flutter",
         "Dart-Code.dart"
-      ],
-      "settings": {
-        "dart.flutterSdkPath": "/sdks/flutter"
-      }
+      ]
     }
   },
-  // Automatically opens the Web port so the user can see the UI immediately
   "forwardPorts": [8080],
   "portsAttributes": {
     "8080": {
