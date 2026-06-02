@@ -4,9 +4,6 @@
 A flutter web app for managing GCL staff and events (self hosted)
 A office/sharepoint mirror (cloud hosted)
 
-Base information pulled from 
-Online contact 
-v
 - Instragram: https://www.instagram.com/gclkyutech/  
 - Website (hosted in google sites): https://sites.google.com/view/gclkyutech/about-us  
 - Line ID: kyutechgcl  
@@ -14,6 +11,16 @@ v
 - Youtube: https://www.youtube.com/channel/UCXeW6dvL52EJgPPNJMlVt0A  
 - Moodle reservation: https://horyu.el.kyutech.ac.jp/course/view.php?id=767 
 - Teams group
+
+## Wanna test?
+|Where|File|
+|----|----|
+|GitHub Codespace|[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=t48189588-del/gcl_personnel)|
+|Mac & linux (local testing)|1. **Download** and extract this repository ZIP folder to your desktop. <br>2. **Execute** `./setup.sh` via your terminal<br>3. Type `y` to approve when prompted, then sit back while the setup launches the system.|
+|Windows (local testing)|1. **Download** and extract this repository ZIP folder to your desktop.<br>2. **Double-Click**: `setup.bat`<br>3. Type `y` to approve when prompted, then sit back while the setup launches the system. 
+
+> [!Note]
+> If you wish to remove the system from your computer, simply drag the main `gcl_personnel` directory folder into your **Trash / Recycle Bin** and empty it. Because all caches and engines are stored directly inside this folder, 100% of all dependencies are wiped instantly from your computer without leaving single file fragments behind.
 
 Currently all information is hosted in excel files in teams groups
 
@@ -163,8 +170,6 @@ Currently all information is hosted in excel files in teams groups
 ### issues to be fixed!!
 1. meetings hours are not being correctly processed by the system 
 
-add auto language detection, application and display result in console terminal 
-
 in the student block, block ONLY the meeting hours block
 
 for students staff
@@ -172,28 +177,20 @@ in the schedule view, show also de the details of approved external meeting requ
 
 in the event proposal tab, add a log of previosly proposed events (show if they are approved, pending or rejected)
 
-in the senior dashboard approval panel
-show for each block the start and end time
-
-
 commander view-senior staff
 approve windows - next month availability 
 1. add a new layout option for day presentation.
    1. When multiple staff has submitted availability for the same time block change layout to each day show the time block grid, inside each block show the proposed schedule for the respective studnet staff with an approve or reject option
-2. instead of removing the block when approved, change to a green background block (for approved), gray (pending approval), red for rejected, also enable the senior staff to change the approval status
 
-fix to uptimize view in web browser mobile format
+fix to optimize view in web browser mobile format
 add graphings for the senior dashboard reports
 1. historgram chart showing the total approved hours worked per time block
-3. based on all the staff languages proficiency, a bar grpahs showing the amount of speakers per language 
-4. a line chart per staff member, showing the accumulative worked hours per day
-5. based on the staff academic status (master, bacherlor, phd, reseatch) show a column bar graphs showing the number of staff per academic status
+2. based on all the staff languages proficiency, a bar grpahs showing the amount of speakers per language 
+3. a line chart per staff member, showing the accumulative worked hours per day
+4. based on the staff academic status (master, bacherlor, phd, reseatch) show a column bar graphs showing the number of staff per academic status
 
 to try 
-from the existing data, create a "form" like for external meeting requests
 only apply to approved student staff schedule
-show date, time and language, academic information? (level and specialty)
-requested topic, amount of persons
 
 # System
 ## Data
@@ -210,7 +207,7 @@ requested topic, amount of persons
 - python? (webscrapping)
 - google apps script (backup)?
 
-## Testing comments
+## Pending features to add
 
 enable a tab if multiple working reports are pending (>3), display all missing in table layout, each day per row 
 
@@ -227,8 +224,6 @@ After the initial event proposal is approved, the proposer shall be able to add:
   - event summary 
   - event photos for SNS publication
 
-junior profile
-add languages (native and speaking)
 
 # Suggestions after hatsuda-san and sugawara-san meeting (may 20, 2026)
 - export excel should be same format as original excel file (same column order and same column names )
@@ -236,8 +231,6 @@ add languages (native and speaking)
   - type 1: date, time, headers student staff name
   - type 2: date, time, row students staff side by side
 - think about future updates/changes adding new screens/templates?
-- build power apps 
-- data permission obtained from hatsuda-san
 - for external visitor, show a month previewe only sholy available slots (color code the student staff availability, origin country and time block) consider chooseing = reserved (for calendar purposes only)
 
 ## For exporting flutter project to github pages
@@ -253,7 +246,7 @@ add languages (native and speaking)
 |date|who|what|
 |----|---|----|
 |**May 13, 2026**|Shiriashi-san & Kimura-san|Presentation of proposal|
-|**May 20, 2026**|Hatsuda-san & Sugawara-san|Presentation of documentation and power apps prototype|
+|**May 20, 2026**|Hatsuda-san & Sugawara-san|Presentation of documentation and power apps prototype <br> Hatsuda-san provided permission to interact with real data from GCL Teams|
 |**May 27, 2026**|Hatsuda-san & Sugawara-san|Presentation of documentation and power apps prototype|
 |**May 28, 2026**|Kimura-san & Shiriashi-san|Presentation of documentation and power apps prototype|
 |**June 1, 2026**|Hatsuda-san|A flutter web app for managing GCL staff and events (power apps)|
