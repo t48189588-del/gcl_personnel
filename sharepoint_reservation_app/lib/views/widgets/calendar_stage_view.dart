@@ -29,7 +29,11 @@ class CalendarStageView extends StatelessWidget {
               selectedDayPredicate: (day) =>
                   isSameDay(provider.selectedDay, day),
               onDaySelected: (selectedDay, focusedDay) {
-                provider.selectDay(selectedDay);
+                //provider.selectDay(selectedDay);
+                Provider.of<BookingProvider>(
+                  context,
+                  listen: false,
+                ).selectDay(selectedDay);
               },
               headerStyle: const HeaderStyle(
                 formatButtonVisible: false,
@@ -133,7 +137,7 @@ class CalendarStageView extends StatelessWidget {
                                   child: Text(
                                     "$count",
                                     style: TextStyle(
-                                        color: isSelected
+                                      color: isSelected
                                           ? Colors.white
                                           : Colors.blue,
                                       fontWeight: FontWeight.bold,

@@ -14,6 +14,15 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<BookingProvider>(context, listen: false);
+      provider.fetchSharePointBookings();
+    });
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
@@ -48,19 +57,28 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1200),
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  CalendarStageView(),
-                  SizedBox(height: 32),
-                  Divider(thickness: 1, height: 1),
-                  SizedBox(height: 32),
-                  BookingFormStageView(),
-                ],
-              ),
-            ),
+            child: provider.isLoading
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const CircularProgressIndicator(),
+                      const SizedBox(height: 16),
+                      Text(provider.translate('loading')),
+                    ],
+                  )
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        CalendarStageView(),
+                        SizedBox(height: 32),
+                        Divider(thickness: 1, height: 1),
+                        SizedBox(height: 32),
+                        BookingFormStageView(),
+                      ],
+                    ),
+                  ),
           ),
         ),
       ),

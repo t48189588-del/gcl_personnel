@@ -9,8 +9,7 @@ class BookingProvider with ChangeNotifier {
   String _currentLocale = 'en';
   bool _isLoading = false;
 
-  // Track booking counts per time slot for the selected day
-  // Map Structure -> {"09:00 AM - 09:30 AM": 1, "09:30 AM - 10:00 AM": 2}
+  List<dynamic> _cachedSharepointItems = [];
   Map<String, int> _slotBookingCounts = {};
 
   DateTime get selectedDay => _selectedDay;
@@ -20,17 +19,18 @@ class BookingProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   Map<String, int> get slotBookingCounts => _slotBookingCounts;
 
-  // Power Automate HTTP POST Webhook URL URL
   final String _powerAutomateUrl =
       'https://defaultdbf986a9f2c7470188ce463dec76cb.a4.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f9a7ba33519541a7826952579b57b3b8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ZfI4IxYzXX9WUWNAhA3nWTkXSla4L1Ongx3dJoFJakE';
 
-  final List<String> timeSlots = [
+  final List<String> _allTimeSlots = [
     '09:00 AM - 09:30 AM',
     '09:30 AM - 10:00 AM',
     '10:00 AM - 10:30 AM',
     '10:30 AM - 11:00 AM',
     '11:00 AM - 11:30 AM',
     '11:30 AM - 12:00 PM',
+    '12:00 PM - 12:30 PM',
+    '12:30 PM - 01:00 PM',
     '01:00 PM - 01:30 PM',
     '01:30 PM - 02:00 PM',
     '02:00 PM - 02:30 PM',
@@ -39,21 +39,28 @@ class BookingProvider with ChangeNotifier {
     '03:30 PM - 04:00 PM',
     '04:00 PM - 04:30 PM',
     '04:30 PM - 05:00 PM',
+    '05:00 PM - 05:30 PM',
+    '05:30 PM - 06:00 PM',
+    '06:00 PM - 06:30 PM',
+    '06:30 PM - 07:00 PM',
+    '07:00 PM - 07:30 PM',
+    '07:30 PM - 08:00 PM',
   ];
 
-  // --- RESTORED CHOICE LIST GETTERS FOR THE DROP-DOWN FIELDS ---
+  List<String> get timeSlots {
+    return _allTimeSlots
+        .where((slot) => (_slotBookingCounts[slot] ?? 0) > 0)
+        .toList();
+  }
 
-  /// Returns localized location string tokens based on active browser layout
   List<String> get locations => _currentLocale == 'ja'
       ? ['オンライン [Teams]', 'GCL ラウンジ']
       : ['Online [Teams]', 'GCL Lounge'];
 
-  /// Returns localized purpose variables based on active browser layout
   List<String> get purposes => _currentLocale == 'ja'
       ? ['課題', 'フリートーク・会話', 'プレゼンテーション練習']
       : ['Assignment', 'Conversation', 'Presentation Practice'];
 
-  /// Returns localized master language codes
   List<String> get targetLanguages => _currentLocale == 'ja'
       ? ['英語 - en', '日本語 - ja', '中国語（繁体） - zh', 'スペイン語 - es']
       : [
@@ -74,7 +81,7 @@ class BookingProvider with ChangeNotifier {
     _selectedDay = day;
     _selectedTimeSlot = null;
     _isFormVisible = false;
-    fetchSharePointBookings(); // Automatically re-pull and recalculate data when day shifts
+    _calculateSlotsForSelectedDay();
   }
 
   void selectTimeSlot(String slot) {
@@ -83,10 +90,18 @@ class BookingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// CORE STAGE 2 FEATURE: Pull from SharePoint & break down into 30-min blocks
   Future<void> fetchSharePointBookings() async {
+    if (_cachedSharepointItems.isNotEmpty) {
+      print(
+        "🎯 [CACHE HIT]: Skipping network request. Utilizing locally stored month dataset mapping.",
+      );
+      _calculateSlotsForSelectedDay();
+      return;
+    }
+
     _isLoading = true;
     _slotBookingCounts.clear();
+    _cachedSharepointItems.clear();
     notifyListeners();
 
     final String payloadData = jsonEncode({
@@ -125,53 +140,84 @@ class BookingProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> sharepointItems = jsonDecode(response.body);
+        _cachedSharepointItems = jsonDecode(response.body);
         print(
-          "💡 Parsed [${sharepointItems.length}] raw dataset rows from SharePoint.",
+          "💡 Parsed [${_cachedSharepointItems.length}] raw dataset rows into storage cache.",
         );
-
-        for (var item in sharepointItems) {
-          // Parse values safely from incoming SharePoint JSON
-          DateTime start = DateTime.parse(item['proposed_start']).toLocal();
-          DateTime end = DateTime.parse(item['proposed_end']).toLocal();
-
-          // Only process bookings matching our currently selected calendar day
-          if (start.year == _selectedDay.year &&
-              start.month == _selectedDay.month &&
-              start.day == _selectedDay.day) {
-            // Slice the booking range down into 30-min intervals
-            for (String slot in timeSlots) {
-              DateTime slotStart = _parseSlotTimeToDateTime(
-                _selectedDay,
-                slot,
-                false,
-              );
-              DateTime slotEnd = _parseSlotTimeToDateTime(
-                _selectedDay,
-                slot,
-                true,
-              );
-
-              // Condition: If the SharePoint window overlaps this slot sequence, increment
-              if (start.isBefore(slotEnd) && end.isAfter(slotStart)) {
-                _slotBookingCounts[slot] = (_slotBookingCounts[slot] ?? 0) + 1;
-              }
-            }
-          }
-        }
+        _calculateSlotsForSelectedDay();
       }
     } catch (networkError) {
       print(
         "🚨 [CRITICAL NETWORK EXCEPTION CRASH]: Failed to hit endpoint endpoint server.",
       );
       print("Detailed Diagnostic Trace: $networkError");
-    } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  /// Helper to convert presentation slot string into explicit DateTime object comparison parameters
+  void _calculateSlotsForSelectedDay() {
+    _slotBookingCounts.clear();
+
+    for (var item in _cachedSharepointItems) {
+      if (item == null ||
+          item['startTime'] == null ||
+          item['endTime'] == null) {
+        continue;
+      }
+
+      String startStr = item['startTime'].toString();
+      String endStr = item['endTime'].toString();
+
+      if (startStr.isEmpty || endStr.isEmpty) {
+        continue;
+      }
+
+      DateTime startRaw = DateTime.parse(startStr);
+      DateTime endRaw = DateTime.parse(endStr);
+
+      DateTime start = DateTime(
+        startRaw.year,
+        startRaw.month,
+        startRaw.day,
+        startRaw.hour,
+        startRaw.minute,
+      );
+      DateTime end = DateTime(
+        endRaw.year,
+        endRaw.month,
+        endRaw.day,
+        endRaw.hour,
+        endRaw.minute,
+      );
+
+      if (start.year == _selectedDay.year &&
+          start.month == _selectedDay.month &&
+          start.day == _selectedDay.day) {
+        for (String slot in _allTimeSlots) {
+          DateTime slotStart = _parseSlotTimeToDateTime(
+            _selectedDay,
+            slot,
+            false,
+          );
+          DateTime slotEnd = _parseSlotTimeToDateTime(_selectedDay, slot, true);
+
+          if ((start.isBefore(slotStart) ||
+                  start.isAtSameMomentAs(slotStart)) &&
+              end.isAfter(slotStart)) {
+            _slotBookingCounts[slot] = (_slotBookingCounts[slot] ?? 0) + 1;
+          }
+        }
+      }
+    }
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  int getTotalStaffCountForSlot(String slot) {
+    return _slotBookingCounts[slot] ?? 0;
+  }
+
   DateTime _parseSlotTimeToDateTime(
     DateTime baseDate,
     String slotRange,
@@ -190,7 +236,6 @@ class BookingProvider with ChangeNotifier {
     return DateTime(baseDate.year, baseDate.month, baseDate.day, hour, minute);
   }
 
-  // Language Dictionary Map
   String translate(String key) {
     final Map<String, Map<String, String>> localizedValues = {
       'en': {
@@ -236,7 +281,6 @@ class BookingProvider with ChangeNotifier {
     return localizedValues[_currentLocale]?[key] ?? key;
   }
 
-  // Combined absolute DateTime calculations for Stage 3 export
   DateTime getCalculatedDateTime({required bool getEndTime}) {
     if (_selectedTimeSlot == null) return _selectedDay;
     final parts = _selectedTimeSlot!.split(' - ');
