@@ -1,11 +1,25 @@
 {
   "name": "GCL Personnel Cloud Box",
-  "image": "ghcr.io/cirruslabs/flutter:3.24.0", // Base stack updated iteratively via launch hooks
-  "initializeCommand": "echo 'Initializing Workspace Engine'",
-  "postCreateCommand": "flutter upgrade && flutter pub get",
+  // Forces the container to use the exact Flutter release containing your SDK target
+  "image": "ghcr.io/cirruslabs/flutter:3.27.0", 
+  "updateContentCommand": "flutter pub get",
   "customizations": {
     "vscode": {
-      "extensions": ["Dart-Code.flutter", "Dart-Code.dart"]
+      "extensions": [
+        "Dart-Code.flutter",
+        "Dart-Code.dart"
+      ],
+      "settings": {
+        "dart.flutterSdkPath": "/sdks/flutter"
+      }
+    }
+  },
+  // Automatically opens the Web port so the user can see the UI immediately
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": {
+      "label": "GCL Personnel UI",
+      "onAutoForward": "openPreview"
     }
   }
 }
