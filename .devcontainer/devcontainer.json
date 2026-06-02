@@ -1,0 +1,11 @@
+{
+  "name": "GCL Personnel Cloud Box",
+  "image": "ghcr.io/cirruslabs/flutter:3.24.0", // Base stack updated iteratively via launch hooks
+  "initializeCommand": "echo 'Initializing Workspace Engine'",
+  "postCreateCommand": "flutter upgrade && flutter pub get",
+  "customizations": {
+    "vscode": {
+      "extensions": ["Dart-Code.flutter", "Dart-Code.dart"]
+    }
+  }
+}

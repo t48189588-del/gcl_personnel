@@ -1,18 +1,12 @@
 # gcl_personnel
 
-## Logs
-Presentation to other student staff **May 6,2026**
-Presentation date to senior staff (shiriashi-san, kimura-san) **May 13, 2026**
-Presentation date to senior staff (hatsuda-san, sugawara-san) **May 20, 2026**
-Presentation of documentation and power apps prototype (hatsuda-san, sugawara-san) **May 27, 2026**
-Presentation of documentation and power apps prototype (kimura-san, shiriashi-san) **May 28, 2026**
 
 A flutter web app for managing GCL staff and events (self hosted)
 A office/sharepoint mirror (cloud hosted)
 
 Base information pulled from 
 Online contact 
-
+v
 - Instragram: https://www.instagram.com/gclkyutech/  
 - Website (hosted in google sites): https://sites.google.com/view/gclkyutech/about-us  
 - Line ID: kyutechgcl  
@@ -254,3 +248,13 @@ add languages (native and speaking)
 | 2    | Navigate to build/web directory                    | `cd build/web`                                         |
 | 3    | temporary git (for uploading to github pages)      | `git init && git add . && git commit -m "first commit` |
 | 4    | uploading pages                                    | `git push -f <repo>.git master:gh-pages`               |
+
+# Logs
+|date|who|what|
+|----|---|----|
+|**May 13, 2026**|Shiriashi-san & Kimura-san|Presentation of proposal|
+|**May 20, 2026**|Hatsuda-san & Sugawara-san|Presentation of documentation and power apps prototype|
+|**May 27, 2026**|Hatsuda-san & Sugawara-san|Presentation of documentation and power apps prototype|
+|**May 28, 2026**|Kimura-san & Shiriashi-san|Presentation of documentation and power apps prototype|
+|**June 1, 2026**|Hatsuda-san|A flutter web app for managing GCL staff and events (power apps)|
+|**June 2, 2026**|Hatsuda-san & Sugawara-san|Presented reservation flutter portal and suggestions on fields to add|
