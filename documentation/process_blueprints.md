@@ -27,9 +27,9 @@ gantt
     title Historical Git Activity Track
     dateFormat  YYYY-MM-DD
     section Commit Milestones
-    Documentation about flutter project  active, 2026-05-25, 3d
-    documentation for building the web page files for github pages from the flutter project  active, 2026-05-25, 3d
-    presentation made to hatsuda and sugawara, base for implementation  active, 2026-05-23, 3d
-    data cleaning script  working schedules availability and approved   active, 2026-05-21, 3d
-    notes after hatsuda-san and sugawara-san meeting  active, 2026-05-20, 3d
+    updating devcontainer to fix issues with the github codespace  active, 2026-06-02, 3d
+    fixing issues with github container creation  active, 2026-06-02, 3d
+    minor fixes dart version limitations added vscode for building web UI whe building from github codespace  active, 2026-06-02, 3d
+    update flutter version to match SDK environment  active, 2026-06-02, 3d
+    updated documentation for muli devices testing  github, mac, linux or windows   active, 2026-06-02, 3d
 ```
