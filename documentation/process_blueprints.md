@@ -27,9 +27,9 @@ gantt
     title Historical Git Activity Track
     dateFormat  YYYY-MM-DD
     section Commit Milestones
+    added reservation page calendar and form pull data from sharepoint  active, 2026-06-02, 3d
     updating devcontainer to fix issues with the github codespace  active, 2026-06-02, 3d
     fixing issues with github container creation  active, 2026-06-02, 3d
     minor fixes dart version limitations added vscode for building web UI whe building from github codespace  active, 2026-06-02, 3d
     update flutter version to match SDK environment  active, 2026-06-02, 3d
-    updated documentation for muli devices testing  github, mac, linux or windows   active, 2026-06-02, 3d
 ```
