@@ -874,4 +874,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get skip => 'Skip';
+
+  @override
+  String get eventDetails => 'Event Details';
+
+  @override
+  String get eventLocation => 'Event Location';
+
+  @override
+  String get gclRoom => 'GCL Room';
+
+  @override
+  String get finished => 'Finished';
+
+  @override
+  String get eventComments => 'Event Comments / Notes';
+
+  @override
+  String get postApprovalSNS => 'Post-Approval Details (For SNS)';
+
+  @override
+  String get eventSummarySNS => 'Event Summary for SNS';
+
+  @override
+  String get uploadPhotos => 'Upload Photos';
+
+  @override
+  String get detailsSaved => 'Details saved for publication!';
+
+  @override
+  String get saveDetails => 'Save Details';
 }

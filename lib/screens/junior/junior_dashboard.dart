@@ -1799,6 +1799,131 @@ class _AgendaView extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildNoticeBoard(BuildContext context, AppProvider provider, StaffMember staff, AppLocalizations loc) {
+    final pendingReports = provider.reports.where((r) => r.staffId == staff.id && !r.isSubmitted && r.scheduledEnd.isBefore(DateTime.now())).toList();
+    final today = DateTime.now();
+    final holidayCheck = provider.operatingHours.holidays.where((h) => h.date.year == today.year && h.date.month == today.month && h.date.day == today.day);
+    final upcomingMeetings = provider.externalMeetingRequests.where((r) => r.assignedStaffId == staff.id && r.status == 'approved' && r.requestedTime.isAfter(today)).toList();
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (holidayCheck.isNotEmpty)
+          Expanded(
+            child: Card(
+              color: Colors.red.shade50,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(children: [Icon(Icons.celebration, color: Colors.red), SizedBox(width: 8), Text('Holiday Notice', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red))]),
+                    const SizedBox(height: 8),
+                    Text(holidayCheck.first.message),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        if (pendingReports.isNotEmpty)
+          Expanded(
+            child: InkWell(
+              onTap: () { /* Future integration: Navigate to reports */ },
+              child: Card(
+                color: Colors.orange.shade50,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(children: [const Icon(Icons.warning_amber, color: Colors.orange), const SizedBox(width: 8), Text('${pendingReports.length} Pending Reports', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.orange))]),
+                      const SizedBox(height: 8),
+                      const Text('Please submit your working reports.'),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        Expanded(
+          child: Card(
+            color: Colors.blue.shade50,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Row(children: [Icon(Icons.meeting_room, color: Colors.blue), SizedBox(width: 8), Text('Upcoming Meetings', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue))]),
+                  const SizedBox(height: 8),
+                  if (upcomingMeetings.isEmpty)
+                    const Text('No upcoming meetings.')
+                  else
+                    ...upcomingMeetings.take(2).map((m) => Text('${m.name} - ${DateFormat('MM/dd HH:mm').format(m.requestedTime)}')),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBentoSchedule(BuildContext context, AppProvider provider, StaffMember staff, AppLocalizations loc) {
+    final today = DateTime.now();
+    final todayBlocks = provider.blocks.where((b) => 
+      b.staffId == staff.id && 
+      b.startTime.year == today.year && 
+      b.startTime.month == today.month && 
+      b.startTime.day == today.day
+    ).toList();
+    todayBlocks.sort((a, b) => a.startTime.compareTo(b.startTime));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Today's Schedule", style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 16),
+        if (todayBlocks.isEmpty)
+          const Expanded(child: Center(child: Text("No shifts scheduled for today.")))
+        else
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: todayBlocks.map((b) {
+                  Color bgColor;
+                  if (b.status == 'approved') bgColor = Colors.green.shade100;
+                  else if (b.status == 'rejected') bgColor = Colors.red.shade100;
+                  else bgColor = Colors.grey.shade200;
+
+                  return Container(
+                    width: 150,
+                    margin: const EdgeInsets.only(right: 16),
+                    decoration: BoxDecoration(
+                      color: bgColor,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.black12),
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(DateFormat('HH:mm').format(b.startTime), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                        Text(DateFormat('HH:mm').format(b.startTime.add(const Duration(minutes: 30))), style: const TextStyle(color: Colors.black54)),
+                        const Spacer(),
+                        Text(b.status.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                        Text(b.modality, style: const TextStyle(fontSize: 12)),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
 }
 
 void _showFinishEmploymentDialog(

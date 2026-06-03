@@ -6,7 +6,6 @@ import 'providers/app_provider.dart';
 import 'services/hive_service.dart';
 import 'screens/common/role_gate_screen.dart';
 import 'theme/app_theme.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

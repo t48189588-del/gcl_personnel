@@ -200,7 +200,6 @@ class BookingProvider with ChangeNotifier {
             slot,
             false,
           );
-          DateTime slotEnd = _parseSlotTimeToDateTime(_selectedDay, slot, true);
 
           if ((start.isBefore(slotStart) ||
                   start.isAtSameMomentAs(slotStart)) &&

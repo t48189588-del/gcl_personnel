@@ -29,7 +29,112 @@ class _SeniorDashboardState extends State<SeniorDashboard> {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
     final provider = context.read<AppProvider>();
+
+    final railDestinations = [
+      NavigationRailDestination(
+        icon: const Icon(Icons.calendar_today_outlined),
+        selectedIcon: const Icon(Icons.calendar_today),
+        label: Text(loc.calendarOverview),
+      ),
+      NavigationRailDestination(
+        icon: const Icon(Icons.dashboard_outlined),
+        selectedIcon: const Icon(Icons.dashboard),
+        label: Text(loc.metrics),
+      ),
+      NavigationRailDestination(
+        icon: const Icon(Icons.settings_outlined),
+        selectedIcon: const Icon(Icons.settings),
+        label: Text(loc.guardrails),
+      ),
+      NavigationRailDestination(
+        icon: const Icon(Icons.assignment_outlined),
+        selectedIcon: const Icon(Icons.assignment),
+        label: Text(loc.workingReports),
+      ),
+      NavigationRailDestination(
+        icon: const Icon(Icons.check_circle_outline),
+        selectedIcon: const Icon(Icons.check_circle),
+        label: Text(loc.approve),
+      ),
+      NavigationRailDestination(
+        icon: const Icon(Icons.lightbulb_outline),
+        selectedIcon: const Icon(Icons.lightbulb),
+        label: Text(loc.eventProposal),
+      ),
+      NavigationRailDestination(
+        icon: const Icon(Icons.meeting_room_outlined),
+        selectedIcon: const Icon(Icons.meeting_room),
+        label: Text(loc.meetingRequests),
+      ),
+      NavigationRailDestination(
+        icon: const Icon(Icons.show_chart_outlined),
+        selectedIcon: const Icon(Icons.show_chart),
+        label: Text(loc.charts),
+      ),
+      NavigationRailDestination(
+        icon: const Icon(Icons.bar_chart_outlined),
+        selectedIcon: const Icon(Icons.bar_chart),
+        label: Text(loc.socialMetrics),
+      ),
+    ];
+
+    final bottomDestinations = [
+      NavigationDestination(
+        icon: const Icon(Icons.calendar_today_outlined),
+        selectedIcon: const Icon(Icons.calendar_today),
+        label: loc.calendarOverview,
+      ),
+      NavigationDestination(
+        icon: const Icon(Icons.dashboard_outlined),
+        selectedIcon: const Icon(Icons.dashboard),
+        label: loc.metrics,
+      ),
+      NavigationDestination(
+        icon: const Icon(Icons.settings_outlined),
+        selectedIcon: const Icon(Icons.settings),
+        label: loc.guardrails,
+      ),
+      NavigationDestination(
+        icon: const Icon(Icons.assignment_outlined),
+        selectedIcon: const Icon(Icons.assignment),
+        label: loc.workingReports,
+      ),
+      NavigationDestination(
+        icon: const Icon(Icons.check_circle_outline),
+        selectedIcon: const Icon(Icons.check_circle),
+        label: loc.approve,
+      ),
+      NavigationDestination(
+        icon: const Icon(Icons.lightbulb_outline),
+        selectedIcon: const Icon(Icons.lightbulb),
+        label: loc.eventProposal,
+      ),
+      NavigationDestination(
+        icon: const Icon(Icons.meeting_room_outlined),
+        selectedIcon: const Icon(Icons.meeting_room),
+        label: loc.meetingRequests,
+      ),
+      NavigationDestination(
+        icon: const Icon(Icons.show_chart_outlined),
+        selectedIcon: const Icon(Icons.show_chart),
+        label: loc.charts,
+      ),
+      NavigationDestination(
+        icon: const Icon(Icons.bar_chart_outlined),
+        selectedIcon: const Icon(Icons.bar_chart),
+        label: loc.socialMetrics,
+      ),
+    ];
+
     return ResponsiveScaffold(
+      selectedIndex: _selectedIndex,
+      onDestinationSelected: (int index) {
+        setState(() {
+          _selectedIndex = index;
+        });
+      },
+      railDestinations: railDestinations,
+      bottomDestinations: bottomDestinations,
       appBar: AppBar(
         title: Text(loc.commanderView),
         actions: [
@@ -86,68 +191,7 @@ class _SeniorDashboardState extends State<SeniorDashboard> {
           const SizedBox(width: 20),
         ],
       ),
-      body: Row(
-        children: [
-          NavigationRail(
-            selectedIndex: _selectedIndex,
-            onDestinationSelected: (int index) {
-              setState(() {
-                _selectedIndex = index;
-              });
-            },
-            labelType: NavigationRailLabelType.all,
-            destinations: [
-              NavigationRailDestination(
-                icon: const Icon(Icons.calendar_today_outlined),
-                selectedIcon: const Icon(Icons.calendar_today),
-                label: Text(loc.calendarOverview),
-              ),
-              NavigationRailDestination(
-                icon: const Icon(Icons.dashboard_outlined),
-                selectedIcon: const Icon(Icons.dashboard),
-                label: Text(loc.metrics),
-              ),
-              NavigationRailDestination(
-                icon: const Icon(Icons.settings_outlined),
-                selectedIcon: const Icon(Icons.settings),
-                label: Text(loc.guardrails),
-              ),
-              NavigationRailDestination(
-                icon: const Icon(Icons.assignment_outlined),
-                selectedIcon: const Icon(Icons.assignment),
-                label: Text(loc.workingReports),
-              ),
-              NavigationRailDestination(
-                icon: const Icon(Icons.check_circle_outline),
-                selectedIcon: const Icon(Icons.check_circle),
-                label: Text(loc.approve),
-              ),
-              NavigationRailDestination(
-                icon: const Icon(Icons.lightbulb_outline),
-                selectedIcon: const Icon(Icons.lightbulb),
-                label: Text(loc.eventProposal),
-              ),
-              NavigationRailDestination(
-                icon: const Icon(Icons.meeting_room_outlined),
-                selectedIcon: const Icon(Icons.meeting_room),
-                label: Text(loc.meetingRequests),
-              ),
-              NavigationRailDestination(
-                icon: const Icon(Icons.show_chart_outlined),
-                selectedIcon: const Icon(Icons.show_chart),
-                label: Text(loc.charts),
-              ),
-              NavigationRailDestination(
-                icon: const Icon(Icons.bar_chart_outlined),
-                selectedIcon: const Icon(Icons.bar_chart),
-                label: Text(loc.socialMetrics),
-              ),
-            ],
-          ),
-          const VerticalDivider(thickness: 1, width: 1),
-          Expanded(child: _buildBody()),
-        ],
-      ),
+      body: _buildBody(),
     );
   }
 
@@ -166,7 +210,7 @@ class _SeniorDashboardState extends State<SeniorDashboard> {
       case 5:
         return const _EventProposalsTab();
       case 6:
-        return const _MeetingRequestsTab();
+        return const _ExternalMeetingRequestsView();
       case 7:
         return const ChartVisualizationTab();
       case 8:

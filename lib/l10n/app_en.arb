@@ -340,5 +340,15 @@
   "deadlineDialogTitle": "Availability Submission Reminder",
   "deadlineDialogContent": "Please submit your availability for next month as the 24th deadline has arrived or passed.",
   "goToSubmission": "Go to Submission",
-  "skip": "Skip"
+  "skip": "Skip",
+  "eventDetails": "Event Details",
+  "eventLocation": "Event Location",
+  "gclRoom": "GCL Room",
+  "finished": "Finished",
+  "eventComments": "Event Comments / Notes",
+  "postApprovalSNS": "Post-Approval Details (For SNS)",
+  "eventSummarySNS": "Event Summary for SNS",
+  "uploadPhotos": "Upload Photos",
+  "detailsSaved": "Details saved for publication!",
+  "saveDetails": "Save Details"
 }
