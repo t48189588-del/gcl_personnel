@@ -13,6 +13,11 @@ A office/sharepoint mirror (cloud hosted)
 - Teams group
 
 ## Wanna test?
+### Public website (testing purposes only)
+Main page: https://t48189588-del.github.io/gcl_personnel/
+Reservation: https://t48189588-del.github.io/gcl_personnel/reservation/
+
+### Code
 |Where|File|
 |----|----|
 |GitHub Codespace|[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=t48189588-del/gcl_personnel)|
@@ -251,3 +256,13 @@ After the initial event proposal is approved, the proposer shall be able to add:
 |**May 28, 2026**|Kimura-san & Shiriashi-san|Presentation of documentation and power apps prototype|
 |**June 1, 2026**|Hatsuda-san|A flutter web app for managing GCL staff and events (power apps)|
 |**June 2, 2026**|Hatsuda-san & Sugawara-san|Presented reservation flutter portal and suggestions on fields to add|
+|**June 3, 2026**|Hatsuda-san, Kimura-san, Shiriashi-san & Sugawara-san|Emailed power apps, flutter reservation page and GCL manual|
+
+
+## Tangent/psicological questions
+1. What's the inconvenience?
+2. What's the experience?
+3. What is the highest priority per profile?
+ - student: max amount of payment
+ - main staff: faster organization
+ - visitor: easy of understanding and update

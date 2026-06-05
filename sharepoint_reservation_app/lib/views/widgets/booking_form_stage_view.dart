@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/booking_provider.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class BookingFormStageView extends StatefulWidget {
   const BookingFormStageView({Key? key}) : super(key: key);
@@ -168,7 +171,8 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                onPressed: () {
+                onPressed: () async {
+                  // 1. Added 'async' here
                   if (_formKey.currentState!.validate()) {
                     DateTime startDateTime = provider.getCalculatedDateTime(
                       getEndTime: false,
@@ -187,12 +191,85 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                     print("targetLanguage: $_selectedLanguage");
                     print("--------------------------------------------------");
 
+                    // 2. Show a "Processing..." SnackBar or Loading indicator
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(provider.translate('success_msg')),
-                        backgroundColor: Colors.green,
+                        content: Text('Processing reservation...'),
+                        duration: Duration(seconds: 2),
                       ),
                     );
+
+                    // 3. Construct your JSON payload
+                    final Map<String, dynamic> payload = {
+                      "start": startDateTime.toIso8601String(),
+                      "end": endDateTime.toIso8601String(),
+                      "name": _nameController.text.trim(),
+                      "email": _emailController.text.trim(),
+                      "location": _selectedLocation,
+                      "purpose": _selectedPurpose,
+                      "targetLanguage": _selectedLanguage,
+                    };
+
+                    // 4. Replace this with your actual Power Automate HTTP POST URL
+                    final String powerAutomateUrl = dotenv.get(
+                      'POWER_AUTOMATE_URL_POST',
+                      fallback: '',
+                    );
+
+                    if (powerAutomateUrl.isEmpty) {
+                      print(
+                        "ERROR: Power Automate URL is missing from configuration.",
+                      );
+                      ScaffoldMessenger.of(context).clearSnackBars();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Configuration error. Contact admin.'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+
+                    try {
+                      // 5. Fire off the network request
+                      final response = await http.post(
+                        Uri.parse(powerAutomateUrl),
+                        headers: {'Content-Type': 'application/json'},
+                        body: jsonEncode(payload),
+                      );
+
+                      // 6. Handle the result (Power Automate typically returns 200 or 202)
+                      if (response.statusCode == 200 ||
+                          response.statusCode == 202) {
+                        // Clear previous processing snackbar and show success
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(provider.translate('success_msg')),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+
+                        // Optional senior practice: Clear text controllers / reset state here if desired
+                      } else {
+                        throw Exception(
+                          'Server returned status code ${response.statusCode}',
+                        );
+                      }
+                    } catch (e) {
+                      print("ERROR SYNCING TO POWER AUTOMATE: $e");
+
+                      // 7. Show error UI to the user if the backend connection fails
+                      ScaffoldMessenger.of(context).clearSnackBars();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Failed to submit reservation. Please try again.',
+                          ),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
                   }
                 },
                 child: Text(

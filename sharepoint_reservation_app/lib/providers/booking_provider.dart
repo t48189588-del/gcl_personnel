@@ -19,6 +19,7 @@ class BookingProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   Map<String, int> get slotBookingCounts => _slotBookingCounts;
 
+  //pulls information from power automate
   final String _powerAutomateUrl =
       'https://defaultdbf986a9f2c7470188ce463dec76cb.a4.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f9a7ba33519541a7826952579b57b3b8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ZfI4IxYzXX9WUWNAhA3nWTkXSla4L1Ongx3dJoFJakE';
 
