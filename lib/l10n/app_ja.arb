@@ -318,5 +318,15 @@
   "deadlineDialogTitle": "シフト提出のリマインダー",
   "deadlineDialogContent": "24日の締め切りになりました。来月のシフト希望を提出してください。",
   "goToSubmission": "シフト入力へ",
-  "skip": "スキップ"
+  "skip": "スキップ",
+  "eventDetails": "イベント詳細",
+  "eventLocation": "開催場所",
+  "gclRoom": "GCL Room",
+  "finished": "終了",
+  "eventComments": "イベントのコメント/備考",
+  "postApprovalSNS": "承認後の詳細設定（SNS用）",
+  "eventSummarySNS": "SNS用イベント概要",
+  "uploadPhotos": "写真をアップロード",
+  "detailsSaved": "公開用に詳細が保存されました！",
+  "saveDetails": "詳細を保存"
 }

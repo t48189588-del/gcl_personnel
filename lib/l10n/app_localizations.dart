@@ -1675,6 +1675,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Skip'**
   String get skip;
+
+  /// No description provided for @eventDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Details'**
+  String get eventDetails;
+
+  /// No description provided for @eventLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Location'**
+  String get eventLocation;
+
+  /// No description provided for @gclRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'GCL Room'**
+  String get gclRoom;
+
+  /// No description provided for @finished.
+  ///
+  /// In en, this message translates to:
+  /// **'Finished'**
+  String get finished;
+
+  /// No description provided for @eventComments.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Comments / Notes'**
+  String get eventComments;
+
+  /// No description provided for @postApprovalSNS.
+  ///
+  /// In en, this message translates to:
+  /// **'Post-Approval Details (For SNS)'**
+  String get postApprovalSNS;
+
+  /// No description provided for @eventSummarySNS.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Summary for SNS'**
+  String get eventSummarySNS;
+
+  /// No description provided for @uploadPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Photos'**
+  String get uploadPhotos;
+
+  /// No description provided for @detailsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Details saved for publication!'**
+  String get detailsSaved;
+
+  /// No description provided for @saveDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Details'**
+  String get saveDetails;
 }
 
 class _AppLocalizationsDelegate

@@ -861,4 +861,34 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get skip => 'スキップ';
+
+  @override
+  String get eventDetails => 'イベント詳細';
+
+  @override
+  String get eventLocation => '開催場所';
+
+  @override
+  String get gclRoom => 'GCL Room';
+
+  @override
+  String get finished => '終了';
+
+  @override
+  String get eventComments => 'イベントのコメント/備考';
+
+  @override
+  String get postApprovalSNS => '承認後の詳細設定（SNS用）';
+
+  @override
+  String get eventSummarySNS => 'SNS用イベント概要';
+
+  @override
+  String get uploadPhotos => '写真をアップロード';
+
+  @override
+  String get detailsSaved => '公開用に詳細が保存されました！';
+
+  @override
+  String get saveDetails => '詳細を保存';
 }
