@@ -29,7 +29,6 @@ class CalendarStageView extends StatelessWidget {
               selectedDayPredicate: (day) =>
                   isSameDay(provider.selectedDay, day),
               onDaySelected: (selectedDay, focusedDay) {
-                //provider.selectDay(selectedDay);
                 Provider.of<BookingProvider>(
                   context,
                   listen: false,
@@ -83,15 +82,19 @@ class CalendarStageView extends StatelessWidget {
                     physics: const NeverScrollableScrollPhysics(),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: isWide ? 2 : 1,
-                      childAspectRatio: isWide ? 3.8 : 4.5,
+                      // Adjusted childAspectRatio down slightly to accommodate stacked text layers
+                      childAspectRatio: isWide ? 3.2 : 3.8,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
                     ),
                     itemCount: provider.timeSlots.length,
                     itemBuilder: (context, index) {
                       String slot = provider.timeSlots[index];
-                      int count = provider.slotBookingCounts[slot] ?? 0;
                       bool isSelected = provider.selectedTimeSlot == slot;
+
+                      // Extract categorized breakdown counts from provider
+                      int jaCount = provider.getJapaneseStaffCountForSlot(slot);
+                      int intlCount = provider.getIntlStudentCountForSlot(slot);
 
                       return Material(
                         color: isSelected ? Colors.blue : Colors.white,
@@ -108,10 +111,14 @@ class CalendarStageView extends StatelessWidget {
                               ),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
+                                // Left Layer: Time Block Window
                                 Text(
                                   slot,
                                   style: TextStyle(
@@ -123,26 +130,33 @@ class CalendarStageView extends StatelessWidget {
                                         : FontWeight.normal,
                                   ),
                                 ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? Colors.white.withOpacity(0.25)
-                                        : Colors.grey[100],
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    "$count",
-                                    style: TextStyle(
-                                      color: isSelected
-                                          ? Colors.white
-                                          : Colors.blue,
-                                      fontWeight: FontWeight.bold,
+                                // Right Layer: Stacked Metric Breakdown Display
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      "${provider.translate('ja_staff_label')}: $jaCount",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: isSelected
+                                            ? Colors.white.withOpacity(0.9)
+                                            : Colors.blue[800],
+                                      ),
                                     ),
-                                  ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      "${provider.translate('intl_staff_label')}: $intlCount",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: isSelected
+                                            ? Colors.white.withOpacity(0.9)
+                                            : Colors.grey[700],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),

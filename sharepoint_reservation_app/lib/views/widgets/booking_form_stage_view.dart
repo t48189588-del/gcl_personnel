@@ -21,6 +21,9 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
   String? _selectedPurpose;
   String? _selectedLanguage;
 
+  // Default selection set to professional neutral fallback value
+  String _preferredStaffPreference = 'anyone';
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -51,6 +54,13 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
         ),
       );
     }
+
+    // Dynamic localization maps for the presentation preference layout
+    final isJa = provider.currentLocale == 'ja';
+    final String sectionTitle = isJa ? "希望するスタッフタイプ" : "Preferred Staff Type";
+    final String labelAnyone = isJa ? "指定なし (誰でも)" : "No Preference (Anyone)";
+    final String labelJapanese = isJa ? "日本人スタッフのみ" : "Japanese Personnel Only";
+    final String labelIntl = isJa ? "留学生のみ" : "International Student Only";
 
     return Form(
       key: _formKey,
@@ -160,6 +170,64 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                 validator: (val) =>
                     val == null ? provider.translate('select_lang') : null,
               ),
+              const SizedBox(height: 24),
+
+              // --- STAFF SELECTION RADIO LAYOUT ---
+              // --- STAFF SELECTION RADIO LAYOUT ---
+              Text(
+                provider.translate('pref_title'),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[700],
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey[400]!),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  children: [
+                    RadioListTile<String>(
+                      title: Text(
+                        provider.translate('pref_anyone'),
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                      value: 'anyone',
+                      groupValue: _preferredStaffPreference,
+                      activeColor: Colors.blue,
+                      onChanged: (val) =>
+                          setState(() => _preferredStaffPreference = val!),
+                    ),
+                    const Divider(height: 1, indent: 16, endIndent: 16),
+                    RadioListTile<String>(
+                      title: Text(
+                        provider.translate('pref_japanese'),
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                      value: 'japanese',
+                      groupValue: _preferredStaffPreference,
+                      activeColor: Colors.blue,
+                      onChanged: (val) =>
+                          setState(() => _preferredStaffPreference = val!),
+                    ),
+                    const Divider(height: 1, indent: 16, endIndent: 16),
+                    RadioListTile<String>(
+                      title: Text(
+                        provider.translate('pref_intl'),
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                      value: 'international',
+                      groupValue: _preferredStaffPreference,
+                      activeColor: Colors.blue,
+                      onChanged: (val) =>
+                          setState(() => _preferredStaffPreference = val!),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 32),
 
               ElevatedButton(
@@ -172,7 +240,6 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                   ),
                 ),
                 onPressed: () async {
-                  // 1. Added 'async' here
                   if (_formKey.currentState!.validate()) {
                     DateTime startDateTime = provider.getCalculatedDateTime(
                       getEndTime: false,
@@ -189,17 +256,17 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                     print("location: $_selectedLocation");
                     print("purpose: $_selectedPurpose");
                     print("targetLanguage: $_selectedLanguage");
+                    print("staffPreference: $_preferredStaffPreference");
                     print("--------------------------------------------------");
 
-                    // 2. Show a "Processing..." SnackBar or Loading indicator
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
+                      const SnackBar(
                         content: Text('Processing reservation...'),
                         duration: Duration(seconds: 2),
                       ),
                     );
 
-                    // 3. Construct your JSON payload
+                    // --- PATCHED JSON PAYLOAD TARGET ---
                     final Map<String, dynamic> payload = {
                       "start": startDateTime.toIso8601String(),
                       "end": endDateTime.toIso8601String(),
@@ -208,9 +275,10 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                       "location": _selectedLocation,
                       "purpose": _selectedPurpose,
                       "targetLanguage": _selectedLanguage,
+                      "staffPreference":
+                          _preferredStaffPreference, // Added classification tag mapping
                     };
 
-                    // 4. Replace this with your actual Power Automate HTTP POST URL
                     final String powerAutomateUrl = dotenv.get(
                       'POWER_AUTOMATE_URL_POST',
                       fallback: '',
@@ -231,17 +299,14 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                     }
 
                     try {
-                      // 5. Fire off the network request
                       final response = await http.post(
                         Uri.parse(powerAutomateUrl),
                         headers: {'Content-Type': 'application/json'},
                         body: jsonEncode(payload),
                       );
 
-                      // 6. Handle the result (Power Automate typically returns 200 or 202)
                       if (response.statusCode == 200 ||
                           response.statusCode == 202) {
-                        // Clear previous processing snackbar and show success
                         ScaffoldMessenger.of(context).clearSnackBars();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -249,8 +314,6 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                             backgroundColor: Colors.green,
                           ),
                         );
-
-                        // Optional senior practice: Clear text controllers / reset state here if desired
                       } else {
                         throw Exception(
                           'Server returned status code ${response.statusCode}',
@@ -258,11 +321,9 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                       }
                     } catch (e) {
                       print("ERROR SYNCING TO POWER AUTOMATE: $e");
-
-                      // 7. Show error UI to the user if the backend connection fails
                       ScaffoldMessenger.of(context).clearSnackBars();
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                           content: Text(
                             'Failed to submit reservation. Please try again.',
                           ),

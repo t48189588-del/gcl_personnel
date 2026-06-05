@@ -10,16 +10,34 @@ class BookingProvider with ChangeNotifier {
   bool _isLoading = false;
 
   List<dynamic> _cachedSharepointItems = [];
-  Map<String, int> _slotBookingCounts = {};
+
+  // Categorized classification mappings
+  final Map<String, int> _japaneseStaffCounts = {};
+  final Map<String, int> _intlStudentCounts = {};
 
   DateTime get selectedDay => _selectedDay;
   String? get selectedTimeSlot => _selectedTimeSlot;
   bool get isFormVisible => _isFormVisible;
   String get currentLocale => _currentLocale;
   bool get isLoading => _isLoading;
-  Map<String, int> get slotBookingCounts => _slotBookingCounts;
 
-  //pulls information from power automate
+  // Combines counts to ensure slot stays visible if EITHER type has slots available
+  Map<String, int> get slotBookingCounts {
+    final Map<String, int> totalCounts = {};
+    for (var slot in _allTimeSlots) {
+      int total =
+          (_japaneseStaffCounts[slot] ?? 0) + (_intlStudentCounts[slot] ?? 0);
+      if (total > 0) {
+        totalCounts[slot] = total;
+      }
+    }
+    return totalCounts;
+  }
+
+  // Explicit helper getters for categorized metrics
+  Map<String, int> get japaneseStaffCounts => _japaneseStaffCounts;
+  Map<String, int> get intlStudentCounts => _intlStudentCounts;
+
   final String _powerAutomateUrl =
       'https://defaultdbf986a9f2c7470188ce463dec76cb.a4.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f9a7ba33519541a7826952579b57b3b8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ZfI4IxYzXX9WUWNAhA3nWTkXSla4L1Ongx3dJoFJakE';
 
@@ -50,7 +68,7 @@ class BookingProvider with ChangeNotifier {
 
   List<String> get timeSlots {
     return _allTimeSlots
-        .where((slot) => (_slotBookingCounts[slot] ?? 0) > 0)
+        .where((slot) => (slotBookingCounts[slot] ?? 0) > 0)
         .toList();
   }
 
@@ -93,35 +111,15 @@ class BookingProvider with ChangeNotifier {
 
   Future<void> fetchSharePointBookings() async {
     if (_cachedSharepointItems.isNotEmpty) {
-      print(
-        "🎯 [CACHE HIT]: Skipping network request. Utilizing locally stored month dataset mapping.",
-      );
       _calculateSlotsForSelectedDay();
       return;
     }
 
     _isLoading = true;
-    _slotBookingCounts.clear();
+    _japaneseStaffCounts.clear();
+    _intlStudentCounts.clear();
     _cachedSharepointItems.clear();
     notifyListeners();
-
-    final String payloadData = jsonEncode({
-      "targetDate": _selectedDay.toIso8601String(),
-    });
-
-    print(
-      "========================================================================",
-    );
-    print(
-      "⚡ [FLUTTER NETWORK OUTBOUND]: Initiating API synchronization fetch...",
-    );
-    print(
-      "🔗 Target URL Check: ${_powerAutomateUrl.substring(0, 45.clamp(0, _powerAutomateUrl.length))}...",
-    );
-    print("📦 Payload Manifest: $payloadData");
-    print(
-      "========================================================================",
-    );
 
     try {
       final response = await http.post(
@@ -130,35 +128,19 @@ class BookingProvider with ChangeNotifier {
         body: jsonEncode({"targetDate": _selectedDay.toIso8601String()}),
       );
 
-      print(
-        "========================================================================",
-      );
-      print("📡 [FLUTTER NETWORK INBOUND]: Server Handshake Completed!");
-      print("🔴 HTTP Response Status Code: ${response.statusCode}");
-      print("📄 Raw Response Payload Body Data: ${response.body}");
-      print(
-        "========================================================================",
-      );
-
       if (response.statusCode == 200) {
         _cachedSharepointItems = jsonDecode(response.body);
-        print(
-          "💡 Parsed [${_cachedSharepointItems.length}] raw dataset rows into storage cache.",
-        );
         _calculateSlotsForSelectedDay();
       }
     } catch (networkError) {
-      print(
-        "🚨 [CRITICAL NETWORK EXCEPTION CRASH]: Failed to hit endpoint endpoint server.",
-      );
-      print("Detailed Diagnostic Trace: $networkError");
       _isLoading = false;
       notifyListeners();
     }
   }
 
   void _calculateSlotsForSelectedDay() {
-    _slotBookingCounts.clear();
+    _japaneseStaffCounts.clear();
+    _intlStudentCounts.clear();
 
     for (var item in _cachedSharepointItems) {
       if (item == null ||
@@ -195,6 +177,35 @@ class BookingProvider with ChangeNotifier {
       if (start.year == _selectedDay.year &&
           start.month == _selectedDay.month &&
           start.day == _selectedDay.day) {
+        // --- POWER AUTOMATE CHOICE COLUMN EXTRACTION LAYER ---
+        bool isJapaneseStaff = false;
+        var staffData = item['staff'];
+
+        if (staffData != null) {
+          if (staffData is Map && staffData['Value'] != null) {
+            // Configuration A: Standard Dynamic Content Object -> {"Value": "ja"}
+            String value = staffData['Value'].toString().toLowerCase().trim();
+            isJapaneseStaff = (value == 'ja' || value.contains('japanese'));
+          } else if (staffData is List) {
+            // Configuration B: Multi-Choice array layout -> [{"Value": "ja"}]
+            isJapaneseStaff = staffData.any((element) {
+              if (element is Map && element['Value'] != null) {
+                String val = element['Value'].toString().toLowerCase().trim();
+                return (val == 'ja' || val.contains('japanese'));
+              }
+              return element.toString().toLowerCase().trim() == 'ja';
+            });
+          } else {
+            // Configuration C: Evaluates raw text payload strings or dynamic text variants
+            String rawString = staffData.toString().toLowerCase().trim();
+            isJapaneseStaff =
+                (rawString == 'ja' ||
+                rawString == 'japanese' ||
+                rawString.contains('"value":"ja"') ||
+                rawString.contains('日本語'));
+          }
+        }
+
         for (String slot in _allTimeSlots) {
           DateTime slotStart = _parseSlotTimeToDateTime(
             _selectedDay,
@@ -205,7 +216,12 @@ class BookingProvider with ChangeNotifier {
           if ((start.isBefore(slotStart) ||
                   start.isAtSameMomentAs(slotStart)) &&
               end.isAfter(slotStart)) {
-            _slotBookingCounts[slot] = (_slotBookingCounts[slot] ?? 0) + 1;
+            if (isJapaneseStaff) {
+              _japaneseStaffCounts[slot] =
+                  (_japaneseStaffCounts[slot] ?? 0) + 1;
+            } else {
+              _intlStudentCounts[slot] = (_intlStudentCounts[slot] ?? 0) + 1;
+            }
           }
         }
       }
@@ -215,7 +231,15 @@ class BookingProvider with ChangeNotifier {
   }
 
   int getTotalStaffCountForSlot(String slot) {
-    return _slotBookingCounts[slot] ?? 0;
+    return (_japaneseStaffCounts[slot] ?? 0) + (_intlStudentCounts[slot] ?? 0);
+  }
+
+  int getJapaneseStaffCountForSlot(String slot) {
+    return _japaneseStaffCounts[slot] ?? 0;
+  }
+
+  int getIntlStudentCountForSlot(String slot) {
+    return _intlStudentCounts[slot] ?? 0;
   }
 
   DateTime _parseSlotTimeToDateTime(
@@ -257,6 +281,12 @@ class BookingProvider with ChangeNotifier {
         'success_msg': 'Payload Validated successfully!',
         'slots_header': 'Available 30-Min Slots',
         'loading': 'Syncing with SharePoint Matrix...',
+        'ja_staff_label': 'Japanese students',
+        'intl_staff_label': 'International students',
+        'pref_title': 'Preferred Staff Type',
+        'pref_anyone': 'No Preference (Anyone)',
+        'pref_japanese': 'Japanese Students Only',
+        'pref_intl': 'International Students Only',
       },
       'ja': {
         'title': 'SharePoint 予約ポータル',
@@ -276,6 +306,12 @@ class BookingProvider with ChangeNotifier {
         'success_msg': 'ペイロードの検証に成功しました！',
         'slots_header': '予約可能な時間枠（30分単位）',
         'loading': 'SharePointデータベースと同期中...',
+        'ja_staff_label': '日本人学生',
+        'intl_staff_label': '留学生',
+        'pref_title': '希望するスタッフタイプ',
+        'pref_anyone': '指定なし (誰でも)',
+        'pref_japanese': '日本人学生のみ',
+        'pref_intl': '留学生のみ',
       },
     };
     return localizedValues[_currentLocale]?[key] ?? key;
