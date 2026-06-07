@@ -8,6 +8,8 @@ import '../senior/senior_dashboard.dart';
 import '../junior/junior_dashboard.dart';
 import '../developer/developer_dashboard.dart';
 import '../external/external_meeting_request_screen.dart';
+import 'package:sharepoint_reservation_app/views/home_screen.dart' as sp_views;
+import 'package:sharepoint_reservation_app/providers/booking_provider.dart' as sp_providers;
 
 class RoleGateScreen extends StatelessWidget {
   const RoleGateScreen({super.key});
@@ -95,7 +97,10 @@ class RoleGateScreen extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (_) => Theme(
                             data: isDark ? AppTheme.darkTheme : ThemeData.light(),
-                            child: const ExternalMeetingRequestScreen(),
+                            child: ChangeNotifierProvider(
+                              create: (_) => sp_providers.BookingProvider(),
+                              child: const sp_views.HomeScreen(),
+                            ),
                           ),
                         ),
                       );

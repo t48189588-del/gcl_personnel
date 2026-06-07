@@ -75,7 +75,7 @@ class StaffMember {
       email: json['email'] ?? '',
       nativeLanguage: json['nativeLanguage'],
       languageSkills: (json['languageSkills'] as List<dynamic>?)
-              ?.map((e) => LanguageSkill.fromJson(e))
+              ?.map((e) => LanguageSkill.fromJson(Map<String, dynamic>.from(e as Map)))
               .toList() ??
           _migrateOldLanguages(json),
       degree: json['degree'],
@@ -284,12 +284,12 @@ class OperatingHours {
     return OperatingHours(
       weeklySchedule:
           (json['weeklySchedule'] as List<dynamic>?)
-              ?.map((e) => DaySchedule.fromJson(e))
+              ?.map((e) => DaySchedule.fromJson(Map<String, dynamic>.from(e as Map)))
               .toList() ??
           List.generate(7, (index) => DaySchedule(weekday: index + 1)),
       holidays:
           (json['holidays'] as List<dynamic>?)
-              ?.map((e) => Holiday.fromJson(e))
+              ?.map((e) => Holiday.fromJson(Map<String, dynamic>.from(e as Map)))
               .toList() ??
           [],
       maxWeeklyHours: json['maxWeeklyHours'] as int?,

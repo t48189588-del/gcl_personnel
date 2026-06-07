@@ -4,6 +4,8 @@ import '../../providers/booking_provider.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'dart:io' as io;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class BookingFormStageView extends StatefulWidget {
   const BookingFormStageView({Key? key}) : super(key: key);
@@ -278,6 +280,44 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                       "staffPreference":
                           _preferredStaffPreference, // Added classification tag mapping
                     };
+
+                    bool envExists = false;
+                    try {
+                      if (!kIsWeb) {
+                        final file = io.File('sharepoint_reservation_app/.env').existsSync()
+                            ? io.File('sharepoint_reservation_app/.env')
+                            : io.File('.env').existsSync()
+                                ? io.File('.env')
+                                : null;
+                        if (file != null) {
+                          envExists = true;
+                          final lines = await file.readAsLines();
+                          dotenv.testLoad(fileInput: lines.join('\n'));
+                        }
+                      } else {
+                        envExists = dotenv.env.isNotEmpty && dotenv.get('POWER_AUTOMATE_URL_POST', fallback: '').isNotEmpty;
+                      }
+                    } catch (_) {}
+
+                    if (!envExists) {
+                      print("--- NO .ENV FILE FOUND. ONLY PRINTING PAYLOAD ---");
+                      print("Payload: ${jsonEncode(payload)}");
+                      ScaffoldMessenger.of(context).clearSnackBars();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('No .env found. Payload printed to console.'),
+                          backgroundColor: Colors.orange,
+                        ),
+                      );
+                      return;
+                    }
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Processing reservation...'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
 
                     final String powerAutomateUrl = dotenv.get(
                       'POWER_AUTOMATE_URL_POST',
