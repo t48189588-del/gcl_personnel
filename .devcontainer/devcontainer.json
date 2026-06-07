@@ -1,29 +1,26 @@
 {
-  "name": "GCL Personnel Cloud Box",
-  // Uses GitHub's official, native container that never throws root errors
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
-  
-  // Downloads and installs Flutter locally inside the cloud machine on startup
-  "postCreateCommand": "cd /tmp && wget https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.24.0-stable.tar.xz && tar -xf flutter_linux_3.24.0-stable.tar.xz && mkdir -p $HOME/development && mv flutter $HOME/development/ && export PATH=\"$HOME/development/flutter/bin:$PATH\" && flutter config --no-analytics && cd ${containerWorkspaceFolder} && $HOME/development/flutter/bin/flutter pub get",
-  
-  "containerEnv": {
-    "PATH": "${containerWorkspaceFolder}/../../home/codespace/development/flutter/bin:${containerEnv:PATH}"
+  "name": "Flutter Sandbox Workspace",
+  "build": {
+    "dockerfile": "Dockerfile"
   },
   "customizations": {
     "vscode": {
-      "extensions": [
-        "Dart-Code.flutter",
-        "Dart-Code.dart"
-      ],
       "settings": {
-        "dart.flutterSdkPath": "/home/codespace/development/flutter"
-      }
+        "dart.flutterSdkPath": "/home/vscode/flutter"
+      },
+      "extensions": [
+        "dart-code.dart-code",
+        "dart-code.flutter"
+      ]
     }
   },
+  "remoteUser": "vscode",
+  "updateContentCommand": "flutter pub get",
+  // Port 8080 will serve the hot-reloading Flutter Web app
   "forwardPorts": [8080],
   "portsAttributes": {
     "8080": {
-      "label": "GCL Personnel UI",
+      "label": "Flutter Web App",
       "onAutoForward": "openPreview"
     }
   }
