@@ -18,10 +18,10 @@ Main page: https://t48189588-del.github.io/gcl_personnel/
 Reservation: https://t48189588-del.github.io/gcl_personnel/reservation/
 
 ### Code
-|Where|File|
-|----|----|
-|GitHub Codespace|[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=t48189588-del/gcl_personnel)|
-|Mac & linux (local testing)|1. **Download** and extract this repository ZIP folder to your desktop. <br>2. **Execute** `./setup.sh` via your terminal<br>3. Type `y` to approve when prompted, then sit back while the setup launches the system.|
+|Where|File|command|
+|----|----|----|
+|GitHub Codespace|[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=t48189588-del/gcl_personnel)|testing<br>`flutter run -d web-server --web-port=8080 --web-hostname=0.0.0.0`|
+|Mac & linux (local testing)|1. **Download** and extract this repository ZIP folder to your desktop. <br>2. **Execute** `./setup.sh` via your terminal<br>3. Type `y` and user password to approve when prompted, then sit back while the setup launches the system.|
 |Windows (local testing)|1. **Download** and extract this repository ZIP folder to your desktop.<br>2. **Double-Click**: `setup.bat`<br>3. Type `y` to approve when prompted, then sit back while the setup launches the system. 
 
 > [!Note]
