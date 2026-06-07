@@ -10,7 +10,10 @@
       },
       "extensions": [
         "dart-code.dart-code",
-        "dart-code.flutter"
+        "dart-code.flutter",
+        "yzhang.markdown-all-in-one", // Markdown Shortcuts/Formatting
+        "shaydulin.vscode-markdown-formatter", // Markdown Formatter
+        "ritwickdey.LiveServer"    // Live Server for Static Previews
       ]
     }
   },
