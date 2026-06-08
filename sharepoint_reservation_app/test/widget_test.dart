@@ -1,30 +1,52 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:sharepoint_reservation_app/main.dart';
+import 'package:sharepoint_reservation_app/providers/booking_provider.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('BookingProvider', () {
+    test('initial selectedDay is today', () {
+      final provider = BookingProvider();
+      final now = DateTime.now();
+      expect(provider.selectedDay.year, now.year);
+      expect(provider.selectedDay.month, now.month);
+      expect(provider.selectedDay.day, now.day);
+    });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    test('getJapaneseCountForSlot returns 0 before any data is loaded', () {
+      final provider = BookingProvider();
+      expect(provider.getJapaneseCountForSlot('09:00 AM - 09:30 AM'), 0);
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    test('getIntlCountForSlot returns 0 before any data is loaded', () {
+      final provider = BookingProvider();
+      expect(provider.getIntlCountForSlot('09:00 AM - 09:30 AM'), 0);
+    });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    test('selectDay updates selectedDay and clears time slot', () {
+      final provider = BookingProvider();
+      final tomorrow = DateTime.now().add(const Duration(days: 1));
+      // We call selectDay — it will also trigger fetchSharePointBookings
+      // but that is fire-and-forget; we verify the synchronous state change.
+      provider.selectDay(tomorrow);
+      expect(provider.selectedDay.day, tomorrow.day);
+      expect(provider.selectedTimeSlot, isNull);
+    });
+
+    test('timeSlots is empty when no bookings are cached', () {
+      final provider = BookingProvider();
+      expect(provider.timeSlots, isEmpty);
+    });
+
+    test('translate returns key as fallback for unknown key', () {
+      final provider = BookingProvider();
+      expect(provider.translate('nonexistent_key'), 'nonexistent_key');
+    });
+
+    test('setLocale accepts only en or ja', () {
+      final provider = BookingProvider();
+      provider.setLocale('fr');
+      expect(provider.currentLocale, 'en');
+      provider.setLocale('ja');
+      expect(provider.currentLocale, 'ja');
+    });
   });
 }

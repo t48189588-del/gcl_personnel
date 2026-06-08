@@ -18,19 +18,97 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _departmentController = TextEditingController();
+  final _otherGradeController = TextEditingController();
+  final _otherPurposeController = TextEditingController();
 
   String? _selectedLocation;
   String? _selectedPurpose;
   String? _selectedLanguage;
+  String? _selectedGrade; // Tracks grade dropdown choice
 
   // Default selection set to professional neutral fallback value
   String _preferredStaffPreference = 'anyone';
+
+  // Used to detect if the selected time slot changed so we can reset fields cleanly
+  String? _lastTrackedSlot;
 
   @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
+    _departmentController.dispose();
+    _otherGradeController.dispose();
+    _otherPurposeController.dispose();
     super.dispose();
+  }
+
+  void _resetFormFields() {
+    _nameController.clear();
+    _emailController.clear();
+    _departmentController.clear();
+    _otherGradeController.clear();
+    _selectedLocation = null;
+    _selectedPurpose = null;
+    _selectedLanguage = null;
+    _selectedGrade = null;
+    _preferredStaffPreference = 'anyone';
+  }
+
+  // NEW: Helper function to show a beautiful localized thank you dialog alert box
+  void _showThankYouDialog(BuildContext context, bool isJa) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.green, size: 28),
+              const SizedBox(width: 10),
+              Text(
+                isJa ? '予約が完了しました' : 'Booking Confirmed',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                isJa
+                    ? 'ご利用ありがとうございました！予約ペイロードは正常に処理されました。確認メールをご確認ください。'
+                    : 'Thank you for your reservation! Your booking payload has been processed successfully. Please check your inbox for details.',
+                style: const TextStyle(fontSize: 15, height: 1.4),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.blue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 4.0,
+                ),
+                child: Text(isJa ? '閉じる' : 'Close'),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -57,12 +135,60 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
       );
     }
 
+    // Reset layout choices gracefully if user swaps between different time blocks
+    if (_lastTrackedSlot != provider.selectedTimeSlot) {
+      _lastTrackedSlot = provider.selectedTimeSlot;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _resetFormFields());
+      });
+    }
+
     // Dynamic localization maps for the presentation preference layout
     final isJa = provider.currentLocale == 'ja';
-    final String sectionTitle = isJa ? "希望するスタッフタイプ" : "Preferred Staff Type";
-    final String labelAnyone = isJa ? "指定なし (誰でも)" : "No Preference (Anyone)";
-    final String labelJapanese = isJa ? "日本人スタッフのみ" : "Japanese Personnel Only";
-    final String labelIntl = isJa ? "留学生のみ" : "International Student Only";
+
+    // Grade options matching requested schema with full translation handling
+    final List<String> gradeOptions = [
+      'B1',
+      'B2',
+      'B3',
+      'B4',
+      'M1',
+      'M2',
+      'D1',
+      'D2',
+      isJa ? '研究生' : 'Research Student',
+      isJa ? 'その他' : 'Other',
+    ];
+    final String otherGradeKeyword = isJa ? 'その他' : 'Other';
+
+    // NEW: Purpose options list logic with localized "Other" option appended dynamically
+    final String otherPurposeKeyword = isJa ? 'その他' : 'Other';
+    final List<String> purposeOptions = List<String>.from(provider.purposes);
+    if (!purposeOptions.contains(otherPurposeKeyword)) {
+      purposeOptions.add(otherPurposeKeyword);
+    }
+
+    // Localized strings for the brand new forms fields
+    final String departmentLabel = isJa ? "部局・学科 / 部署" : "Department / Faculty";
+    final String gradeLabel = isJa ? "学年" : "Grade / Academic Year";
+    final String specifyOtherLabel = isJa
+        ? "具体的な学年を入力してください"
+        : "Please specify your grade";
+    final String specifyOtherPurposeLabel = isJa
+        ? "具体的な利用目的を入力してください"
+        : "Please specify your purpose";
+
+    // Grab dynamic data directly from provider for the currently selected slot
+    final List<String> dynamicLanguages = provider.getDynamicTargetLanguages();
+    final List<String> availableCountries = provider.getCountriesForSlot(
+      provider.selectedTimeSlot!,
+    );
+
+    // Safe adjustment: if a chosen language is no longer available in a newly clicked block, reset it
+    if (_selectedLanguage != null &&
+        !dynamicLanguages.contains(_selectedLanguage)) {
+      _selectedLanguage = null;
+    }
 
     return Form(
       key: _formKey,
@@ -92,6 +218,7 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
               ),
               const Divider(height: 32),
 
+              // --- NAME ---
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(
@@ -105,6 +232,7 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
               ),
               const SizedBox(height: 20),
 
+              // --- EMAIL ---
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -126,6 +254,59 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
               ),
               const SizedBox(height: 20),
 
+              // --- NEW: DEPARTMENT TEXT INPUT ---
+              TextFormField(
+                controller: _departmentController,
+                decoration: InputDecoration(
+                  labelText: departmentLabel,
+                  prefixIcon: const Icon(Icons.business),
+                  border: const OutlineInputBorder(),
+                ),
+                validator: (val) => (val == null || val.trim().isEmpty)
+                    ? provider.translate('required')
+                    : null,
+              ),
+              const SizedBox(height: 20),
+
+              // --- NEW: GRADE DROPDOWN ---
+              DropdownButtonFormField<String>(
+                value: _selectedGrade,
+                decoration: InputDecoration(
+                  labelText: gradeLabel,
+                  prefixIcon: const Icon(Icons.school),
+                  border: const OutlineInputBorder(),
+                ),
+                items: gradeOptions.map((grade) {
+                  return DropdownMenuItem(value: grade, child: Text(grade));
+                }).toList(),
+                onChanged: (val) => setState(() {
+                  _selectedGrade = val;
+                  if (val != otherGradeKeyword) {
+                    _otherGradeController.clear();
+                  }
+                }),
+                validator: (val) =>
+                    val == null ? provider.translate('required') : null,
+              ),
+
+              // --- NEW: GRADE "OTHER" CONDITIONAL TEXT INPUT ---
+              if (_selectedGrade == otherGradeKeyword) ...[
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _otherGradeController,
+                  decoration: InputDecoration(
+                    labelText: specifyOtherLabel,
+                    prefixIcon: const Icon(Icons.edit_note),
+                    border: const OutlineInputBorder(),
+                  ),
+                  validator: (val) => (val == null || val.trim().isEmpty)
+                      ? provider.translate('required')
+                      : null,
+                ),
+              ],
+              const SizedBox(height: 20),
+
+              // --- LOCATION ---
               DropdownButtonFormField<String>(
                 value: _selectedLocation,
                 decoration: InputDecoration(
@@ -140,8 +321,9 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                 validator: (val) =>
                     val == null ? provider.translate('select_loc') : null,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 20),             
 
+              // --- PURPOSE DROPDOWN (WITH ADDED OTHER FEATURE) ---
               DropdownButtonFormField<String>(
                 value: _selectedPurpose,
                 decoration: InputDecoration(
@@ -149,15 +331,37 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                   prefixIcon: const Icon(Icons.assignment),
                   border: const OutlineInputBorder(),
                 ),
-                items: provider.purposes.map((p) {
+                items: purposeOptions.map((p) {
                   return DropdownMenuItem(value: p, child: Text(p));
                 }).toList(),
-                onChanged: (val) => setState(() => _selectedPurpose = val),
+                onChanged: (val) => setState(() {
+                  _selectedPurpose = val;
+                  if (val != otherPurposeKeyword) {
+                    _otherPurposeController.clear();
+                  }
+                }),
                 validator: (val) =>
                     val == null ? provider.translate('select_purpose') : null,
               ),
+
+              // --- NEW: PURPOSE "OTHER" CONDITIONAL TEXT INPUT ---
+              if (_selectedPurpose == otherPurposeKeyword) ...[
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _otherPurposeController,
+                  decoration: InputDecoration(
+                    labelText: specifyOtherPurposeLabel,
+                    prefixIcon: const Icon(Icons.rate_review),
+                    border: const OutlineInputBorder(),
+                  ),
+                  validator: (val) => (val == null || val.trim().isEmpty)
+                      ? provider.translate('required')
+                      : null,
+                ),
+              ],
               const SizedBox(height: 20),
 
+              // --- DYNAMIC TARGET LANGUAGE FROM PROVIDER ---
               DropdownButtonFormField<String>(
                 value: _selectedLanguage,
                 decoration: InputDecoration(
@@ -165,7 +369,7 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                   prefixIcon: const Icon(Icons.translate),
                   border: const OutlineInputBorder(),
                 ),
-                items: provider.targetLanguages.map((lang) {
+                items: dynamicLanguages.map((lang) {
                   return DropdownMenuItem(value: lang, child: Text(lang));
                 }).toList(),
                 onChanged: (val) => setState(() => _selectedLanguage = val),
@@ -174,8 +378,7 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
               ),
               const SizedBox(height: 24),
 
-              // --- STAFF SELECTION RADIO LAYOUT ---
-              // --- STAFF SELECTION RADIO LAYOUT ---
+              // --- DYNAMIC STAFF & COUNTRIES RADIO LAYOUT ---
               Text(
                 provider.translate('pref_title'),
                 style: TextStyle(
@@ -203,30 +406,30 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                       onChanged: (val) =>
                           setState(() => _preferredStaffPreference = val!),
                     ),
-                    const Divider(height: 1, indent: 16, endIndent: 16),
-                    RadioListTile<String>(
-                      title: Text(
-                        provider.translate('pref_japanese'),
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      value: 'japanese',
-                      groupValue: _preferredStaffPreference,
-                      activeColor: Colors.blue,
-                      onChanged: (val) =>
-                          setState(() => _preferredStaffPreference = val!),
-                    ),
-                    const Divider(height: 1, indent: 16, endIndent: 16),
-                    RadioListTile<String>(
-                      title: Text(
-                        provider.translate('pref_intl'),
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      value: 'international',
-                      groupValue: _preferredStaffPreference,
-                      activeColor: Colors.blue,
-                      onChanged: (val) =>
-                          setState(() => _preferredStaffPreference = val!),
-                    ),
+
+                    // Maps dynamic nationalities passed from the Sharepoint response array per time frame
+                    ...availableCountries.map((country) {
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Divider(height: 1, indent: 16, endIndent: 16),
+                          RadioListTile<String>(
+                            title: Text(
+                              country, // Outputs localized string parsed directly ("中国", "インド")
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                            value: country.toLowerCase().trim(),
+                            groupValue: _preferredStaffPreference
+                                .toLowerCase()
+                                .trim(),
+                            activeColor: Colors.blue,
+                            onChanged: (val) => setState(
+                              () => _preferredStaffPreference = country,
+                            ),
+                          ),
+                        ],
+                      );
+                    }).toList(),
                   ],
                 ),
               ),
@@ -250,15 +453,33 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                       getEndTime: true,
                     );
 
+                    // Compute clean outputs for standard or "other" options
+                    final String finalGrade =
+                        (_selectedGrade == otherGradeKeyword)
+                        ? _otherGradeController.text.trim()
+                        : _selectedGrade ?? "";
+
+                    // NEW: Compute final purpose choice accounting for "Other" field entry
+                    final String finalPurpose =
+                        (_selectedPurpose == otherPurposeKeyword)
+                        ? _otherPurposeController.text.trim()
+                        : _selectedPurpose ?? "";
+
+                    final Locale deviceLocale = View.of(context).platformDispatcher.locale;
+                    final String systemDefaultLanguageString = deviceLocale.toLanguageTag(); // Yields standard BCP47 layouts like "en-US", "ja-JP"
+
                     print("--- STAGE 1 PASSED: CLEAN DATA PAYLOAD EXPORT ---");
                     print("start: ${startDateTime.toIso8601String()}");
                     print("end: ${endDateTime.toIso8601String()}");
                     print("name: ${_nameController.text.trim()}");
                     print("email: ${_emailController.text.trim()}");
+                    print("department: ${_departmentController.text.trim()}");
+                    print("grade: $finalGrade");
                     print("location: $_selectedLocation");
-                    print("purpose: $_selectedPurpose");
+                    print("purpose: $finalPurpose");
                     print("targetLanguage: $_selectedLanguage");
                     print("staffPreference: $_preferredStaffPreference");
+                    print("nativeLanguage: $systemDefaultLanguageString"); 
                     print("--------------------------------------------------");
 
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -268,47 +489,62 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                       ),
                     );
 
-                    // --- PATCHED JSON PAYLOAD TARGET ---
                     final Map<String, dynamic> payload = {
                       "start": startDateTime.toIso8601String(),
                       "end": endDateTime.toIso8601String(),
                       "name": _nameController.text.trim(),
                       "email": _emailController.text.trim(),
+                      "department": _departmentController.text.trim(),
+                      "grade": finalGrade,
                       "location": _selectedLocation,
-                      "purpose": _selectedPurpose,
+                      "purpose": finalPurpose,
                       "targetLanguage": _selectedLanguage,
-                      "staffPreference":
-                          _preferredStaffPreference, // Added classification tag mapping
+                      "staffPreference": _preferredStaffPreference,
+                      "nativeLanguage": systemDefaultLanguageString, 
                     };
 
                     bool envExists = false;
                     try {
                       if (!kIsWeb) {
-                        final file = io.File('sharepoint_reservation_app/.env').existsSync()
+                        final file =
+                            io.File(
+                              'sharepoint_reservation_app/.env',
+                            ).existsSync()
                             ? io.File('sharepoint_reservation_app/.env')
                             : io.File('.env').existsSync()
-                                ? io.File('.env')
-                                : null;
+                            ? io.File('.env')
+                            : null;
                         if (file != null) {
                           envExists = true;
                           final lines = await file.readAsLines();
                           dotenv.testLoad(fileInput: lines.join('\n'));
                         }
                       } else {
-                        envExists = dotenv.env.isNotEmpty && dotenv.get('POWER_AUTOMATE_URL_POST', fallback: '').isNotEmpty;
+                        envExists =
+                            dotenv.env.isNotEmpty &&
+                            dotenv
+                                .get('POWER_AUTOMATE_URL_POST', fallback: '')
+                                .isNotEmpty;
                       }
                     } catch (_) {}
 
                     if (!envExists) {
-                      print("--- NO .ENV FILE FOUND. ONLY PRINTING PAYLOAD ---");
+                      print(
+                        "--- NO .ENV FILE FOUND. ONLY PRINTING PAYLOAD ---",
+                      );
                       print("Payload: ${jsonEncode(payload)}");
                       ScaffoldMessenger.of(context).clearSnackBars();
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('No .env found. Payload printed to console.'),
+                          content: Text(
+                            'No .env found. Payload printed to console.',
+                          ),
                           backgroundColor: Colors.orange,
                         ),
                       );
+                      // NEW: Clear fields and trigger the beautiful success thanks dialog on fallback print simulation too!
+                      _showThankYouDialog(context, isJa);
+                      setState(() => _resetFormFields());
                       return;
                     }
 
@@ -354,6 +590,9 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                             backgroundColor: Colors.green,
                           ),
                         );
+                        // NEW: Pop open the rich thank you dialog screen and wipe input fields clean
+                        _showThankYouDialog(context, isJa);
+                        setState(() => _resetFormFields());
                       } else {
                         throw Exception(
                           'Server returned status code ${response.statusCode}',

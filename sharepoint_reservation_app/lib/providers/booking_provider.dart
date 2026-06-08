@@ -142,6 +142,10 @@ class BookingProvider with ChangeNotifier {
     _japaneseStaffCounts.clear();
     _intlStudentCounts.clear();
 
+    // === ADDED: RESET EXPLICIT DYNAMIC CONTAINERS DURING CALCULATION ===
+    _slotCountries.clear();
+    _slotLanguages.clear();
+
     for (var item in _cachedSharepointItems) {
       if (item == null ||
           item['startTime'] == null ||
@@ -180,6 +184,7 @@ class BookingProvider with ChangeNotifier {
         // --- POWER AUTOMATE CHOICE COLUMN EXTRACTION LAYER ---
         bool isJapaneseStaff = false;
         var staffData = item['staff'];
+        String staffValue = staffData?.toString().trim() ?? '';
 
         if (staffData != null) {
           if (staffData is Map && staffData['Value'] != null) {
@@ -206,21 +211,71 @@ class BookingProvider with ChangeNotifier {
           }
         }
 
+        // === ADDED: DATA EXTRACTION FOR COUNTRIES & LANGUAGES ===
+        String? itemCountry;
+        var countryData = item['country'];
+        if (countryData != null) {
+          itemCountry = (countryData is Map && countryData['Value'] != null)
+              ? countryData['Value'].toString().trim()
+              : countryData.toString().trim();
+        }
+
+        List<String> itemLanguages = [];
+        // 1. Extract raw staff text name language part (e.g. "swahili" from "swahili - sw")
+        if (staffValue.isNotEmpty && !staffValue.contains('{')) {
+          String parsedStaffLang = staffValue.split('-').first.trim();
+          if (parsedStaffLang.isNotEmpty) {
+            itemLanguages.add(parsedStaffLang);
+          }
+        }
+
+        var langData = item['possibleTargerLanguages']; // Exact spelling matched
+        if (langData != null) {
+          String rawLangs = (langData is Map && langData['Value'] != null)
+              ? langData['Value'].toString()
+              : langData.toString();
+          if (rawLangs.isNotEmpty) {
+            itemLanguages = rawLangs.split(',').map((e) => e.trim()).toList();
+          }
+        }
+
         for (String slot in _allTimeSlots) {
           DateTime slotStart = _parseSlotTimeToDateTime(
             _selectedDay,
             slot,
             false,
           );
+          DateTime slotEnd = _parseSlotTimeToDateTime(
+            _selectedDay,
+            slot,
+            true,
+          );
 
-          if ((start.isBefore(slotStart) ||
-                  start.isAtSameMomentAs(slotStart)) &&
-              end.isAfter(slotStart)) {
+          // Evaluates if the dynamic booking item overlaps this 30-min window
+          if (start.isBefore(slotEnd) && end.isAfter(slotStart)) {
             if (isJapaneseStaff) {
               _japaneseStaffCounts[slot] =
                   (_japaneseStaffCounts[slot] ?? 0) + 1;
             } else {
               _intlStudentCounts[slot] = (_intlStudentCounts[slot] ?? 0) + 1;
+            }
+
+            // Bind unique dynamic country data tags per slot
+            if (itemCountry != null && itemCountry.isNotEmpty) {
+              _slotCountries.putIfAbsent(slot, () => []);
+              if (!_slotCountries[slot]!.contains(itemCountry)) {
+                _slotCountries[slot]!.add(itemCountry);
+              }
+            }
+
+            // Bind unique target languages parameters per slot
+            if (itemLanguages.isNotEmpty) {
+              _slotLanguages.putIfAbsent(slot, () => []);
+              for (var lang in itemLanguages) {
+                if (!_slotLanguages[slot]!.contains(lang)) {
+                  _slotLanguages[slot]!.add(lang);
+                }
+              }
             }
           }
         }
@@ -272,13 +327,13 @@ class BookingProvider with ChangeNotifier {
         'location': 'Location',
         'purpose': 'Purpose',
         'target_lang': 'Target Language',
-        'verify_btn': 'Verify Payload Data',
+        'verify_btn': 'Submit reservation request',
         'required': 'Required field',
         'invalid_email': 'Enter a valid email address',
         'select_loc': 'Please select a location',
         'select_purpose': 'Please select a purpose',
         'select_lang': 'Please select a target language',
-        'success_msg': 'Payload Validated successfully!',
+        'success_msg': 'Reservation submitted successfully!',
         'slots_header': 'Available 30-Min Slots',
         'loading': 'Syncing with SharePoint Matrix...',
         'ja_staff_label': 'Japanese students',
@@ -287,6 +342,10 @@ class BookingProvider with ChangeNotifier {
         'pref_anyone': 'No Preference (Anyone)',
         'pref_japanese': 'Japanese Students Only',
         'pref_intl': 'International Students Only',
+        'sectionTitle': 'Staff Preferences',
+        'labelAnyone': 'No Preference (Anyone)',
+        'labelJapanese': 'Japanese Students',
+        'labelIntl': 'International Students'
       },
       'ja': {
         'title': 'SharePoint 予約ポータル',
@@ -297,13 +356,13 @@ class BookingProvider with ChangeNotifier {
         'location': '場所',
         'purpose': '利用目的',
         'target_lang': '対象言語',
-        'verify_btn': 'ペイロードデータを検証',
+        'verify_btn': '予約リクエストを送信',
         'required': '必須項目です',
         'invalid_email': '有効なメールアドレスを入力してください',
         'select_loc': '場所を選択してください',
         'select_purpose': '目的を選択してください',
         'select_lang': '対象言語を選択してください',
-        'success_msg': 'ペイロードの検証に成功しました！',
+        'success_msg': '予約が正常に送信されました！',
         'slots_header': '予約可能な時間枠（30分単位）',
         'loading': 'SharePointデータベースと同期中...',
         'ja_staff_label': '日本人学生',
@@ -312,6 +371,10 @@ class BookingProvider with ChangeNotifier {
         'pref_anyone': '指定なし (誰でも)',
         'pref_japanese': '日本人学生のみ',
         'pref_intl': '留学生のみ',
+        'sectionTitle': '希望するスタッフタイプ',
+        'labelAnyone': '指定なし (誰でも)',
+        'labelJapanese': '日本人学生',
+        'labelIntl': '留学生'
       },
     };
     return localizedValues[_currentLocale]?[key] ?? key;
@@ -334,5 +397,53 @@ class BookingProvider with ChangeNotifier {
       hour,
       minute,
     );
+  }
+
+  // =========================================================================
+  // === NEW ADDITIONS ONLY: APPENDED MISSING FEATURES WITHOUT MODIFICATION ===
+  // =========================================================================
+
+  final Map<String, List<String>> _slotCountries = {};
+  final Map<String, List<String>> _slotLanguages = {};
+
+  List<String> getCountriesForSlot(String slot) => _slotCountries[slot] ?? [];
+  List<String> getLanguagesForSlot(String slot) => _slotLanguages[slot] ?? [];
+
+  // Expanded localization support for dynamic languages display
+  final Map<String, Map<String, String>> _langDisplayMap = {
+    'english': {'en': 'English - en', 'ja': '英語 - en'},
+    'japanese': {'en': 'Japanese - ja', 'ja': '日本語 - ja'},
+    'chinese': {'en': 'Mandarin Chinese - zh', 'ja': '中国語（繁体） - zh'},
+    'spanish': {'en': 'Spanish - es', 'ja': 'スペイン語 - es'},
+    'swahili': {'en': 'Swahili - sw', 'ja': 'スワヒリ語 - sw'},
+    'kikuyu': {'en': 'Kikuyu - ki', 'ja': 'キクユ語 - ki'},
+  };
+
+  List<String> getDynamicTargetLanguages() {
+    if (_selectedTimeSlot == null) return [];
+    final rawLanguages = _slotLanguages[_selectedTimeSlot] ?? [];
+    
+    return rawLanguages.map((lang) {
+      final key = lang.toLowerCase().trim();
+      if (_langDisplayMap.containsKey(key)) {
+        return _langDisplayMap[key]![_currentLocale]!;
+      }
+      return lang;
+    }).toList();
+  }
+
+  Future<bool> sendBookingPayload(Map<String, dynamic> payload, {String? customUrl}) async {
+    final url = (customUrl != null && customUrl.isNotEmpty) ? customUrl : _powerAutomateUrl;
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(payload),
+      );
+      return response.statusCode == 200 || response.statusCode == 202;
+    } catch (e) {
+      debugPrint("Error pipeline call failed: $e");
+      return false;
+    }
   }
 }
