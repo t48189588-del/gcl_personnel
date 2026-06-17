@@ -15,7 +15,10 @@ A office/sharepoint mirror (cloud hosted)
 ## Wanna test?
 ### Public website (testing purposes only)
 Main page: https://t48189588-del.github.io/gcl_personnel/
+<br>
 Reservation: https://t48189588-del.github.io/gcl_personnel/reservation/
+> [!Note]
+> The website are for testing purposes only. The information presented is presented only as an auxiliary for testing and interactivity, submission is not enabled either.
 
 ### Code
 |Where|File|command|
@@ -59,7 +62,7 @@ Currently all information is hosted in excel files in teams groups
       - [x] Excel 
       - [x] generate PDF naming=japanese year.month_GCL_Schedule.pdf
   - [x] Staff information
-  - [x] holidays input (to pull from internet yearly and ask for user confirmation)
+  - [x] holidays input (to pull from internet yearly and ask for user confirmation)v
   - [x] platform management logging
     - [x] instagram
     - [ ] website
@@ -232,11 +235,7 @@ After the initial event proposal is approved, the proposer shall be able to add:
 
 # Suggestions after hatsuda-san and sugawara-san meeting (may 20, 2026)
 - export excel should be same format as original excel file (same column order and same column names )
-- print availability schuedule
-  - type 1: date, time, headers student staff name
-  - type 2: date, time, row students staff side by side
 - think about future updates/changes adding new screens/templates?
-- for external visitor, show a month previewe only sholy available slots (color code the student staff availability, origin country and time block) consider chooseing = reserved (for calendar purposes only)
 
 ## For exporting flutter project to github pages
 | Step | Explain                                            | code                                                   |
@@ -257,6 +256,8 @@ After the initial event proposal is approved, the proposer shall be able to add:
 |**June 1, 2026**|Hatsuda-san|A flutter web app for managing GCL staff and events (power apps)|
 |**June 2, 2026**|Hatsuda-san & Sugawara-san|Presented reservation flutter portal and suggestions on fields to add|
 |**June 3, 2026**|Hatsuda-san, Kimura-san, Shiriashi-san & Sugawara-san|Emailed power apps, flutter reservation page and GCL manual|
+|**June 10, 2026**|Kimura-san, Shiriashi-san|Presente mobile resevation page & suggested construction of mobile app for admin staff|
+|**June 17, 2026**|All GCL staff|Presentation of systems to all staff<br> adjusted timeline <ul> <li> July - August: Testing phases <li> October: deployment</ul>|
 
 
 ## Tangent/psicological questions
