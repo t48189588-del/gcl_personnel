@@ -11,7 +11,7 @@ A office/sharepoint mirror (cloud hosted)
 - Youtube: https://www.youtube.com/channel/UCXeW6dvL52EJgPPNJMlVt0A  
 - Moodle reservation: https://horyu.el.kyutech.ac.jp/course/view.php?id=767 
 - Teams group
-
+v
 ## Wanna test?
 ### Public website (testing purposes only)
 Main page: https://t48189588-del.github.io/gcl_personnel/
@@ -257,7 +257,8 @@ After the initial event proposal is approved, the proposer shall be able to add:
 |**June 1, 2026**|Hatsuda-san|A flutter web app for managing GCL staff and events (power apps)|
 |**June 2, 2026**|Hatsuda-san & Sugawara-san|Presented reservation flutter portal and suggestions on fields to add|
 |**June 3, 2026**|Hatsuda-san, Kimura-san, Shiriashi-san & Sugawara-san|Emailed power apps, flutter reservation page and GCL manual|
-
+|**June 17,2026**|All GCL staff|Presentation of complete system (github, power app and flutter)|
+|**June 24, 2026**|Hatsuda-san & Kimura-san|Presentation of working reports screen (from main staff perspective) and feedback<br>Additional information in regard preparing data presentation for higher admin <ul><li>Footer on working reports, must remain the same when printed</li><li>All working reports are printed</li><li>Electronic signatures/stamps are reserved only for headquarter director and vice president</li></ul>|
 
 ## Tangent/psicological questions
 1. What's the inconvenience?
