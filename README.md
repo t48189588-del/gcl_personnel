@@ -153,6 +153,7 @@ Currently all information is hosted in excel files in teams groups
 - power automate integration?
 
 ## Pendings
+- [ ] make short format videos for each stage (both student and seniors taff)
 - [x] Working reports (information and standards)
 - [ ] Meeting Agenda & Minutes
 - [ ] SNS scrapper (only public information)
