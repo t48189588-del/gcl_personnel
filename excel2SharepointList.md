@@ -4,6 +4,10 @@ This script is made to read the Excel file to export data in json format to powe
 View link [How to implement this script](https://learn.microsoft.com/ja-jp/office/dev/scripts/overview/excel)
 
 ## Working schedules
+![Original](./documentation/media/scheduleOriginal.jpg)
+
+![Flattened](./documentation/media/scheduledFlattened.jpg)
+### code
 
 ```
 function main(workbook: ExcelScript.Workbook) {
@@ -104,6 +108,10 @@ function main(workbook: ExcelScript.Workbook) {
 
 
 ## Working reports
+![original](./documentation/media/reportOriginal.jpg)
+![flattened](./documentation/media/reportFlattened.jpg)
+
+### code
 ```
 function main(workbook: ExcelScript.Workbook) {
 
