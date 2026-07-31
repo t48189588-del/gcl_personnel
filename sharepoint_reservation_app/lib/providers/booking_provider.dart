@@ -220,24 +220,24 @@ class BookingProvider with ChangeNotifier {
               : countryData.toString().trim();
         }
 
-        List<String> itemLanguages = [];
+        // List<String> itemLanguages = [];
         // 1. Extract raw staff text name language part (e.g. "swahili" from "swahili - sw")
-        if (staffValue.isNotEmpty && !staffValue.contains('{')) {
-          String parsedStaffLang = staffValue.split('-').first.trim();
-          if (parsedStaffLang.isNotEmpty) {
-            itemLanguages.add(parsedStaffLang);
-          }
-        }
+        // if (staffValue.isNotEmpty && !staffValue.contains('{')) {
+        //   String parsedStaffLang = staffValue.split('-').first.trim();
+        //   if (parsedStaffLang.isNotEmpty) {
+        //     itemLanguages.add(parsedStaffLang);
+        //   }
+        // }
 
-        var langData = item['possibleTargerLanguages']; // Exact spelling matched
-        if (langData != null) {
-          String rawLangs = (langData is Map && langData['Value'] != null)
-              ? langData['Value'].toString()
-              : langData.toString();
-          if (rawLangs.isNotEmpty) {
-            itemLanguages = rawLangs.split(',').map((e) => e.trim()).toList();
-          }
-        }
+        // var langData = item['possibleTargerLanguages']; // Exact spelling matched
+        // if (langData != null) {
+        //   String rawLangs = (langData is Map && langData['Value'] != null)
+        //       ? langData['Value'].toString()
+        //       : langData.toString();
+        //   if (rawLangs.isNotEmpty) {
+        //     itemLanguages = rawLangs.split(',').map((e) => e.trim()).toList();
+        //   }
+        // }
 
         for (String slot in _allTimeSlots) {
           DateTime slotStart = _parseSlotTimeToDateTime(
@@ -269,14 +269,14 @@ class BookingProvider with ChangeNotifier {
             }
 
             // Bind unique target languages parameters per slot
-            if (itemLanguages.isNotEmpty) {
-              _slotLanguages.putIfAbsent(slot, () => []);
-              for (var lang in itemLanguages) {
-                if (!_slotLanguages[slot]!.contains(lang)) {
-                  _slotLanguages[slot]!.add(lang);
-                }
-              }
-            }
+            // if (itemLanguages.isNotEmpty) {
+            //   _slotLanguages.putIfAbsent(slot, () => []);
+            //   for (var lang in itemLanguages) {
+            //     if (!_slotLanguages[slot]!.contains(lang)) {
+            //       _slotLanguages[slot]!.add(lang);
+            //     }
+            //   }
+            // }
           }
         }
       }
@@ -318,12 +318,12 @@ class BookingProvider with ChangeNotifier {
   String translate(String key) {
     final Map<String, Map<String, String>> localizedValues = {
       'en': {
-        'title': 'SharePoint Reservation Portal',
+        'title': 'GCL Reservation Portal',
         'prompt':
             'Select a date and an available 30-minute window above to continue.',
         'booking_slot': 'Booking Slot',
         'name': 'Full Name',
-        'email': 'Email Address',
+        'email': 'Kyutech Email Address (@mail.kyutech.jp)',
         'location': 'Location',
         'purpose': 'Purpose',
         'target_lang': 'Target Language',
@@ -348,11 +348,11 @@ class BookingProvider with ChangeNotifier {
         'labelIntl': 'International Students'
       },
       'ja': {
-        'title': 'SharePoint 予約ポータル',
+        'title': 'GCL 予約ポータル',
         'prompt': '上のカレンダーから日付と空いている時間枠を選択してください。',
         'booking_slot': '予約枠',
         'name': '氏名（フルネーム）',
-        'email': 'メールアドレス',
+        'email': '九工大メールアドレスのみ (@mail.kyutech.jp)',
         'location': '場所',
         'purpose': '利用目的',
         'target_lang': '対象言語',
@@ -361,7 +361,7 @@ class BookingProvider with ChangeNotifier {
         'invalid_email': '有効なメールアドレスを入力してください',
         'select_loc': '場所を選択してください',
         'select_purpose': '目的を選択してください',
-        'select_lang': '対象言語を選択してください',
+        'select_lang': '希望する言語',
         'success_msg': '予約が正常に送信されました！',
         'slots_header': '予約可能な時間枠（30分単位）',
         'loading': 'SharePointデータベースと同期中...',

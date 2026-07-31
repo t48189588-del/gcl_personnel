@@ -34,6 +34,12 @@ class CalendarStageView extends StatelessWidget {
                   listen: false,
                 ).selectDay(selectedDay);
               },
+              onPageChanged: (focusedDay) {
+                Provider.of<BookingProvider>(
+                  context,
+                  listen: false,
+                ).selectDay(focusedDay);
+              },
               headerStyle: const HeaderStyle(
                 formatButtonVisible: false,
                 titleCentered: true,

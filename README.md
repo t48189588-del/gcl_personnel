@@ -11,7 +11,7 @@ A office/sharepoint mirror (cloud hosted)
 - Youtube: https://www.youtube.com/channel/UCXeW6dvL52EJgPPNJMlVt0A  
 - Moodle reservation: https://horyu.el.kyutech.ac.jp/course/view.php?id=767 
 - Teams group
-v
+
 ## Wanna test?
 ### Public website (testing purposes only)
 Main page: https://t48189588-del.github.io/gcl_personnel/
@@ -21,11 +21,11 @@ Reservation: https://t48189588-del.github.io/gcl_personnel/reservation/
 > The website are for testing purposes only. The information presented is presented only as an auxiliary for testing and interactivity, submission is not enabled either.
 
 ### Code
-|Where|File|command|
-|----|----|----|
-|GitHub Codespace|[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=t48189588-del/gcl_personnel)|testing<br>`flutter run -d web-server --web-port=8080 --web-hostname=0.0.0.0`|
-|Mac & linux (local testing)|1. **Download** and extract this repository ZIP folder to your desktop. <br>2. **Execute** `./setup.sh` via your terminal<br>3. Type `y` and user password to approve when prompted, then sit back while the setup launches the system.|
-|Windows (local testing)|1. **Download** and extract this repository ZIP folder to your desktop.<br>2. **Double-Click**: `setup.bat`<br>3. Type `y` to approve when prompted, then sit back while the setup launches the system. 
+| Where                                | File                                                                                                                                                                                                                                    | command                                                                       |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| GitHub Codespace<br> (cloud testing) | [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=t48189588-del/gcl_personnel)                                                              | testing<br>`flutter run -d web-server --web-port=8080 --web-hostname=0.0.0.0` |
+| Mac & linux<br>(local testing)       | 1. **Download** and extract this repository ZIP folder to your desktop. <br>2. **Execute** `./setup.sh` via your terminal<br>3. Type `y` and user password to approve when prompted, then sit back while the setup launches the system. |
+| Windows<br>(local testing)           | 1. **Download** and extract this repository ZIP folder to your desktop.<br>2. **Double-Click**: `setup.bat`<br>3. Type `y` to approve when prompted, then sit back while the setup launches the system.                                 |
 
 > [!Note]
 > If you wish to remove the system from your computer, simply drag the main `gcl_personnel` directory folder into your **Trash / Recycle Bin** and empty it. Because all caches and engines are stored directly inside this folder, 100% of all dependencies are wiped instantly from your computer without leaving single file fragments behind.
@@ -134,11 +134,11 @@ Currently all information is hosted in excel files in teams groups
   - events
   - attendance
   - meeting agenda
-- Login capability
+- [x] Login capability
   - cojoin with office 365 (kyutech credentials) 
 - Multi-language support (integrate with translation API and cache saving)
-  - English
-  - Japanese
+  - [x] English
+  - [x] Japanese
   - Chinese
 - dashboard visualization
   - public information from the SNS 
@@ -148,9 +148,13 @@ Currently all information is hosted in excel files in teams groups
 - local storage?
 - sharepoint storage in teams
 - automatic backup generation 
-  - locally 
+  - [x] locally 
   - online
-- power automate integration?
+- power automate integration
+  - [x] sharepoing -> flutter
+  - [x] flutter -> sharepoint
+  - [x] excel backup
+  - [ ] SQLite3 backup
 
 ## Pendings
 - [ ] make short format videos for each stage (both student and seniors taff)
@@ -175,6 +179,7 @@ Currently all information is hosted in excel files in teams groups
   - [ ] GCL staff
   - [ ] non staff (public?)
   - [ ] frequency count?
+- [ ] montly? check teams members - share/delete access to power apps
 
 ### issues to be fixed!!
 1. meetings hours are not being correctly processed by the system 
@@ -202,10 +207,15 @@ to try
 only apply to approved student staff schedule
 
 # System
+> [!Note]
+> Convert to flowchart diagram presentation
+
 ## Data
 - Sharepoint list
 - Excel tables (saved in teams group)
 - SQlite
+
+Currently "human-readable but not machine-readable"
 
 ## User interface (UI)
 - Power apps
@@ -248,18 +258,18 @@ After the initial event proposal is approved, the proposer shall be able to add:
 | 4    | uploading pages                                    | `git push -f <repo>.git master:gh-pages`               |
 
 # Logs
-|date|who|what|
-|----|---|----|
-|**May 13, 2026**|Shiriashi-san & Kimura-san|Presentation of proposal|
-|**May 20, 2026**|Hatsuda-san & Sugawara-san|Presentation of documentation and power apps prototype <br> Hatsuda-san provided permission to interact with real data from GCL Teams|
-|**May 27, 2026**|Hatsuda-san & Sugawara-san|Presentation of documentation and power apps prototype|
-|**May 28, 2026**|Kimura-san & Shiriashi-san|Presentation of documentation and power apps prototype|
-|**June 1, 2026**|Hatsuda-san|A flutter web app for managing GCL staff and events (power apps)|
-|**June 2, 2026**|Hatsuda-san & Sugawara-san|Presented reservation flutter portal and suggestions on fields to add|
-|**June 3, 2026**|Hatsuda-san, Kimura-san, Shiriashi-san & Sugawara-san|Emailed power apps, flutter reservation page and GCL manual|
-|**June 17,2026**|All GCL staff|Presentation of complete system (github, power app and flutter)|
-|**June 24, 2026**|Hatsuda-san & Kimura-san|Presentation of working reports screen (from main staff perspective) and feedback<br>Additional information in regard preparing data presentation for higher admin <ul><li>Footer on working reports, must remain the same when printed</li><li>All working reports are printed</li><li>Electronic signatures/stamps are reserved only for headquarter director and vice president</li></ul>|
-
+| date              | who                                                   | what                                                                                                                                                                                                                                                                                                                                                                                         |
+| ----------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **May 13, 2026**  | Shiriashi-san & Kimura-san                            | Presentation of proposal                                                                                                                                                                                                                                                                                                                                                                     |
+| **May 20, 2026**  | Hatsuda-san & Sugawara-san                            | Presentation of documentation and power apps prototype <br> Hatsuda-san provided permission to interact with real data from GCL Teams                                                                                                                                                                                                                                                        |
+| **May 27, 2026**  | Hatsuda-san & Sugawara-san                            | Presentation of documentation and power apps prototype                                                                                                                                                                                                                                                                                                                                       |
+| **May 28, 2026**  | Kimura-san & Shiriashi-san                            | Presentation of documentation and power apps prototype                                                                                                                                                                                                                                                                                                                                       |
+| **June 1, 2026**  | Hatsuda-san                                           | A flutter web app for managing GCL staff and events (power apps)                                                                                                                                                                                                                                                                                                                             |
+| **June 2, 2026**  | Hatsuda-san & Sugawara-san                            | Presented reservation flutter portal and suggestions on fields to add                                                                                                                                                                                                                                                                                                                        |
+| **June 3, 2026**  | Hatsuda-san, Kimura-san, Shiriashi-san & Sugawara-san | Emailed power apps, flutter reservation page and GCL manual                                                                                                                                                                                                                                                                                                                                  |
+| **June 17, 2026** | All GCL staff                                         | Presentation of complete system (github, power app and flutter)                                                                                                                                                                                                                                                                                                                              |
+| **June 24, 2026** | Hatsuda-san & Kimura-san                              | Presentation of working reports screen (from main staff perspective) and feedback<br>Additional information in regard preparing data presentation for higher admin <ul><li>Footer on working reports, must remain the same when printed</li><li>All working reports are printed</li><li>Electronic signatures/stamps are reserved only for headquarter director and vice president</li></ul> |
+| **July 29, 2026** | All GCL staff                                         | Presentation of complete system (github, power app and flutter)<br>Consultation with shiriashi-san about expected reports (schedules, reports, reservation and events), public visibility, japanese translation for approved & available                                                                                                                                                     |
 ## Tangent/psicological questions
 1. What's the inconvenience?
 2. What's the experience?
@@ -267,3 +277,95 @@ After the initial event proposal is approved, the proposer shall be able to add:
  - student: max amount of payment
  - main staff: faster organization
  - visitor: easy of understanding and update
+
+
+# Common problems
+## Variables names
+use **ONLY** english variable in excel and sharepoint. When using power automate calling japanese characters becomes not human readable.
+|Variable name <br> (Sharepoint, excel column)|Power automate field name|
+|---|---|
+|スタッフ|OData__x30b9__x30bf__x30c3__x30d5_|
+|氏名|OData__x540d__x524d_|
+|名前|OData__x540d__x524d_|
+|メール|OData__x30e1__x30fc__x30eb_|
+|国|OData__x56fd_|
+|母語|OData__x6bcd__x8a9e_|
+|他の言語|OData__x4ed6__x306e__x8a00__x8a9e_|
+|プロフィール|OData__x30d7__x30ed__x30d5__x30a3__x30|
+|私について|OData__x79c1__x306b__x3064__x3044__x30|
+|キャンパス|OData__x30ad__x30e3__x30f3__x30d1__x30|
+
+## Power automate & Flutter communication
+the JSON fields must be **EXACTLY equal** (name and data type)
+Power automate expects to receive
+```
+{
+    "type": "object",
+    "properties": {
+        "start": {
+            "type": "string"
+        },
+        "end": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "email": {
+            "type": "string"
+        },
+        "department": {
+            "type": "string"
+        },
+        "grade": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "purpose": {
+            "type": "string"
+        },
+        "targetLanguage": {
+            "type": [
+                "string"
+            ]
+        },
+        "staffPreference": {
+            "type": "string"
+        },
+        "nativeLanguage": {
+            "type": "string"
+        }
+    }
+}
+```
+Good example
+
+start: 2026-08-03T13:30:00.000
+end: 2026-08-03T14:00:00.000
+name: test
+email: kung@mail.kyutech.jp
+department: test2
+grade: B2
+location: GCL Lounge
+purpose: Conversation
+targetLanguage:$\color{black}{\colorbox{#FFC000}{\text{英語 - en}}}$
+staffPreference: anyone
+nativeLanguage: en-US
+
+Bad Example
+
+start: 2026-08-03T13:30:00.000
+end: 2026-08-03T14:00:00.000
+name: test
+email: kung@mail.kyutech.jp
+department: test2
+grade: B2
+location: GCL Lounge
+purpose: Conversation
+targetLanguage: $\color{black}{\colorbox{#FFC000}{\text{null}}}$
+staffPreference: anyone
+nativeLanguage: en-US
+
+Explanation: The variable *targetLanguage* only expects to receives a string, but if a null value is send, the flow crashes with responde Bad request (from power automate) and ERROR SYNCING TO POWER AUTOMATE: Exception: Server returned status code 400 (from flutter)

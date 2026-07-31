@@ -245,7 +245,7 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                   if (val == null || val.trim().isEmpty)
                     return provider.translate('required');
                   if (!RegExp(
-                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                    r'^[\w-\.]+@mail\.kyutech\.jp$',
                   ).hasMatch(val.trim())) {
                     return provider.translate('invalid_email');
                   }
@@ -362,21 +362,21 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
               const SizedBox(height: 20),
 
               // --- DYNAMIC TARGET LANGUAGE FROM PROVIDER ---
-              DropdownButtonFormField<String>(
-                value: _selectedLanguage,
-                decoration: InputDecoration(
-                  labelText: provider.translate('target_lang'),
-                  prefixIcon: const Icon(Icons.translate),
-                  border: const OutlineInputBorder(),
-                ),
-                items: dynamicLanguages.map((lang) {
-                  return DropdownMenuItem(value: lang, child: Text(lang));
-                }).toList(),
-                onChanged: (val) => setState(() => _selectedLanguage = val),
-                validator: (val) =>
-                    val == null ? provider.translate('select_lang') : null,
-              ),
-              const SizedBox(height: 24),
+              // DropdownButtonFormField<String>(
+              //   value: _selectedLanguage,
+              //   decoration: InputDecoration(
+              //     labelText: provider.translate('target_lang'),
+              //     prefixIcon: const Icon(Icons.translate),
+              //     border: const OutlineInputBorder(),
+              //   ),
+              //   items: dynamicLanguages.map((lang) {
+              //     return DropdownMenuItem(value: lang, child: Text(lang));
+              //   }).toList(),
+              //   onChanged: (val) => setState(() => _selectedLanguage = val),
+              //   validator: (val) =>
+              //       val == null ? provider.translate('select_lang') : null,
+              // ),
+              // const SizedBox(height: 24),
 
               // --- DYNAMIC STAFF & COUNTRIES RADIO LAYOUT ---
               Text(

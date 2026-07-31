@@ -4,6 +4,14 @@ This script is made to read the Excel file to export data in json format to powe
 View link [How to implement this script](https://learn.microsoft.com/ja-jp/office/dev/scripts/overview/excel)
 
 ## Working schedules
+|simbol|meaning|
+|---|---|
+|GCL|work on gcl in person only|
+|Teams|teams only|
+|◯|Available for both GCL loung in person or online (teams)|
+|$\color{black}{\colorbox{#FFC000}{\text{◯}}}$|Approved by main staff|
+|◯ <br> No background color|Available, not yet approved|
+
 ![Original](./documentation/media/scheduleOriginal.jpg)
 
 ![Flattened](./documentation/media/scheduledFlattened.jpg)
@@ -63,7 +71,7 @@ function main(workbook: ExcelScript.Workbook) {
         staff: header[a],
         startTime: `${currentDate}T${times[0]}`,
         endTime: `${currentDate}T${times[1]}`,
-        value: color ? "approved" : "available",
+        value: color ? "承認" : "出勤可",
         color
       });
     }
@@ -233,3 +241,108 @@ function main(workbook: ExcelScript.Workbook) {
 ```
 
 ## Reservations
+![original](./documentation/media/reservationOriginal.jpg)
+![flattened](./documentation/media/reservationFlattened.jpg)
+### code
+```
+function main(workbook: ExcelScript.Workbook) {
+
+  type BookingRecord = {
+    worksheet: string;
+    date: string;
+    day: string;
+    startTime: string;
+    endTime: string;
+    origin: string;
+    jap_support: string;
+    place: string;
+    name: string;
+    department: string;
+    participants: string;
+    purpose: string;
+  };
+
+  const records: BookingRecord[] = [];
+
+  // Safe cell reader
+  function cell(data: string[][], row: number, col: number): string {
+    return data[row]?.[col]?.toString().trim() ?? "";
+  }
+
+  for (const sheet of workbook.getWorksheets()) {
+
+    const used = sheet.getUsedRange();
+    if (!used) continue;
+
+    const data = used.getTexts();
+
+    // Find header row
+    let headerRow = -1;
+    for (let r = 0; r < data.length; r++) {
+      if (cell(data, r, 0) === "Date") {
+        headerRow = r;
+        break;
+      }
+    }
+
+    if (headerRow === -1) continue;
+
+    let currentDate = "";
+    let currentDay = "";
+    let currentTime = "";
+
+    for (let r = headerRow + 1; r < data.length; r++) {
+
+      const date = cell(data, r, 0);
+      const day = cell(data, r, 1);
+      const time = cell(data, r, 2);
+
+      if (date) currentDate = date;
+      if (day) currentDay = day;
+      if (time) currentTime = time;
+
+      const origin = cell(data, r, 3);
+      const jap_support = cell(data, r, 4);
+      const place = cell(data, r, 5);
+      const name = cell(data, r, 6);
+      const department = cell(data, r, 7);
+      const participants = cell(data, r, 8);
+      const purpose = cell(data, r, 9);
+
+      // Skip non-booked rows
+      if (!place || !name || !department) {
+        continue;
+      }
+
+      let startTime = "";
+      let endTime = "";
+
+      if (currentTime.includes("-")) {
+        const parts = currentTime.split("-");
+        startTime = parts[0].trim();
+        endTime = parts[1].trim();
+      } else {
+        startTime = currentTime;
+      }
+
+      records.push({
+        worksheet: sheet.getName(),
+        date: currentDate,
+        day: currentDay,
+        startTime,
+        endTime,
+        origin,
+        jap_support,
+        place,
+        name,
+        department,
+        participants,
+        purpose
+      });
+    }
+  }
+
+  return records;
+}
+
+```
