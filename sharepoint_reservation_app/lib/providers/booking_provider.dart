@@ -245,11 +245,7 @@ class BookingProvider with ChangeNotifier {
             slot,
             false,
           );
-          DateTime slotEnd = _parseSlotTimeToDateTime(
-            _selectedDay,
-            slot,
-            true,
-          );
+          DateTime slotEnd = _parseSlotTimeToDateTime(_selectedDay, slot, true);
 
           // Evaluates if the dynamic booking item overlaps this 30-min window
           if (start.isBefore(slotEnd) && end.isAfter(slotStart)) {
@@ -345,7 +341,8 @@ class BookingProvider with ChangeNotifier {
         'sectionTitle': 'Staff Preferences',
         'labelAnyone': 'No Preference (Anyone)',
         'labelJapanese': 'Japanese Students',
-        'labelIntl': 'International Students'
+        'labelIntl': 'International Students',
+        'jaSupport': 'Do you wish Japanese staff support?',
       },
       'ja': {
         'title': 'GCL 予約ポータル',
@@ -374,7 +371,8 @@ class BookingProvider with ChangeNotifier {
         'sectionTitle': '希望するスタッフタイプ',
         'labelAnyone': '指定なし (誰でも)',
         'labelJapanese': '日本人学生',
-        'labelIntl': '留学生'
+        'labelIntl': '留学生',
+        'jaSupport': '日本人スタッフのサポートを希望しますか？',
       },
     };
     return localizedValues[_currentLocale]?[key] ?? key;
@@ -422,7 +420,7 @@ class BookingProvider with ChangeNotifier {
   List<String> getDynamicTargetLanguages() {
     if (_selectedTimeSlot == null) return [];
     final rawLanguages = _slotLanguages[_selectedTimeSlot] ?? [];
-    
+
     return rawLanguages.map((lang) {
       final key = lang.toLowerCase().trim();
       if (_langDisplayMap.containsKey(key)) {
@@ -432,8 +430,13 @@ class BookingProvider with ChangeNotifier {
     }).toList();
   }
 
-  Future<bool> sendBookingPayload(Map<String, dynamic> payload, {String? customUrl}) async {
-    final url = (customUrl != null && customUrl.isNotEmpty) ? customUrl : _powerAutomateUrl;
+  Future<bool> sendBookingPayload(
+    Map<String, dynamic> payload, {
+    String? customUrl,
+  }) async {
+    final url = (customUrl != null && customUrl.isNotEmpty)
+        ? customUrl
+        : _powerAutomateUrl;
     try {
       final response = await http.post(
         Uri.parse(url),

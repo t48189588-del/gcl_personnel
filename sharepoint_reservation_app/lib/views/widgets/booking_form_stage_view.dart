@@ -26,6 +26,7 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
   String? _selectedPurpose;
   String? _selectedLanguage;
   String? _selectedGrade; // Tracks grade dropdown choice
+  bool _jaSupport = false;
 
   // Default selection set to professional neutral fallback value
   String _preferredStaffPreference = 'anyone';
@@ -51,6 +52,7 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
     _selectedLocation = null;
     _selectedPurpose = null;
     _selectedLanguage = null;
+    _jaSupport = false;
     _selectedGrade = null;
     _preferredStaffPreference = 'anyone';
   }
@@ -321,7 +323,7 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                 validator: (val) =>
                     val == null ? provider.translate('select_loc') : null,
               ),
-              const SizedBox(height: 20),             
+              const SizedBox(height: 20),
 
               // --- PURPOSE DROPDOWN (WITH ADDED OTHER FEATURE) ---
               DropdownButtonFormField<String>(
@@ -377,6 +379,32 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
               //       val == null ? provider.translate('select_lang') : null,
               // ),
               // const SizedBox(height: 24),
+
+              //Japanese support
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey[400]!),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: FormField<bool>(
+                  initialValue: false,
+                  builder: (FormFieldState<bool> state) {
+                    return CheckboxListTile(
+                      title: Text(provider.translate('jaSupport')),
+                      value: _jaSupport,
+                      onChanged: (bool? newValue) {
+                        setState(() {
+                          _jaSupport = newValue ?? false;
+                          state.didChange(
+                            newValue,
+                          ); // Updates Form validation state
+                        });
+                      },
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
 
               // --- DYNAMIC STAFF & COUNTRIES RADIO LAYOUT ---
               Text(
@@ -465,8 +493,11 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                         ? _otherPurposeController.text.trim()
                         : _selectedPurpose ?? "";
 
-                    final Locale deviceLocale = View.of(context).platformDispatcher.locale;
-                    final String systemDefaultLanguageString = deviceLocale.toLanguageTag(); // Yields standard BCP47 layouts like "en-US", "ja-JP"
+                    final Locale deviceLocale = View.of(
+                      context,
+                    ).platformDispatcher.locale;
+                    final String systemDefaultLanguageString = deviceLocale
+                        .toLanguageTag(); // Yields standard BCP47 layouts like "en-US", "ja-JP"
 
                     print("--- STAGE 1 PASSED: CLEAN DATA PAYLOAD EXPORT ---");
                     print("start: ${startDateTime.toIso8601String()}");
@@ -479,7 +510,8 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                     print("purpose: $finalPurpose");
                     print("targetLanguage: $_selectedLanguage");
                     print("staffPreference: $_preferredStaffPreference");
-                    print("nativeLanguage: $systemDefaultLanguageString"); 
+                    print("JapaneseSupport: $_jaSupport");
+                    print("nativeLanguage: $systemDefaultLanguageString");
                     print("--------------------------------------------------");
 
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -500,7 +532,8 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                       "purpose": finalPurpose,
                       "targetLanguage": _selectedLanguage,
                       "staffPreference": _preferredStaffPreference,
-                      "nativeLanguage": systemDefaultLanguageString, 
+                      "japaneseSupport": _jaSupport,
+                      "nativeLanguage": systemDefaultLanguageString,
                     };
 
                     bool envExists = false;

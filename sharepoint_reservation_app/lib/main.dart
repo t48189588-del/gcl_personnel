@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'O365 SharePoint Booking Portal',
+      title: 'Global Communication Lounge Booking Portal',
       debugShowCheckedModeBanner: false,
 
       // 1. Register the core Flutter UI translation delegates
