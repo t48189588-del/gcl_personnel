@@ -270,6 +270,7 @@ After the initial event proposal is approved, the proposer shall be able to add:
 | **June 17, 2026** | All GCL staff                                         | Presentation of complete system (github, power app and flutter)                                                                                                                                                                                                                                                                                                                              |
 | **June 24, 2026** | Hatsuda-san & Kimura-san                              | Presentation of working reports screen (from main staff perspective) and feedback<br>Additional information in regard preparing data presentation for higher admin <ul><li>Footer on working reports, must remain the same when printed</li><li>All working reports are printed</li><li>Electronic signatures/stamps are reserved only for headquarter director and vice president</li></ul> |
 | **July 29, 2026** | All GCL staff                                         | Presentation of complete system (github, power app and flutter)<br>Consultation with shiriashi-san about expected reports (schedules, reports, reservation and events), public visibility, japanese translation for approved & available                                                                                                                                                     |
+|**August 3,2026**|Hatsuda-san, Kimura-san, Shiriashi-san,Sugawara-san|Sent email with report and tabular data in excel book `GCLデータ.xlsx` and access to V1 of power apps<br>Capabilities:<ul><li>Working scheduling</li><li>Working reports</li><li>Reservations</li><li>Events</li></ul>
 ## Tangent/psicological questions
 1. What's the inconvenience?
 2. What's the experience?
@@ -341,7 +342,7 @@ Power automate expects to receive
 }
 ```
 Good example
-
+```
 start: 2026-08-03T13:30:00.000
 end: 2026-08-03T14:00:00.000
 name: test
@@ -350,13 +351,13 @@ department: test2
 grade: B2
 location: GCL Lounge
 purpose: Conversation
-targetLanguage:$\color{black}{\colorbox{#FFC000}{\text{英語 - en}}}$
+targetLanguage:英語 - en
 staffPreference: anyone
 nativeLanguage: en-US
-
+```
 Bad Example
 
-start: 2026-08-03T13:30:00.000
+```start: 2026-08-03T13:30:00.000
 end: 2026-08-03T14:00:00.000
 name: test
 email: kung@mail.kyutech.jp
@@ -364,8 +365,9 @@ department: test2
 grade: B2
 location: GCL Lounge
 purpose: Conversation
-targetLanguage: $\color{black}{\colorbox{#FFC000}{\text{null}}}$
+targetLanguage: null
 staffPreference: anyone
 nativeLanguage: en-US
+```
 
 Explanation: The variable *targetLanguage* only expects to receives a string, but if a null value is send, the flow crashes with responde Bad request (from power automate) and ERROR SYNCING TO POWER AUTOMATE: Exception: Server returned status code 400 (from flutter)

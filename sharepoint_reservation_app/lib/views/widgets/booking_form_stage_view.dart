@@ -116,6 +116,12 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<BookingProvider>(context);
+    
+    final int jaCount = provider.selectedTimeSlot == null
+    ? 0
+    : provider.getJapaneseStaffCountForSlot(
+        provider.selectedTimeSlot!,
+      );
 
     if (!provider.isFormVisible) {
       return Center(
@@ -378,32 +384,33 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
               //   validator: (val) =>
               //       val == null ? provider.translate('select_lang') : null,
               // ),
-              // const SizedBox(height: 24),
+              // const SizedBox(height: 24),             
 
               //Japanese support
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[400]!),
-                  borderRadius: BorderRadius.circular(8),
+              if (jaCount > 0)
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey[400]!),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: FormField<bool>(
+                    initialValue: false,
+                    builder: (FormFieldState<bool> state) {
+                      return CheckboxListTile(
+                        title: Text(provider.translate('jaSupport')),
+                        value: _jaSupport,
+                        onChanged: (bool? newValue) {
+                          setState(() {
+                            _jaSupport = newValue ?? false;
+                            state.didChange(
+                              newValue,
+                            ); // Updates Form validation state
+                          });
+                        },
+                      );
+                    },
+                  ),
                 ),
-                child: FormField<bool>(
-                  initialValue: false,
-                  builder: (FormFieldState<bool> state) {
-                    return CheckboxListTile(
-                      title: Text(provider.translate('jaSupport')),
-                      value: _jaSupport,
-                      onChanged: (bool? newValue) {
-                        setState(() {
-                          _jaSupport = newValue ?? false;
-                          state.didChange(
-                            newValue,
-                          ); // Updates Form validation state
-                        });
-                      },
-                    );
-                  },
-                ),
-              ),
               const SizedBox(height: 20),
 
               // --- DYNAMIC STAFF & COUNTRIES RADIO LAYOUT ---
