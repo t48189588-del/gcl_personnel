@@ -1,60 +1,83 @@
-# Make sure you're on main
-git checkout main
+#!/bin/bash
 
-# Build the Flutter web app
-cd sharepoint_reservation_app
+set -e
+
+PROJECT_ROOT=$(pwd)
+TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+
+echo "=== Building gcl_personnel ==="
+
+flutter clean
+flutter pub get
 
 flutter build web \
-    --release \
-    --base-href /gcl_personnel/reservation/
+  --release \
+  --base-href /gcl_personnel/
+
+
+echo "=== Preparing main app ==="
+
+rm -rf /tmp/gcl_personnel_pages
+mkdir -p /tmp/gcl_personnel_pages/gcl_personnel
+
+cp -r build/web/* \
+      /tmp/gcl_personnel_pages/gcl_personnel/
+
+
+echo "=== Building reservation app ==="
+
+cd sharepoint_reservation_app
+
+flutter clean
+flutter pub get
+
+flutter build web \
+  --release \
+  --base-href /gcl_personnel/reservation/
+
+mkdir -p ../tmp_reservation_build
 
 cd ..
 
-# Create a staging directory
-rm -rf publish
-mkdir publish
+mkdir -p /tmp/gcl_personnel_pages/gcl_personnel/reservation
 
-# Copy the main website into the staging directory
-rsync -av \
-    --exclude publish \
-    --exclude .git \
-    --exclude sharepoint_reservation_app \
-    --exclude build \
-    ./ publish/
+cp -r sharepoint_reservation_app/build/web/* \
+      /tmp/gcl_personnel_pages/gcl_personnel/reservation/
 
-# Copy the Flutter build into /reservation
-mkdir -p publish/reservation
-cp -R sharepoint_reservation_app/build/web/* publish/reservation/
 
-# Add a .nojekyll file
-touch publish/.nojekyll
+echo "=== Switching to gh-pages ==="
 
-# Create gh-pages branch if it doesn't already exist
-git show-ref --verify --quiet refs/heads/gh-pages || git branch gh-pages
+git checkout gh-pages
 
-# Create a worktree for the gh-pages branch
-rm -rf /tmp/gcl_personnel-gh-pages
-git worktree add /tmp/gcl_personnel-gh-pages gh-pages
 
-# Remove old published files
-find /tmp/gcl_personnel-gh-pages -mindepth 1 -maxdepth 1 \
-    ! -name ".git" \
-    -exec rm -rf {} +
+echo "=== Updating gh-pages files ==="
 
-# Copy the new site
-cp -R publish/* /tmp/gcl_personnel-gh-pages/
+rm -rf gcl_personnel
 
-cd /tmp/gcl_personnel-gh-pages
+cp -r /tmp/gcl_personnel_pages/gcl_personnel .
+
+
+echo "=== Commit deployment ==="
 
 git add .
 
-git commit -m "Deploy $(date '+%Y-%m-%d %H:%M:%S')" || echo "Nothing to commit"
+git commit \
+  -m "Deploy Flutter web apps last update: ${TIMESTAMP}" \
+  || echo "No changes detected"
+
+
+echo "=== Push gh-pages ==="
 
 git push --force origin gh-pages
 
-cd -
 
-# Clean up
-git worktree remove /tmp/gcl_personnel-gh-pages
+echo "=== Return to previous branch ==="
 
-rm -rf publish
+git checkout -
+
+
+echo "=== Cleanup ==="
+
+rm -rf /tmp/gcl_personnel_pages
+
+echo "=== Deployment completed ==="
