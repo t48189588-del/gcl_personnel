@@ -18,11 +18,10 @@ flutter build web \
 echo "=== Preparing main app ==="
 
 rm -rf /tmp/gcl_personnel_pages
-mkdir -p /tmp/gcl_personnel_pages/gcl_personnel
+mkdir -p /tmp/gcl_personnel_pages
 
 cp -r build/web/* \
-      /tmp/gcl_personnel_pages/gcl_personnel/
-
+      /tmp/gcl_personnel_pages/
 
 echo "=== Building reservation app ==="
 
@@ -39,10 +38,10 @@ mkdir -p ../tmp_reservation_build
 
 cd ..
 
-mkdir -p /tmp/gcl_personnel_pages/gcl_personnel/reservation
+mkdir -p /tmp/gcl_personnel_pages/reservation
 
 cp -r sharepoint_reservation_app/build/web/* \
-      /tmp/gcl_personnel_pages/gcl_personnel/reservation/
+      /tmp/gcl_personnel_pages/reservation/
 
 
 echo "=== Switching to gh-pages ==="
@@ -80,4 +79,4 @@ echo "=== Cleanup ==="
 
 rm -rf /tmp/gcl_personnel_pages
 
-echo "=== Deployment completed ==="
+echo "=== Deployment completed ==="pw
