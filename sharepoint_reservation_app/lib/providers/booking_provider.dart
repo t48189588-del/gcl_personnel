@@ -343,6 +343,7 @@ class BookingProvider with ChangeNotifier {
         'labelJapanese': 'Japanese Students',
         'labelIntl': 'International Students',
         'jaSupport': 'Do you wish Japanese staff support?',
+        'quantity': 'Number of Students',
       },
       'ja': {
         'title': 'GCL 予約ポータル',
@@ -373,6 +374,7 @@ class BookingProvider with ChangeNotifier {
         'labelJapanese': '日本人学生',
         'labelIntl': '留学生',
         'jaSupport': '日本人スタッフのサポートを希望しますか？',
+        'quantity': '人数',
       },
     };
     return localizedValues[_currentLocale]?[key] ?? key;
