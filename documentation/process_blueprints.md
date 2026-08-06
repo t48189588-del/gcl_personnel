@@ -33,3 +33,15 @@ gantt
     minor fixes dart version limitations added vscode for building web UI whe building from github codespace  active, 2026-06-02, 3d
     update flutter version to match SDK environment  active, 2026-06-02, 3d
 ```
+
+## Reservation
+```mermaid
+classDiagram
+    namespace Reservation {
+        class Request {
+            External GCL student
+            +route()
+        }
+    }
+
+```
