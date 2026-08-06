@@ -1,16 +1,16 @@
-# gcl_personnel
+# Global Communication Lounge User Interface
 
 
-A flutter web app for managing GCL staff and events (self hosted)
-A office/sharepoint mirror (cloud hosted)
+A single screen web app for managing all Global Communication Lounge (GCL) staff and processes 
+
 
 - Instragram: https://www.instagram.com/gclkyutech/  
-- Website (hosted in google sites): https://sites.google.com/view/gclkyutech/about-us  
 - Line ID: kyutechgcl  
 - Email: gcl@lai.kyutech.ac.jp  
 - Youtube: https://www.youtube.com/channel/UCXeW6dvL52EJgPPNJMlVt0A  
 - Moodle reservation: https://horyu.el.kyutech.ac.jp/course/view.php?id=767 
 - Teams group
+- Website (hosted in google sites): https://sites.google.com/view/gclkyutech/about-us  [soon to be deprecated]
 
 ## Wanna test?
 ### Public website (testing purposes only)
@@ -26,6 +26,8 @@ Reservation: https://t48189588-del.github.io/gcl_personnel/reservation/
 | GitHub Codespace<br> (cloud testing) | [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=t48189588-del/gcl_personnel)                                                              | testing<br>`flutter run -d web-server --web-port=8080 --web-hostname=0.0.0.0` |
 | Mac & linux<br>(local testing)       | 1. **Download** and extract this repository ZIP folder to your desktop. <br>2. **Execute** `./setup.sh` via your terminal<br>3. Type `y` and user password to approve when prompted, then sit back while the setup launches the system. |
 | Windows<br>(local testing)           | 1. **Download** and extract this repository ZIP folder to your desktop.<br>2. **Double-Click**: `setup.bat`<br>3. Type `y` to approve when prompted, then sit back while the setup launches the system.                                 |
+|All devices|[Convert to website](./publish.sh)|
+
 
 > [!Note]
 > If you wish to remove the system from your computer, simply drag the main `gcl_personnel` directory folder into your **Trash / Recycle Bin** and empty it. Because all caches and engines are stored directly inside this folder, 100% of all dependencies are wiped instantly from your computer without leaving single file fragments behind.
@@ -38,7 +40,7 @@ Currently all information is hosted in excel files in teams groups
     - Student assistants
         - Japanese staff
         - International staff
-    - visitor
+    - visitors
 - processes
     - Working
         - schedules
@@ -53,7 +55,7 @@ Currently all information is hosted in excel files in teams groups
     - [ ] Hatsuda Hisanori
     - [ ] Shiraishi Shinyav
     - [ ] Kiruma Tomoko
-  - [x] student staff (25 people)
+  - [x] student staff (~25 people)
     - [ ] admin / owner
     - [ ] users
   - [x] GCL hour schedule
@@ -206,9 +208,40 @@ add graphings for the senior dashboard reports
 to try 
 only apply to approved student staff schedule
 
-# System
+# System architecture
 > [!Note]
 > Convert to flowchart diagram presentation
+```mermaid
+graph TB
+    %% Core Architecture with Bidirectional Flows
+    UI <--> Backbone
+    Backbone <--> Data
+
+    %% Subgraphs acting as the "Boxes" containing the possibilities
+    subgraph UI [User Interface]
+        direction LR
+        UI_PA[Power Apps]
+        UI_FL[Flutter]
+    end
+
+    subgraph Backbone [Backbone]
+        direction LR
+        BB_PA[Power Automate]
+        BB_PY[Python]
+    end
+
+    subgraph Data [Data]
+        direction LR
+        D_EX[Excel]
+        D_SP[SharePoint List]
+        D_SQ[SQLite3]
+    end
+
+       %% Styling
+    style UI fill:#f9f9f9,stroke:#283747,stroke-width:2px,color:#283747,font-weight:bold
+    style Backbone fill:#f9f9f9,stroke:#283747,stroke-width:2px,color:#283747,font-weight:bold
+    style Data fill:#f9f9f9,stroke:#283747,stroke-width:2px,color:#283747,font-weight:bold
+```
 
 ## Data
 - Sharepoint list
@@ -248,15 +281,6 @@ After the initial event proposal is approved, the proposer shall be able to add:
 - export excel should be same format as original excel file (same column order and same column names )
 - think about future updates/changes adding new screens/templates?
 
-## For exporting flutter project to github pages
-| Step | Explain                                            | code                                                   |
-| ---- | -------------------------------------------------- | ------------------------------------------------------ |
-| 0    | Preparation, ensuring all libraries are up to date | `flutter clean && flutter pub get`                     |
-| 1    | Preparing web pages elements (html, css, js)       | `flutter build web`                                    |
-| 2    | Navigate to build/web directory                    | `cd build/web`                                         |
-| 3    | temporary git (for uploading to github pages)      | `git init && git add . && git commit -m "first commit` |
-| 4    | uploading pages                                    | `git push -f <repo>.git master:gh-pages`               |
-
 # Logs
 | date              | who                                                   | what                                                                                                                                                                                                                                                                                                                                                                                         |
 | ----------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -267,10 +291,12 @@ After the initial event proposal is approved, the proposer shall be able to add:
 | **June 1, 2026**  | Hatsuda-san                                           | A flutter web app for managing GCL staff and events (power apps)                                                                                                                                                                                                                                                                                                                             |
 | **June 2, 2026**  | Hatsuda-san & Sugawara-san                            | Presented reservation flutter portal and suggestions on fields to add                                                                                                                                                                                                                                                                                                                        |
 | **June 3, 2026**  | Hatsuda-san, Kimura-san, Shiriashi-san & Sugawara-san | Emailed power apps, flutter reservation page and GCL manual                                                                                                                                                                                                                                                                                                                                  |
-| **June 17, 2026** | All GCL staff                                         | Presentation of complete system (github, power app and flutter)                                                                                                                                                                                                                                                                                                                              |
+| **June 17, 2026** | All GCL staff (Iizuka campus)                                         | Presentation of complete system (github, power app and flutter)                                                                                                                                                                                                                                                                                                                              |
 | **June 24, 2026** | Hatsuda-san & Kimura-san                              | Presentation of working reports screen (from main staff perspective) and feedback<br>Additional information in regard preparing data presentation for higher admin <ul><li>Footer on working reports, must remain the same when printed</li><li>All working reports are printed</li><li>Electronic signatures/stamps are reserved only for headquarter director and vice president</li></ul> |
-| **July 29, 2026** | All GCL staff                                         | Presentation of complete system (github, power app and flutter)<br>Consultation with shiriashi-san about expected reports (schedules, reports, reservation and events), public visibility, japanese translation for approved & available                                                                                                                                                     |
-|**August 3,2026**|Hatsuda-san, Kimura-san, Shiriashi-san,Sugawara-san|Sent email with report and tabular data in excel book `GCLデータ.xlsx` and access to V1 of power apps<br>Capabilities:<ul><li>Working scheduling</li><li>Working reports</li><li>Reservations</li><li>Events</li></ul>
+| **July 29, 2026** | All GCL staff (Iizuka campus)                                         | Presentation of complete system (github, power app and flutter)<br>Consultation with shiriashi-san about expected reports (schedules, reports, reservation and events), public visibility, japanese translation for approved & available                                                                                                                                                     |
+|**August 3,2026**|Hatsuda-san, Kimura-san, Shiriashi-san,Sugawara-san|Sent email with report and tabular data in excel book `GCLデータ.xlsx` and access to V1 of power apps<br>Capabilities:<ul><li>Working scheduling</li><li>Working reports</li><li>Reservations</li><li>Events</li></ul>|
+|**August 5,2026**|All GCL staff (Iizuka campus)|Sent official email starting testing phase with power apps<br>Feedback to improve UI presentation for reservation page and main staff UI|
+|**August 6,2026**|Shiriashi-san and Kimura-san|Updated reservation screen in power apps and made confirmation message to send email (jap and eng version)|
 ## Tangent/psicological questions
 1. What's the inconvenience?
 2. What's the experience?
