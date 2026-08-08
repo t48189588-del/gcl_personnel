@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/booking_provider.dart';
+import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -14,6 +15,32 @@ class BookingFormStageView extends StatefulWidget {
   _BookingFormStageViewState createState() => _BookingFormStageViewState();
 }
 
+class MaxValueInputFormatter extends TextInputFormatter {
+                final int max;
+
+                MaxValueInputFormatter(this.max);
+
+                @override
+                TextEditingValue formatEditUpdate(
+                  TextEditingValue oldValue,
+                  TextEditingValue newValue,
+                ) {
+                  // Allow empty value while editing.
+                  if (newValue.text.isEmpty) {
+                    return newValue;
+                  }
+
+                  final value = int.tryParse(newValue.text);
+
+                  // Reject non-integer values or values greater than max.
+                  if (value == null || value > max) {
+                    return oldValue;
+                  }
+
+                  return newValue;
+                }
+              }
+
 class _BookingFormStageViewState extends State<BookingFormStageView> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
@@ -21,6 +48,7 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
   final _departmentController = TextEditingController();
   final _otherGradeController = TextEditingController();
   final _otherPurposeController = TextEditingController();
+  final _studentCount = TextEditingController();
 
   String? _selectedLocation;
   String? _selectedPurpose;
@@ -41,6 +69,7 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
     _departmentController.dispose();
     _otherGradeController.dispose();
     _otherPurposeController.dispose();
+    _studentCount.dispose();
     super.dispose();
   }
 
@@ -49,11 +78,13 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
     _emailController.clear();
     _departmentController.clear();
     _otherGradeController.clear();
+    _studentCount.clear();
     _selectedLocation = null;
     _selectedPurpose = null;
     _selectedLanguage = null;
     _jaSupport = false;
     _selectedGrade = null;
+    _studentCount.text = '0';
     _preferredStaffPreference = 'anyone';
   }
 
@@ -177,7 +208,7 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
     }
 
     // Localized strings for the brand new forms fields
-    final String departmentLabel = isJa ? "部局・学科 / 部署" : "Department / Faculty";
+    final String departmentLabel = isJa ? "学部・学科 / 部署" : "Department / Faculty";
     final String gradeLabel = isJa ? "学年" : "Grade / Academic Year";
     final String specifyOtherLabel = isJa
         ? "具体的な学年を入力してください"
@@ -312,6 +343,38 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                       : null,
                 ),
               ],
+              const SizedBox(height: 20),
+
+              TextFormField(
+                controller: _studentCount,
+                decoration: InputDecoration(
+                  labelText: provider.translate('quantity'),
+                  prefixIcon: const Icon(Icons.groups),
+                  border: const OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  MaxValueInputFormatter(10), // Blocks 11 or higher
+                ],
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return provider.translate('enter_people');
+                  }
+
+                  final people = int.tryParse(value);
+
+                  if (people == null) {
+                    return provider.translate('enter_valid_integer');
+                  }
+
+                  if (people < 0 || people > 10) {
+                    return provider.translate('people_must_be_between_0_and_10');
+                  }
+
+                  return null;
+                },
+              ),
               const SizedBox(height: 20),
 
               // --- LOCATION ---
@@ -517,6 +580,7 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                     print("purpose: $finalPurpose");
                     print("targetLanguage: $_selectedLanguage");
                     print("staffPreference: $_preferredStaffPreference");
+                    print("studentCount: ${_studentCount.text.trim()}");
                     print("JapaneseSupport: $_jaSupport");
                     print("nativeLanguage: $systemDefaultLanguageString");
                     print("--------------------------------------------------");
@@ -539,6 +603,7 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                       "purpose": finalPurpose,
                       "targetLanguage": _selectedLanguage,
                       "staffPreference": _preferredStaffPreference,
+                      "studentCount": _studentCount.text.trim(),
                       "japaneseSupport": _jaSupport,
                       "nativeLanguage": systemDefaultLanguageString,
                     };
