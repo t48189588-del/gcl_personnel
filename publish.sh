@@ -1,82 +1,258 @@
+```bash
 #!/bin/bash
 
 set -e
 
-PROJECT_ROOT=$(pwd)
-TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+# ============================================================
+# Configuration
+# ============================================================
 
-echo "=== Building gcl_personnel ==="
+PROJECT_ROOT="$(pwd)"
+CURRENT_BRANCH="$(git branch --show-current)"
+TIMESTAMP="$(date '+%Y-%m-%d %H:%M:%S')"
+
+DEPLOY_DIR="/tmp/gcl_personnel_pages"
+
+MAIN_BASE_HREF="/gcl_personnel/"
+RESERVATION_BASE_HREF="/gcl_personnel/reservation/"
+
+
+# ============================================================
+# Safety checks
+# ============================================================
+
+echo "=== Checking repository ==="
+
+if [ -z "$CURRENT_BRANCH" ]; then
+    echo "ERROR: Could not determine current Git branch."
+    exit 1
+fi
+
+if [ "$CURRENT_BRANCH" = "gh-pages" ]; then
+    echo "ERROR: Run this script from the main/development branch."
+    exit 1
+fi
+
+if [ ! -f "pubspec.yaml" ]; then
+    echo "ERROR: pubspec.yaml not found."
+    echo "Run this script from the gcl_personnel project root."
+    exit 1
+fi
+
+if [ ! -d "sharepoint_reservation_app" ]; then
+    echo "ERROR: sharepoint_reservation_app directory not found."
+    exit 1
+fi
+
+
+# ============================================================
+# Prepare temporary deployment directory
+# ============================================================
+
+echo "=== Preparing deployment directory ==="
+
+rm -rf "$DEPLOY_DIR"
+mkdir -p "$DEPLOY_DIR"
+
+
+# ============================================================
+# Build MAIN Flutter application
+# ============================================================
+
+echo ""
+echo "============================================================"
+echo " Building gcl_personnel"
+echo "============================================================"
 
 flutter clean
 flutter pub get
 
 flutter build web \
-  --release \
-  --base-href /gcl_personnel/
+    --release \
+    --base-href "$MAIN_BASE_HREF"
 
 
-echo "=== Preparing main app ==="
+# ============================================================
+# Copy MAIN application
+#
+# Result:
+# gh-pages/
+# ├── index.html
+# ├── assets/
+# ├── flutter.js
+# └── ...
+# ============================================================
 
-rm -rf /tmp/gcl_personnel_pages
-mkdir -p /tmp/gcl_personnel_pages
+echo "=== Preparing main application ==="
 
-cp -r build/web/* \
-      /tmp/gcl_personnel_pages/
+cp -r build/web/. "$DEPLOY_DIR/"
 
-echo "=== Building reservation app ==="
 
-cd sharepoint_reservation_app
+# ============================================================
+# Build RESERVATION Flutter application
+# ============================================================
+
+echo ""
+echo "============================================================"
+echo " Building sharepoint_reservation_app"
+echo "============================================================"
+
+cd "$PROJECT_ROOT/sharepoint_reservation_app"
 
 flutter clean
 flutter pub get
 
 flutter build web \
-  --release \
-  --base-href /gcl_personnel/reservation/
-
-mkdir -p ../tmp_reservation_build
-
-cd ..
-
-mkdir -p /tmp/gcl_personnel_pages/reservation
-
-cp -r sharepoint_reservation_app/build/web/* \
-      /tmp/gcl_personnel_pages/reservation/
+    --release \
+    --base-href "$RESERVATION_BASE_HREF"
 
 
-echo "=== Switching to gh-pages ==="
+# ============================================================
+# Copy RESERVATION application
+#
+# Result:
+# gh-pages/
+# ├── index.html
+# ├── ...
+# └── reservation/
+#     ├── index.html
+#     ├── assets/
+#     └── ...
+# ============================================================
+
+echo "=== Preparing reservation application ==="
+
+mkdir -p "$DEPLOY_DIR/reservation"
+
+cp -r build/web/. "$DEPLOY_DIR/reservation/"
+
+
+# ============================================================
+# Return to repository root
+# ============================================================
+
+cd "$PROJECT_ROOT"
+
+
+# ============================================================
+# Switch to gh-pages
+# ============================================================
+
+echo ""
+echo "============================================================"
+echo " Deploying to gh-pages"
+echo "============================================================"
+
+echo "Current branch: $CURRENT_BRANCH"
 
 git checkout gh-pages
 
 
-echo "=== Updating gh-pages files ==="
+# ============================================================
+# Completely clean gh-pages working tree
+#
+# Keep .git, remove everything else.
+# ============================================================
 
-rm -rf gcl_personnel
+echo "=== Cleaning gh-pages branch ==="
 
-cp -r /tmp/gcl_personnel_pages/gcl_personnel .
-
-
-echo "=== Commit deployment ==="
-
-git add .
-
-git commit \
-  -m "Deploy Flutter web apps last update: ${TIMESTAMP}" \
-  || echo "No changes detected"
+find . -mindepth 1 -maxdepth 1 ! -name ".git" -exec rm -rf {} \;
 
 
-echo "=== Push gh-pages ==="
+# ============================================================
+# Copy compiled applications
+# ============================================================
+
+echo "=== Copying compiled applications ==="
+
+cp -r "$DEPLOY_DIR"/. .
+
+
+# GitHub Pages should not process this as a Jekyll site.
+touch .nojekyll
+
+
+# ============================================================
+# Show deployment structure
+# ============================================================
+
+echo ""
+echo "=== Deployment structure ==="
+
+echo ""
+echo "Main application:"
+echo "  ./index.html"
+
+echo ""
+echo "Reservation application:"
+echo "  ./reservation/index.html"
+
+echo ""
+echo "Files deployed:"
+find . -maxdepth 2 -type f | sort
+
+
+# ============================================================
+# Commit
+# ============================================================
+
+echo ""
+echo "=== Committing deployment ==="
+
+git add -A
+
+if git diff --cached --quiet; then
+    echo "No changes detected."
+else
+    git commit \
+        -m "Deploy Flutter web apps last update: ${TIMESTAMP}"
+fi
+
+
+# ============================================================
+# Push
+# ============================================================
+
+echo ""
+echo "=== Pushing gh-pages ==="
 
 git push --force origin gh-pages
 
 
-echo "=== Return to previous branch ==="
+# ============================================================
+# Return to original branch
+# ============================================================
 
-git checkout -
+echo ""
+echo "=== Returning to ${CURRENT_BRANCH} ==="
+
+git checkout "$CURRENT_BRANCH"
 
 
+# ============================================================
+# Cleanup
+# ============================================================
+
+echo ""
 echo "=== Cleanup ==="
 
-rm -rf /tmp/gcl_personnel_pages
+rm -rf "$DEPLOY_DIR"
 
-echo "=== Deployment completed ==="pw
+
+# ============================================================
+# Complete
+# ============================================================
+
+echo ""
+echo "============================================================"
+echo " Deployment completed successfully!"
+echo "============================================================"
+
+echo ""
+echo "Main:"
+echo "https://t48189588-del.github.io/gcl_personnel/"
+
+echo ""
+echo "Reservation:"
+echo "https://t48189588-del.github.io/gcl_personnel/reservation/"
+```
