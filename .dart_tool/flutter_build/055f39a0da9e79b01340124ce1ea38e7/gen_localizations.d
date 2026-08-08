@@ -1,1 +1,0 @@
- /home/yoga/Desktop/gcl_personnel/lib/l10n/app_localizations_en.dart /home/yoga/Desktop/gcl_personnel/lib/l10n/app_localizations_ja.dart /home/yoga/Desktop/gcl_personnel/lib/l10n/app_localizations.dart:  /home/yoga/Desktop/gcl_personnel/l10n.yaml /home/yoga/Desktop/gcl_personnel/lib/l10n/app_en.arb /home/yoga/Desktop/gcl_personnel/lib/l10n/app_ja.arb
