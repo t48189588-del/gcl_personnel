@@ -1,4 +1,3 @@
-```bash
 #!/bin/bash
 
 set -e
@@ -255,4 +254,3 @@ echo "https://t48189588-del.github.io/gcl_personnel/"
 echo ""
 echo "Reservation:"
 echo "https://t48189588-del.github.io/gcl_personnel/reservation/"
-```
