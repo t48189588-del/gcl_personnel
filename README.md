@@ -13,7 +13,9 @@ A office/sharepoint mirror (cloud hosted)
 - Teams group
 
 ## Wanna test?
-### Public website (testing purposes only)
+### Public website Power apps
+
+### Public website (testing purposes only) Flutter
 Main page: https://t48189588-del.github.io/gcl_personnel/
 <br>
 Reservation: https://t48189588-del.github.io/gcl_personnel/reservation/
