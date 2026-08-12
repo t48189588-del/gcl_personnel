@@ -13,7 +13,9 @@ A single screen web app for managing all Global Communication Lounge (GCL) staff
 - Website (hosted in google sites): https://sites.google.com/view/gclkyutech/about-us  [soon to be deprecated]
 
 ## Wanna test?
-### Public website (testing purposes only)
+### Public website Power apps
+
+### Public website (testing purposes only) Flutter
 Main page: https://t48189588-del.github.io/gcl_personnel/
 <br>
 Reservation: https://t48189588-del.github.io/gcl_personnel/reservation/
