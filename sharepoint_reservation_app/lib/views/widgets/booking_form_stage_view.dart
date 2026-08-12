@@ -1,12 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../providers/booking_provider.dart';
 import 'package:flutter/services.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'dart:io' as io;
-import 'package:flutter/foundation.dart' show kIsWeb;
+
+import '../../providers/booking_provider.dart';
 
 class BookingFormStageView extends StatefulWidget {
   const BookingFormStageView({Key? key}) : super(key: key);
@@ -16,30 +14,30 @@ class BookingFormStageView extends StatefulWidget {
 }
 
 class MaxValueInputFormatter extends TextInputFormatter {
-                final int max;
+  final int max;
 
-                MaxValueInputFormatter(this.max);
+  MaxValueInputFormatter(this.max);
 
-                @override
-                TextEditingValue formatEditUpdate(
-                  TextEditingValue oldValue,
-                  TextEditingValue newValue,
-                ) {
-                  // Allow empty value while editing.
-                  if (newValue.text.isEmpty) {
-                    return newValue;
-                  }
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    // Allow empty value while editing.
+    if (newValue.text.isEmpty) {
+      return newValue;
+    }
 
-                  final value = int.tryParse(newValue.text);
+    final value = int.tryParse(newValue.text);
 
-                  // Reject non-integer values or values greater than max.
-                  if (value == null || value > max) {
-                    return oldValue;
-                  }
+    // Reject non-integer values or values greater than max.
+    if (value == null || value > max) {
+      return oldValue;
+    }
 
-                  return newValue;
-                }
-              }
+    return newValue;
+  }
+}
 
 class _BookingFormStageViewState extends State<BookingFormStageView> {
   final _formKey = GlobalKey<FormState>();
@@ -147,12 +145,10 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<BookingProvider>(context);
-    
+
     final int jaCount = provider.selectedTimeSlot == null
-    ? 0
-    : provider.getJapaneseStaffCountForSlot(
-        provider.selectedTimeSlot!,
-      );
+        ? 0
+        : provider.getJapaneseStaffCountForSlot(provider.selectedTimeSlot!);
 
     if (!provider.isFormVisible) {
       return Center(
@@ -369,7 +365,9 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                   }
 
                   if (people < 0 || people > 10) {
-                    return provider.translate('people_must_be_between_0_and_10');
+                    return provider.translate(
+                      'people_must_be_between_0_and_10',
+                    );
                   }
 
                   return null;
@@ -447,7 +445,7 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
               //   validator: (val) =>
               //       val == null ? provider.translate('select_lang') : null,
               // ),
-              // const SizedBox(height: 24),             
+              // const SizedBox(height: 24),
 
               //Japanese support
               if (jaCount > 0)
@@ -543,178 +541,117 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                   ),
                 ),
                 onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    DateTime startDateTime = provider.getCalculatedDateTime(
-                      getEndTime: false,
+                  if (!_formKey.currentState!.validate()) {
+                    return;
+                  }
+
+                  final DateTime startDateTime = provider.getCalculatedDateTime(
+                    getEndTime: false,
+                  );
+
+                  final DateTime endDateTime = provider.getCalculatedDateTime(
+                    getEndTime: true,
+                  );
+
+                  // Compute clean grade value.
+                  final String finalGrade =
+                      (_selectedGrade == otherGradeKeyword)
+                      ? _otherGradeController.text.trim()
+                      : _selectedGrade ?? '';
+
+                  // Compute clean purpose value.
+                  final String finalPurpose =
+                      (_selectedPurpose == otherPurposeKeyword)
+                      ? _otherPurposeController.text.trim()
+                      : _selectedPurpose ?? '';
+
+                  final Locale deviceLocale = View.of(
+                    context,
+                  ).platformDispatcher.locale;
+
+                  final String systemDefaultLanguageString = deviceLocale
+                      .toLanguageTag();
+
+                  final Map<String, dynamic> payload = {
+                    'start': startDateTime.toIso8601String(),
+                    'end': endDateTime.toIso8601String(),
+                    'name': _nameController.text.trim(),
+                    'email': _emailController.text.trim(),
+                    'department': _departmentController.text.trim(),
+                    'grade': finalGrade,
+                    'location': _selectedLocation,
+                    'purpose': finalPurpose,
+                    'targetLanguage': _selectedLanguage,
+                    'staffPreference': _preferredStaffPreference,
+                    'studentCount': _studentCount.text.trim(),
+                    'japaneseSupport': _jaSupport,
+                    'nativeLanguage': systemDefaultLanguageString,
+                  };
+
+                  debugPrint(
+                    'Submitting reservation payload: ${jsonEncode(payload)}',
+                  );
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Processing reservation...'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+
+                  try {
+                    final bool success = await provider.sendBookingPayload(
+                      payload,
                     );
-                    DateTime endDateTime = provider.getCalculatedDateTime(
-                      getEndTime: true,
-                    );
 
-                    // Compute clean outputs for standard or "other" options
-                    final String finalGrade =
-                        (_selectedGrade == otherGradeKeyword)
-                        ? _otherGradeController.text.trim()
-                        : _selectedGrade ?? "";
+                    if (!mounted) {
+                      return;
+                    }
 
-                    // NEW: Compute final purpose choice accounting for "Other" field entry
-                    final String finalPurpose =
-                        (_selectedPurpose == otherPurposeKeyword)
-                        ? _otherPurposeController.text.trim()
-                        : _selectedPurpose ?? "";
+                    ScaffoldMessenger.of(context).clearSnackBars();
 
-                    final Locale deviceLocale = View.of(
-                      context,
-                    ).platformDispatcher.locale;
-                    final String systemDefaultLanguageString = deviceLocale
-                        .toLanguageTag(); // Yields standard BCP47 layouts like "en-US", "ja-JP"
-
-                    print("--- STAGE 1 PASSED: CLEAN DATA PAYLOAD EXPORT ---");
-                    print("start: ${startDateTime.toIso8601String()}");
-                    print("end: ${endDateTime.toIso8601String()}");
-                    print("name: ${_nameController.text.trim()}");
-                    print("email: ${_emailController.text.trim()}");
-                    print("department: ${_departmentController.text.trim()}");
-                    print("grade: $finalGrade");
-                    print("location: $_selectedLocation");
-                    print("purpose: $finalPurpose");
-                    print("targetLanguage: $_selectedLanguage");
-                    print("staffPreference: $_preferredStaffPreference");
-                    print("studentCount: ${_studentCount.text.trim()}");
-                    print("JapaneseSupport: $_jaSupport");
-                    print("nativeLanguage: $systemDefaultLanguageString");
-                    print("--------------------------------------------------");
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Processing reservation...'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-
-                    final Map<String, dynamic> payload = {
-                      "start": startDateTime.toIso8601String(),
-                      "end": endDateTime.toIso8601String(),
-                      "name": _nameController.text.trim(),
-                      "email": _emailController.text.trim(),
-                      "department": _departmentController.text.trim(),
-                      "grade": finalGrade,
-                      "location": _selectedLocation,
-                      "purpose": finalPurpose,
-                      "targetLanguage": _selectedLanguage,
-                      "staffPreference": _preferredStaffPreference,
-                      "studentCount": _studentCount.text.trim(),
-                      "japaneseSupport": _jaSupport,
-                      "nativeLanguage": systemDefaultLanguageString,
-                    };
-
-                    bool envExists = false;
-                    try {
-                      if (!kIsWeb) {
-                        final file =
-                            io.File(
-                              'sharepoint_reservation_app/.env',
-                            ).existsSync()
-                            ? io.File('sharepoint_reservation_app/.env')
-                            : io.File('.env').existsSync()
-                            ? io.File('.env')
-                            : null;
-                        if (file != null) {
-                          envExists = true;
-                          final lines = await file.readAsLines();
-                          dotenv.testLoad(fileInput: lines.join('\n'));
-                        }
-                      } else {
-                        envExists =
-                            dotenv.env.isNotEmpty &&
-                            dotenv
-                                .get('POWER_AUTOMATE_URL_POST', fallback: '')
-                                .isNotEmpty;
-                      }
-                    } catch (_) {}
-
-                    if (!envExists) {
-                      print(
-                        "--- NO .ENV FILE FOUND. ONLY PRINTING PAYLOAD ---",
-                      );
-                      print("Payload: ${jsonEncode(payload)}");
-                      ScaffoldMessenger.of(context).clearSnackBars();
+                    if (success) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'No .env found. Payload printed to console.',
-                          ),
-                          backgroundColor: Colors.orange,
+                        SnackBar(
+                          content: Text(provider.translate('success_msg')),
+                          backgroundColor: Colors.green,
                         ),
                       );
-                      // NEW: Clear fields and trigger the beautiful success thanks dialog on fallback print simulation too!
+
                       _showThankYouDialog(context, isJa);
-                      setState(() => _resetFormFields());
-                      return;
-                    }
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Processing reservation...'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-
-                    final String powerAutomateUrl = dotenv.get(
-                      'POWER_AUTOMATE_URL_POST',
-                      fallback: '',
-                    );
-
-                    if (powerAutomateUrl.isEmpty) {
-                      print(
-                        "ERROR: Power Automate URL is missing from configuration.",
-                      );
-                      ScaffoldMessenger.of(context).clearSnackBars();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Configuration error. Contact admin.'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                      return;
-                    }
-
-                    try {
-                      final response = await http.post(
-                        Uri.parse(powerAutomateUrl),
-                        headers: {'Content-Type': 'application/json'},
-                        body: jsonEncode(payload),
-                      );
-
-                      if (response.statusCode == 200 ||
-                          response.statusCode == 202) {
-                        ScaffoldMessenger.of(context).clearSnackBars();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(provider.translate('success_msg')),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                        // NEW: Pop open the rich thank you dialog screen and wipe input fields clean
-                        _showThankYouDialog(context, isJa);
-                        setState(() => _resetFormFields());
-                      } else {
-                        throw Exception(
-                          'Server returned status code ${response.statusCode}',
-                        );
-                      }
-                    } catch (e) {
-                      print("ERROR SYNCING TO POWER AUTOMATE: $e");
-                      ScaffoldMessenger.of(context).clearSnackBars();
+                      setState(() {
+                        _resetFormFields();
+                      });
+                    } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text(
-                            'Failed to submit reservation. Please try again.',
+                            'Failed to submit reservation. '
+                            'Please try again.',
                           ),
                           backgroundColor: Colors.red,
                         ),
                       );
                     }
+                  } catch (e) {
+                    debugPrint('ERROR SYNCING RESERVATION: $e');
+
+                    if (!mounted) {
+                      return;
+                    }
+
+                    ScaffoldMessenger.of(context).clearSnackBars();
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Failed to submit reservation. '
+                          'Please try again.',
+                        ),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
                   }
                 },
                 child: Text(

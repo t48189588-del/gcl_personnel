@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart' show kIsWeb, kReleaseMode;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class BookingProvider with ChangeNotifier {
   DateTime _selectedDay = DateTime.now();
@@ -38,9 +40,41 @@ class BookingProvider with ChangeNotifier {
   Map<String, int> get japaneseStaffCounts => _japaneseStaffCounts;
   Map<String, int> get intlStudentCounts => _intlStudentCounts;
 
-  final String _powerAutomateUrl =
-      'https://defaultdbf986a9f2c7470188ce463dec76cb.a4.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f9a7ba33519541a7826952579b57b3b8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ZfI4IxYzXX9WUWNAhA3nWTkXSla4L1Ongx3dJoFJakE';
+  String _getBookingsEndpoint() {
+  if (kIsWeb && kReleaseMode) {
+    return '/api/booking';
+  }
 
+  final localUrl = dotenv.maybeGet(
+    'POWER_AUTOMATE_URL_GET',
+  );
+
+  if (localUrl == null || localUrl.trim().isEmpty) {
+    throw Exception(
+      'POWER_AUTOMATE_URL_GET is missing from .env',
+    );
+  }
+
+  return localUrl.trim();
+}
+
+String _getReservationEndpoint() {
+  if (kIsWeb && kReleaseMode) {
+    return '/api/reservation';
+  }
+
+  final localUrl = dotenv.maybeGet(
+    'POWER_AUTOMATE_URL_POST',
+  );
+
+  if (localUrl == null || localUrl.trim().isEmpty) {
+    throw Exception(
+      'POWER_AUTOMATE_URL_POST is missing from .env',
+    );
+  }
+
+  return localUrl.trim();
+}
   final List<String> _allTimeSlots = [
     '09:00 AM - 09:30 AM',
     '09:30 AM - 10:00 AM',
@@ -122,10 +156,15 @@ class BookingProvider with ChangeNotifier {
     notifyListeners();
 
     try {
+      final endpoint = _getBookingsEndpoint();
       final response = await http.post(
-        Uri.parse(_powerAutomateUrl),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"targetDate": _selectedDay.toIso8601String()}),
+        Uri.parse(endpoint),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode({
+          "targetDate": _selectedDay.toIso8601String(),
+        }),
       );
 
       if (response.statusCode == 200) {
@@ -433,22 +472,34 @@ class BookingProvider with ChangeNotifier {
   }
 
   Future<bool> sendBookingPayload(
-    Map<String, dynamic> payload, {
-    String? customUrl,
-  }) async {
-    final url = (customUrl != null && customUrl.isNotEmpty)
-        ? customUrl
-        : _powerAutomateUrl;
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(payload),
-      );
-      return response.statusCode == 200 || response.statusCode == 202;
-    } catch (e) {
-      debugPrint("Error pipeline call failed: $e");
-      return false;
-    }
+  Map<String, dynamic> payload, {
+  String? customUrl,
+}) async {
+  final url = (customUrl != null && customUrl.isNotEmpty)
+      ? customUrl
+      : _getReservationEndpoint();
+
+  try {
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(payload),
+    );
+
+    debugPrint(
+      'Reservation API returned HTTP ${response.statusCode}',
+    );
+
+    return response.statusCode == 200 ||
+        response.statusCode == 202;
+  } catch (e) {
+    debugPrint(
+      'Error pipeline call failed: $e',
+    );
+
+    return false;
   }
+}
 }
