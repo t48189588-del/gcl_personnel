@@ -50,3 +50,5 @@ GCL_information.md
 /data/
 *.xlsx
 *.csv
+.vercel
+.env*
