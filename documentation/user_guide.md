@@ -33,7 +33,11 @@ This is the student staff who will help/assist in providing the communication wi
 - submitting working schedule (for next month)
 - submitting working report (for ongoing month)
 - handling reservation
-- 
+#### Schedule
+This is the screen for the student to submit the availability for the next month. Currently days and week validation
+![day_schedule](./media/day_scheduling.jpg)
+![week_schedule](./media/week_scheduling.jpg)
+![confirmation_screen](./media/confirmation_screen.jpg)
 # Developer/programmer
 Tools:
 - power automate

@@ -300,6 +300,7 @@ After the initial event proposal is approved, the proposer shall be able to add:
 |**August 5,2026**|All GCL staff (Iizuka campus)|Sent official email starting testing phase with power apps<br>Feedback to improve UI presentation for reservation page and main staff UI|
 |**August 6,2026**|Shiriashi-san and Kimura-san|Updated reservation screen in power apps and made confirmation message to send email (jap and eng version)|
 |**August 12,2026**|Hatsuda-san, Kimura-san and Shiriashi-san|Approved Working schedule submission documentation (ppt in japanese and english), message sent to all Iizuka GCL staff for testing and collecting next month working availability schedule<br>Finished Vercel reservation website|
+|**August 16,2026**||Updating documentation<ul><li>Student staff availability schedule submission</li></ul>|
 ## Tangent/psicological questions
 1. What's the inconvenience?
 2. What's the experience?
