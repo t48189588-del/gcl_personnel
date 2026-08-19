@@ -430,23 +430,6 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
               ],
               const SizedBox(height: 20),
 
-              // --- DYNAMIC TARGET LANGUAGE FROM PROVIDER ---
-              // DropdownButtonFormField<String>(
-              //   value: _selectedLanguage,
-              //   decoration: InputDecoration(
-              //     labelText: provider.translate('target_lang'),
-              //     prefixIcon: const Icon(Icons.translate),
-              //     border: const OutlineInputBorder(),
-              //   ),
-              //   items: dynamicLanguages.map((lang) {
-              //     return DropdownMenuItem(value: lang, child: Text(lang));
-              //   }).toList(),
-              //   onChanged: (val) => setState(() => _selectedLanguage = val),
-              //   validator: (val) =>
-              //       val == null ? provider.translate('select_lang') : null,
-              // ),
-              // const SizedBox(height: 24),
-
               //Japanese support
               if (jaCount > 0)
                 Container(
@@ -474,7 +457,7 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                 ),
               const SizedBox(height: 20),
 
-              // --- DYNAMIC STAFF & COUNTRIES RADIO LAYOUT ---
+              // --- DYNAMIC COUNTRY RADIO LAYOUT ---
               Text(
                 provider.translate('pref_title'),
                 style: TextStyle(
@@ -484,6 +467,7 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                 ),
               ),
               const SizedBox(height: 8),
+
               Container(
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey[400]!),
@@ -491,39 +475,22 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                 ),
                 child: Column(
                   children: [
-                    RadioListTile<String>(
-                      title: Text(
-                        provider.translate('pref_anyone'),
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      value: 'anyone',
-                      groupValue: _preferredStaffPreference,
-                      activeColor: Colors.blue,
-                      onChanged: (val) =>
-                          setState(() => _preferredStaffPreference = val!),
-                    ),
-
-                    // Maps dynamic nationalities passed from the Sharepoint response array per time frame
                     ...availableCountries.map((country) {
-                      return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Divider(height: 1, indent: 16, endIndent: 16),
-                          RadioListTile<String>(
-                            title: Text(
-                              country, // Outputs localized string parsed directly ("中国", "インド")
-                              style: const TextStyle(fontSize: 14),
-                            ),
-                            value: country.toLowerCase().trim(),
-                            groupValue: _preferredStaffPreference
-                                .toLowerCase()
-                                .trim(),
-                            activeColor: Colors.blue,
-                            onChanged: (val) => setState(
-                              () => _preferredStaffPreference = country,
-                            ),
-                          ),
-                        ],
+                      return RadioListTile<String>(
+                        title: Text(
+                          country,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        value: country,
+                        groupValue: _preferredStaffPreference,
+                        activeColor: Colors.blue,
+                        onChanged: (val) {
+                          if (val == null) return;
+
+                          setState(() {
+                            _preferredStaffPreference = val;
+                          });
+                        },
                       );
                     }).toList(),
                   ],
@@ -569,6 +536,12 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                     context,
                   ).platformDispatcher.locale;
 
+                  final String? selectedStaffName = provider
+                      .getStaffNameForSlotAndCountry(
+                        provider.selectedTimeSlot!,
+                        _preferredStaffPreference,
+                      );
+
                   final String systemDefaultLanguageString = deviceLocale
                       .toLanguageTag();
 
@@ -583,6 +556,7 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                     'purpose': finalPurpose,
                     'targetLanguage': _selectedLanguage,
                     'staffPreference': _preferredStaffPreference,
+                    'staffName': selectedStaffName,
                     'studentCount': _studentCount.text.trim(),
                     'japaneseSupport': _jaSupport,
                     'nativeLanguage': systemDefaultLanguageString,
