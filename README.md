@@ -23,6 +23,7 @@ Reservation: https://t48189588-del.github.io/gcl_personnel/reservation/
 > The website are for testing purposes only. The information presented is presented only as an auxiliary for testing and interactivity, submission is not enabled either.
 
 ### Code
+Ensure that Docker is properly installed locally. Otherwise check: [instructions for installing Docker](https://docs.docker.com/engine/install/)
 | Where                                | File                                                                                                                                                                                                                                    | command                                                                       |
 | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | GitHub Codespace<br> (cloud testing) | [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=t48189588-del/gcl_personnel)                                                              | testing<br>`flutter run -d web-server --web-port=8080 --web-hostname=0.0.0.0` |
