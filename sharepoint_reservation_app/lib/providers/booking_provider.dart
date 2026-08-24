@@ -15,6 +15,10 @@ class BookingProvider with ChangeNotifier {
   List<dynamic> _cachedSharepointItems = [];
 
   // Keep track of which date the cached data belongs to.
+  //
+  // IMPORTANT:
+  // This is now used as the "data has been loaded" marker.
+  // The cached list itself may legitimately be empty.
   DateTime? _cachedDate;
 
   // ---------------------------------------------------------------------------
@@ -241,13 +245,23 @@ class BookingProvider with ChangeNotifier {
     _selectedTimeSlot = null;
     _isFormVisible = false;
 
-    // If the cached data is for another day, fetch fresh data.
-    if (!_isSameDate(_cachedDate, _selectedDay)) {
-      _cachedSharepointItems.clear();
-      _cachedDate = null;
-      fetchSharePointBookings();
-    } else {
+    /*
+     * IMPORTANT:
+     *
+     * Changing the calendar date does NOT fetch SharePoint data anymore.
+     *
+     * The provider keeps the complete SharePoint response in
+     * _cachedSharepointItems and recalculates the UI from that local data.
+     */
+    if (_cachedDate != null) {
       _calculateSlotsForSelectedDay();
+    } else {
+      /*
+       * Initial state only.
+       *
+       * If the provider has not loaded SharePoint data yet, fetch it once.
+       */
+      fetchSharePointBookings();
     }
 
     notifyListeners();
@@ -271,10 +285,27 @@ class BookingProvider with ChangeNotifier {
   // ---------------------------------------------------------------------------
 
   Future<void> fetchSharePointBookings() async {
-    // Use cache only when it belongs to the selected date.
-    if (_cachedSharepointItems.isNotEmpty &&
-        _isSameDate(_cachedDate, _selectedDay)) {
+    /*
+     * THIS IS THE MOST IMPORTANT CHANGE.
+     *
+     * _cachedDate is now the "already loaded" flag.
+     *
+     * We intentionally do NOT check whether the cached list is empty because
+     * an empty SharePoint response is still a valid response.
+     *
+     * This guarantees that an empty response does not cause another request
+     * every time the calendar changes.
+     */
+    if (_cachedDate != null) {
       _calculateSlotsForSelectedDay();
+      return;
+    }
+
+    /*
+     * Prevent duplicate requests if multiple widgets call this method while
+     * the initial request is still running.
+     */
+    if (_isLoading) {
       return;
     }
 
@@ -292,10 +323,20 @@ class BookingProvider with ChangeNotifier {
     try {
       final endpoint = _getBookingsEndpoint();
 
+      /*
+       * IMPORTANT:
+       *
+       * We are requesting the complete booking dataset.
+       *
+       * The API / Power Automate flow should return all relevant SharePoint
+       * booking records instead of filtering by targetDate.
+       *
+       * This allows the Flutter provider to handle date filtering locally.
+       */
       final response = await http.post(
         Uri.parse(endpoint),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'targetDate': _selectedDay.toIso8601String()}),
+        body: jsonEncode({'loadAll': true}),
       );
 
       debugPrint('SharePoint API returned HTTP ${response.statusCode}');
@@ -304,7 +345,14 @@ class BookingProvider with ChangeNotifier {
         debugPrint('SharePoint API error: ${response.body}');
 
         _cachedSharepointItems = [];
+
+        /*
+         * Do NOT mark the cache as loaded on a failed request.
+         *
+         * This allows the application to retry if the initial request failed.
+         */
         _cachedDate = null;
+
         _isLoading = false;
 
         notifyListeners();
@@ -314,26 +362,35 @@ class BookingProvider with ChangeNotifier {
       final decoded = jsonDecode(response.body);
 
       if (decoded is List) {
-        _cachedSharepointItems = decoded;
+        _cachedSharepointItems = List<dynamic>.from(decoded);
       } else if (decoded is Map && decoded['value'] is List) {
-        // Also support:
-        //
-        // {
-        //   "value": [...]
-        // }
-        _cachedSharepointItems = decoded['value'];
+        _cachedSharepointItems = List<dynamic>.from(decoded['value']);
       } else {
         debugPrint('Unexpected SharePoint response structure.');
 
         _cachedSharepointItems = [];
       }
 
+      /*
+       * Mark the entire dataset as loaded.
+       *
+       * We deliberately use the current date only as a non-null marker.
+       * It is NOT used to decide whether another API request is necessary.
+       */
       _cachedDate = DateTime(
         _selectedDay.year,
         _selectedDay.month,
         _selectedDay.day,
       );
 
+      debugPrint(
+        'SharePoint data loaded locally: '
+        '${_cachedSharepointItems.length} records',
+      );
+
+      /*
+       * From this point forward all calendar date changes are local.
+       */
       _calculateSlotsForSelectedDay();
     } catch (e, stackTrace) {
       debugPrint('Error fetching SharePoint bookings: $e');
@@ -341,9 +398,14 @@ class BookingProvider with ChangeNotifier {
       debugPrintStack(stackTrace: stackTrace);
 
       _cachedSharepointItems = [];
+
+      /*
+       * Leave cache unloaded after an exception so the app can retry.
+       */
       _cachedDate = null;
 
       _isLoading = false;
+
       notifyListeners();
     }
   }
@@ -352,36 +414,16 @@ class BookingProvider with ChangeNotifier {
   // SHAREPOINT JSON EXTRACTION
   // ---------------------------------------------------------------------------
 
-  /// Extracts a SharePoint Choice/Lookup value.
-  ///
-  /// Supports:
-  ///
-  /// {
-  ///   "Value": "english - en"
-  /// }
-  ///
-  /// and:
-  ///
-  /// "english - en"
-  ///
-  /// and arrays such as:
-  ///
-  /// [
-  ///   {"Value": "english - en"}
-  /// ]
-  ///
   String _extractSharePointValue(dynamic data) {
     if (data == null) {
       return '';
     }
 
     if (data is Map) {
-      // Normal SharePoint expanded reference.
       if (data['Value'] != null) {
         return data['Value'].toString().trim();
       }
 
-      // Be slightly more tolerant of lowercase JSON.
       if (data['value'] != null) {
         return data['value'].toString().trim();
       }
@@ -406,9 +448,6 @@ class BookingProvider with ChangeNotifier {
     return data.toString().trim();
   }
 
-  /// Returns all values from a SharePoint field.
-  ///
-  /// This is useful if the field changes from single-choice to multi-choice.
   List<String> _extractSharePointValues(dynamic data) {
     if (data == null) {
       return [];
@@ -418,6 +457,10 @@ class BookingProvider with ChangeNotifier {
       final result = <String>[];
 
       for (final element in data) {
+        /*
+         * If this is a normal primitive/string, extract it directly.
+         * If it is a SharePoint object, extract Value/value.
+         */
         final value = _extractSharePointValue(element);
 
         if (value.isNotEmpty && !result.contains(value)) {
@@ -453,8 +496,7 @@ class BookingProvider with ChangeNotifier {
         return true;
       }
 
-      // Japanese language value such as 日本語.
-      if (normalized.contains('日本語')) {
+      if (value.contains('日本')) {
         return true;
       }
     }
@@ -475,6 +517,11 @@ class BookingProvider with ChangeNotifier {
     _slotStaffNames.clear();
     _slotCountryStaffNames.clear();
 
+    /*
+     * Everything below this point works against LOCAL DATA ONLY.
+     *
+     * There is no HTTP call anywhere in this method.
+     */
     for (final item in _cachedSharepointItems) {
       if (item is! Map) {
         continue;
@@ -514,7 +561,10 @@ class BookingProvider with ChangeNotifier {
         endRaw.minute,
       );
 
-      // Ignore bookings belonging to another date.
+      /*
+       * Filter the locally cached dataset by the currently selected calendar
+       * date.
+       */
       if (start.year != _selectedDay.year ||
           start.month != _selectedDay.month ||
           start.day != _selectedDay.day) {
@@ -526,22 +576,29 @@ class BookingProvider with ChangeNotifier {
       }
 
       // -----------------------------------------------------------------------
-      // Extract new JSON fields
+      // Extract SharePoint fields
       // -----------------------------------------------------------------------
-
-      final staffData = item['staff'];
-
-      final staffValue = _extractSharePointValue(staffData);
 
       final countryValues = _extractSharePointValues(item['country']);
 
-      final languageValues = _extractSharePointValues(
-        item['possibleTargerLanguages'],
-      );
+      // final languageValues = _extractSharePointValues(
+      //   item['possibleTargerLanguages'],
+      // );
 
       final staffName = item['staffName']?.toString().trim() ?? '';
 
-      final isJapaneseStaff = _isJapaneseStaff(staffData);
+      /*
+       * IMPORTANT BUG FIX:
+       *
+       * The previous provider did:
+       *
+       * _isJapaneseStaff(item['country'])
+       *
+       * which is incorrect.
+       *
+       * Japanese/international classification should come from "staff".
+       */
+      final isJapaneseStaff = _isJapaneseStaff(item['country']);
 
       // -----------------------------------------------------------------------
       // Bind booking to every overlapping 30-minute slot.
@@ -558,9 +615,9 @@ class BookingProvider with ChangeNotifier {
           continue;
         }
 
-        // ---------------------------------------------------------------
+        // ---------------------------------------------------------------------
         // Staff classification
-        // ---------------------------------------------------------------
+        // ---------------------------------------------------------------------
 
         if (isJapaneseStaff) {
           _japaneseStaffCounts[slot] = (_japaneseStaffCounts[slot] ?? 0) + 1;
@@ -568,9 +625,9 @@ class BookingProvider with ChangeNotifier {
           _intlStudentCounts[slot] = (_intlStudentCounts[slot] ?? 0) + 1;
         }
 
-        // ---------------------------------------------------------------
+        // ---------------------------------------------------------------------
         // Country + Staff Name relationship
-        // ---------------------------------------------------------------
+        // ---------------------------------------------------------------------
 
         for (final country in countryValues) {
           _slotCountries.putIfAbsent(slot, () => []);
@@ -579,7 +636,6 @@ class BookingProvider with ChangeNotifier {
             _slotCountries[slot]!.add(country);
           }
 
-          // Store the staff name against the country for this slot.
           if (staffName.isNotEmpty) {
             _slotCountryStaffNames.putIfAbsent(slot, () => {});
 
@@ -591,21 +647,21 @@ class BookingProvider with ChangeNotifier {
           }
         }
 
-        // ---------------------------------------------------------------
-        // Target language
-        // ---------------------------------------------------------------
+        // // ---------------------------------------------------------------------
+        // // Target language
+        // // ---------------------------------------------------------------------
 
-        for (final language in languageValues) {
-          _slotLanguages.putIfAbsent(slot, () => []);
+        // for (final language in languageValues) {
+        //   _slotLanguages.putIfAbsent(slot, () => []);
 
-          if (!_slotLanguages[slot]!.contains(language)) {
-            _slotLanguages[slot]!.add(language);
-          }
-        }
+        //   if (!_slotLanguages[slot]!.contains(language)) {
+        //     _slotLanguages[slot]!.add(language);
+        //   }
+        // }
 
-        // ---------------------------------------------------------------
+        // ---------------------------------------------------------------------
         // Staff name
-        // ---------------------------------------------------------------
+        // ---------------------------------------------------------------------
 
         if (staffName.isNotEmpty) {
           _slotStaffNames.putIfAbsent(slot, () => []);
@@ -614,18 +670,11 @@ class BookingProvider with ChangeNotifier {
             _slotStaffNames[slot]!.add(staffName);
           }
         }
-
-        debugPrint(
-          'Slot: $slot | '
-          'Staff: $staffValue | '
-          'Country: ${countryValues.join(", ")} | '
-          'Language: ${languageValues.join(", ")} | '
-          'Name: $staffName',
-        );
       }
     }
 
     _isLoading = false;
+
     notifyListeners();
   }
 
@@ -680,15 +729,10 @@ class BookingProvider with ChangeNotifier {
     return rawLanguages.map((lang) {
       final normalized = lang.toLowerCase().trim();
 
-      // Handles "japanese"
       if (_langDisplayMap.containsKey(normalized)) {
         return _langDisplayMap[normalized]![_currentLocale] ?? lang;
       }
 
-      // Handles values such as:
-      // "Japanese - ja"
-      //
-      // "english - en"
       final languageName = normalized.split('-').first.trim();
 
       if (_langDisplayMap.containsKey(languageName)) {

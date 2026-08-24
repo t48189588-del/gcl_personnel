@@ -224,7 +224,6 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
         !dynamicLanguages.contains(_selectedLanguage)) {
       _selectedLanguage = null;
     }
-
     return Form(
       key: _formKey,
       child: Card(
