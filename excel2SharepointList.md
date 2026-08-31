@@ -239,7 +239,10 @@ function main(workbook: ExcelScript.Workbook) {
     return records;
 }
 ```
-
+### Excel formatting formula
+Setting format (color and background) for weekeend cells
+- Saturday `=$B7=7`
+- Sunday `=$B7=1`
 ## Reservations
 ![original](./documentation/media/reservationOriginal.jpg)
 ![flattened](./documentation/media/reservationFlattened.jpg)

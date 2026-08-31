@@ -10,6 +10,7 @@
 ||Reservation|Approved|承認|The working schedule that has been approved for the main staff to work and get paid|
 ||Reservation|Department|学部|
 ||Reservation|Pending|
+||Reservation|Requested Nationality|
 |||Rejected|拒否|
 |||Completed||
 |||Canceled||
@@ -18,3 +19,8 @@
 |Checked and approved by: Kimura-san|Report| Pending|保留中|
 |Checked and approved by: Kimura-san|Report| Approved|承認|
 |Checked and approved by: Kimura-san|Report| Reject|不承認|
+||Event|Schedule start||Date and time expected to start the event|
+||Event|Schedule end||Date and time expected to end the event|
+||Event|Activity Type||Choose the type of activity:<ul><li>Meeting</li><li>Event</li></ul>
+||Event|Proposed||Date and time expected to end the event|
+||Event|Submit|提出|Date and time expected to end the event|
