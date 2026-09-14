@@ -308,6 +308,10 @@ After the initial event proposal is approved, the proposer shall be able to add:
 |**August 26,2026**|Hatsuda-san & Kimura-san|First outside student using vercel website for reservation|
 |**September 2,2026**|Hatsuda-san & Kimura-san|<ul><li>Fixing updates to working schedule</li><li>reservations filtering</li><li>report updates and generation</li></ul>|
 |**September 4,2026**|Kimura-san|<ul><li>Updating working reports interface (students staff view)</li><li>Worked on documentation on how to use the working report screen</li><li>Added welcome screen for new staff</li></ul>|
+|**September 9,2026**|Kimuira-san & Hatsuda-san|<ul><li>Finish wrinting [excel fill table office script](./sharepoint2excel.md#working-reports)</li><li>Set a reminder email for GCL visitors, 1 day in advance</li><li>Setting welcome message for new staff</li><li>Added 14:00-14:30 shift (by Shiriashi-san requests via Teams chat)</ul>|
+|**September 10,2026**||<ul><li>Building excel office script for [creating tabular presentation](./sharepoint2excel.md#creating-tabular-presentation)</li><li>Enabling text input when selecting "Others" in the student's working report screen</li><li>Adding "勤務日数" and "勤務時間" to main staff working reports screen
+|**September 14,2026**||<ul><li>Prepare working books for matching with power automate output</li><li>Customizing activities forms</li><li>Adding japanese support for reservations</li></ul>|
+
 ## Tangent/psicological questions
 1. What's the inconvenience?
 2. What's the experience?
