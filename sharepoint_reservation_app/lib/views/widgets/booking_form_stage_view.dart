@@ -209,7 +209,7 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
       isJa ? '工学部' : 'Engineering',
       isJa ? '情報工学部' : 'Computer Science and Systems Engineering',
       isJa ? '生命体工学' : 'Life Science and Systems Engineering',
-      isJa ? 'その他' : 'Other',
+      // isJa ? 'その他' : 'Other',
     ];
     final String departmentLabel = isJa ? "学部・学科 / 部署" : "Department / Faculty";
     final String gradeLabel = isJa ? "学年" : "Grade / Academic Year";
@@ -562,7 +562,7 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                     'end': endDateTime.toIso8601String(),
                     'name': _nameController.text.trim(),
                     'email': _emailController.text.trim(),
-                    'department': _departmentController.text.trim(),
+                    'department': _selectedDepartment,
                     'grade': finalGrade,
                     'location': _selectedLocation,
                     'purpose': finalPurpose,
