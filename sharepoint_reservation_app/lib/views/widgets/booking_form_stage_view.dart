@@ -51,6 +51,7 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
   String? _selectedLocation;
   String? _selectedPurpose;
   String? _selectedLanguage;
+  String? _selectedDepartment; // Tracks department dropdown choice
   String? _selectedGrade; // Tracks grade dropdown choice
   bool _jaSupport = false;
 
@@ -204,6 +205,12 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
     }
 
     // Localized strings for the brand new forms fields
+    final List<String> departmentOptions = [      
+      isJa ? '工学部' : 'Engineering',
+      isJa ? '情報工学部' : 'Computer Science and Systems Engineering',
+      isJa ? '生命体工学' : 'Life Science and Systems Engineering',
+      isJa ? 'その他' : 'Other',
+    ];
     final String departmentLabel = isJa ? "学部・学科 / 部署" : "Department / Faculty";
     final String gradeLabel = isJa ? "学年" : "Grade / Academic Year";
     final String specifyOtherLabel = isJa
@@ -289,13 +296,19 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
               const SizedBox(height: 20),
 
               // --- NEW: DEPARTMENT TEXT INPUT ---
-              TextFormField(
-                controller: _departmentController,
+              DropdownButtonFormField<String>(
+                value: _selectedDepartment,
                 decoration: InputDecoration(
                   labelText: departmentLabel,
                   prefixIcon: const Icon(Icons.business),
                   border: const OutlineInputBorder(),
                 ),
+                items: departmentOptions.map((dept) {
+                  return DropdownMenuItem(value: dept, child: Text(dept));
+                }).toList(),
+                onChanged: (val) => setState(() {
+                  _selectedDepartment = val;
+                }),
                 validator: (val) => (val == null || val.trim().isEmpty)
                     ? provider.translate('required')
                     : null,
@@ -363,9 +376,9 @@ class _BookingFormStageViewState extends State<BookingFormStageView> {
                     return provider.translate('enter_valid_integer');
                   }
 
-                  if (people < 0 || people > 10) {
+                  if (people < 1 || people > 10) {
                     return provider.translate(
-                      'people_must_be_between_0_and_10',
+                      'people_must_be_between_1_and_10',
                     );
                   }
 

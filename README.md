@@ -422,3 +422,69 @@ when using updates functions (that write information from power apps to excel da
 this functions will return `Network error when using Patch function: The specified record was not found.` if the power apps Id column is blank
 
 Even if the column is not used/called by the user.
+
+# Additional prompt for improving functionality
+```
+{
+  "conversation_session": {
+    "topic": "Microsoft Power Platform Architecture, Optimization, and Data Flow",
+    "date": "2026-09-28",
+    "system_overview": {
+      "front_end": "Power Apps (Internal users: ~20) & Flutter Website + Power Automate (External users: ~10,000)",
+      "staging_storage": "Active Month Data Book & GCL Data Book (Excel via OneDrive)",
+      "historical_storage": "SharePoint Lists (Active/Operational) & Future PostgreSQL/Access (Historical View-Only)",
+      "key_challenges": ["Multilanguage performance", "Excel vs. Power Apps data type mismatches", "Office Script persistence", "Data cleaning, deduplication, and archival workflows"]
+    },
+    "messages": [
+      {
+        "role": "user",
+        "content": "this is an exploratory Q&A session, no code or file generation \n\nbase information\n1. Using microsoft power platform (automate, apps, bi) and services (onedrive, sharepoint lists, excel files)\n2. a single application for ALL user to access, see, edit and submit data in an easy way. Apps is incharge of collecting and sending information. All other data processes (data grouping, data cleaning, data duplication and backup) are to be processed in the background (either by excel, sharepoint or power apps) \n3. Power apps MUST support multilanguage for anyone in any language to understand. \ntoday im looking for optimization processes and setting the correct functions to be done by each tool.\n\nask any other additional question to understand the base system, then ill begin asking the doubts I have in order to learn and possible implement"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello! This sounds like a robust and practical architecture... [Clarifying questions regarding user scale, data storage backend, and multilanguage strategy]"
+      },
+      {
+        "role": "user",
+        "content": "1. dept users... 20 people. external users... 10,000 people (at most 5 simultaneous requests)\n2. I plan to use excel for drafting information, once officially approved transfer to sharepoint... eventually integrate database for historical data.\n3. static UI labels, currently microsoft translate function is being implemented... taking 10-30 seconds, want smooth experience and localized meaning."
+      },
+      {
+        "role": "assistant",
+        "content": "Recommended tool responsibilities table and initial optimization tips (moving away from dynamic translation to static localization tables/collections, Excel concurrency precautions)."
+      },
+      {
+        "role": "user",
+        "content": "Issues to fix:\n1. Duplicate/error data cleaning & email notification (When should it be done?)\n2. Excel vs Power Apps data type mismatch (dates/times) and establishing a clear data manipulation scheme.\n3. Excel-to-SharePoint backup/archival schedule for active daily edited tables."
+      },
+      {
+        "role": "assistant",
+        "content": "Addressed the three issues: split validation into real-time basic checks and background deep logic/deduplication; use ISO 8601 text formatting in Power Automate as a shield; implement rolling window archival schedules (daily reports, weekly schedules, nightly reservations)."
+      },
+      {
+        "role": "user",
+        "content": "what other recommendation can you make on this fronts? optimizations, proper data clenaning, savings, backups, formats...."
+      },
+      {
+        "role": "assistant",
+        "content": "Provided advanced recommendations: Quarantine Table pattern, Composite Hash Keys, Power Automate Parsing Shield, Excel Table formatting, Rolling Window Excel strategy, OneDrive backups, and API/Delegation conservation."
+      },
+      {
+        "role": "user",
+        "content": "Described data scheme (Active Month Book, GCL Book, SharePoint list). Noted specific draft tables (`reservationavailability`, `workingavailaibility`) suffering from Patch type mismatches. Asked if Power Automate can pass clean array to Excel for Office Scripts."
+      },
+      {
+        "role": "assistant",
+        "content": "Confirmed Office Scripts + Power Automate is the gold standard for bulk insertion and type enforcement, completely bypassing fragile direct Patch operations."
+      },
+      {
+        "role": "user",
+        "content": "Follow-up issues:\n1. 'Office script not found' error on new books and how to prevent it.\n2. Should approvals/rejections use Patch or Power Automate?\n3. How Option A sync pattern checks for duplicates before writing to Excel."
+      },
+      {
+        "role": "assistant",
+        "content": "Provided solutions: Master Template method with pre-embedded scripts and folder permission lockdowns, routing approvals through Power Automate for business logic/notifications, and building a List rows + Filter array duplication gate in Power Automate prior to script execution."
+      }
+    ]
+  }
+}
+```
