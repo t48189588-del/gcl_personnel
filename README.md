@@ -311,7 +311,8 @@ After the initial event proposal is approved, the proposer shall be able to add:
 |**September 9,2026**|Kimuira-san & Hatsuda-san|<ul><li>Finish wrinting [excel fill table office script](./sharepoint2excel.md#working-reports)</li><li>Set a reminder email for GCL visitors, 1 day in advance</li><li>Setting welcome message for new staff</li><li>Added 14:00-14:30 shift (by Shiriashi-san requests via Teams chat)</ul>|
 |**September 10,2026**||<ul><li>Building excel office script for [creating tabular presentation](./sharepoint2excel.md#creating-tabular-presentation)</li><li>Enabling text input when selecting "Others" in the student's working report screen</li><li>Adding "勤務日数" and "勤務時間" to main staff working reports screen
 |**September 14,2026**||<ul><li>Prepare working books for matching with power automate output</li><li>Customizing activities forms</li><li>Adding japanese support for reservations</li></ul>|
-
+|**September 30,2026**|Shiriashi-san|<ul><li>Changing 学部 in reservation page from text >> dropdown options ["工学部","情報工学部","生命体工学"]</li><li>Changing scheduling and availability submission (patch >> power automate flow)</li><li>Adding japanese support for reservations</li></ul>|
+|**October 1,2026**|Shiriashi-san and Kimura-san|<ul><li>Planted the issue for program transfering (to consider in advance before my graduation)</li><li>Add auto send survey email to reservations requesters AFTER completion</li><li>Prepared working report manual (english and japanese)</li></ul>|
 ## Tangent/psicological questions
 1. What's the inconvenience?
 2. What's the experience?
