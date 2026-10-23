@@ -313,6 +313,8 @@ After the initial event proposal is approved, the proposer shall be able to add:
 |**September 14,2026**||<ul><li>Prepare working books for matching with power automate output</li><li>Customizing activities forms</li><li>Adding japanese support for reservations</li></ul>|
 |**September 30,2026**|Shiriashi-san|<ul><li>Changing 学部 in reservation page from text >> dropdown options ["工学部","情報工学部","生命体工学"]</li><li>Changing scheduling and availability submission (patch >> power automate flow)</li><li>Adding japanese support for reservations</li></ul>|
 |**October 1,2026**|Shiriashi-san and Kimura-san|<ul><li>Planted the issue for program transfering (to consider in advance before my graduation)</li><li>Add auto send survey email to reservations requesters AFTER completion</li><li>Prepared working report manual (english and japanese)</li></ul>|
+|**October 7,2026**|Hatsuda-san and Kimura-san|<ul><li>Added for main staff to add student staff to any shift</li></ul>|
+|**October 16,2026**|Shiriashi-san|<ul><li>Added Information about tobata staff (students and main staff)</li><li>set december as target date for sharing system with tobata staff</li><li>Received approval to ask help to other iizuka japanese staff to check documentation translation and short format video generation (<1min)</li></ul>|
 ## Tangent/psicological questions
 1. What's the inconvenience?
 2. What's the experience?
