@@ -99,15 +99,56 @@ flowchart TB
 ```
 
 ## passing information from excel to public website
-website
+Reservation website: https://gcl-personnel-kohl.vercel.app
+
 Data tables:
 - [reservation availability](./data_tables.md#reservation-availability)
+- [working schedules](./data_tables.md#working-schedules)
+- [reservations](./data_tables.md#reservations)
+
+
+
+## Reservation Availability and Booking Workflow
+
+The reservation process begins with a scheduled Power Automate flow that runs Monday through Friday at 19:00. The flow summarizes and compacts changes made to the daily staff schedules, then updates the Reservation Availability Table to keep the available time-slot data organized and ready for retrieval. When an external user accesses the Vercel website, Power Automate retrieves the reservation availability data, converts it into JSON, and sends it to Vercel. The website processes the received data and splits availability into bookable time blocks for the requested date and time, allowing the user to select a desired slot.
+
+When the user submits a reservation, the reservation details are automatically saved to the Reservation Table, and the Reservation Availability Table is updated to remove the booked time slot from available inventory. This ensures that subsequent availability requests reflect the latest reservation data and reduces the risk of duplicate bookings. Developers should ensure that reservation records and availability updates remain consistent, particularly when multiple users attempt to reserve the same time slot concurrently.
 
 ```mermaid
-flowchart TB
-    A[Receive request from website]
-    B[Get available]
-    C[Prepare data]
-    D[Pass to flutter to show]
-    A-->B-->C-->D
+flowchart TD
+    A([Start])
+
+    subgraph SCHEDULE["1. Scheduled Availability Update"]
+        B["Power Automate runs<br/>Monday-Friday at 19:00"]
+        C["Summarize and compact<br/>daily schedule changes"]
+        D[("Reservation Availability Table")]
+        B --> C --> D
+    end
+
+    subgraph ACCESS["2. User Access and Availability Retrieval"]
+        E["External user accesses<br/>Vercel website"]
+        F["Power Automate retrieves<br/>availability data"]
+        G["Convert data to JSON<br/>and send to Vercel"]
+        H["Vercel receives JSON"]
+        I["Split availability into<br/>bookable time blocks for<br/>the selected date and time"]
+        J["Display available slots"]
+        K["User selects a slot<br/>and submits reservation"]
+
+        E --> F --> G --> H --> I --> J --> K
+        D --> F
+    end
+
+    subgraph SUBMISSION["3. Reservation Submission"]
+        L[("Reservation Table")]
+        M["Automatically save<br/>reservation details"]
+        N["Update Reservation<br/>Availability Table"]
+        O["Remove booked slot<br/>from available inventory"]
+        P([Ready for main staff revision])
+
+        K --> M --> L -->P
+        M --> N --> D
+        N --> O 
+    end
+
+    A --> B
 ```
