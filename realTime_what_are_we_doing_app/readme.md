@@ -12,6 +12,8 @@ This is a webfirst platform to share with ANYONE in Kyutech Iizuka, about
 
 
 # AI prompt
+
+## Version 1
 ```
 Master Prompt — Department Personnel Directory & Messaging MVP
 1. Project objective
@@ -384,4 +386,365 @@ Document the deployment process and remaining limitations.
 Prioritize a coherent, reliable demonstration over an excessive number of features.
 
 The final product should allow a board member to discover a person, see when they are available, send a message, and receive a real reply from the presenter — all through a polished public and private web experience.
+```
+
+## version 2
+```
+MASTER PROMPT — BUILD AND RUN THE DEPARTMENT MVP DIRECTLY IN THE BROWSER
+1. Your mission
+
+Act as an expert full-stack developer and build a working MVP for a department personnel directory, availability calendar, messaging platform, and long-term service request system.
+
+Your primary deliverable is a RUNNING, INTERACTIVE WEB APPLICATION that I can immediately open and test in the browser preview. Do not respond with architecture recommendations, a development plan, wireframes, or instructions telling me how to build the application myself. BUILD THE APPLICATION FIRST.
+
+Use the available coding environment, browser preview, application builder, and connected tools to create and run the actual application.
+
+Do not stop after explaining what you intend to build. Start implementing the user interface and working interactions immediately. Make reasonable technical decisions independently.
+
+If the environment supports a live application preview, launch the application and make it available there. If it supports a persistent development server, run it and verify the preview. Do not merely print source code when you can render and run the application directly.
+
+If a particular environment limitation prevents execution, explain the specific limitation and provide the closest genuinely runnable result available.
+
+2. Product requirements
+
+Build two connected interfaces backed by shared application data.
+
+Public website
+
+Provide four navigation destinations:
+
+Directory.
+Daily Calendar.
+Long-Term Requests.
+Feedback.
+
+The public website must be accessible without requiring a personnel account.
+
+Private workspace
+
+Provide a personnel login and private workspace containing:
+
+Daily activity publishing.
+Inbox and unread indicators.
+Individual messaging.
+Incoming long-term request management.
+Authorized demo-data reset.
+
+The public and private interfaces must work together as one application.
+
+3. Immediate browser-preview requirements
+
+Before doing any architectural discussion, create a complete, visually polished, interactive application that opens in the browser.
+
+The first runnable version must include:
+
+A fully rendered public directory.
+At least five realistic fictional personnel profiles with portraits.
+Working navigation between all public pages.
+A functional daily calendar displaying 30-minute intervals.
+An availability timeline beneath directory entries.
+A long-term request form with validation.
+A feedback form.
+A personnel login screen.
+An activity publishing page.
+An inbox and individual chat interface.
+A long-term request management view.
+Sample data that makes the application immediately testable.
+Responsive desktop and mobile layouts.
+Clear success, error, loading, and empty states where applicable.
+
+Every visible primary action must work. Do not use inert buttons or decorative controls that imply functionality that does not exist.
+
+Do not wait for an external backend to be configured before implementing and displaying the frontend.
+
+4. Demo mode and real backend behavior
+
+Provide an immediately usable demonstration mode using fictional seed data.
+
+Demo mode must allow me to explore the entire user experience without first configuring external credentials.
+
+Where backend functionality is unavailable, implement clearly identified local demo behavior for interface testing, including:
+
+Browsing personnel and schedules.
+Filtering the calendar.
+Publishing sample activities.
+Creating sample service requests.
+Changing request statuses through authorized demo controls.
+Navigating between inbox and chat.
+Testing message composition and conversation interactions.
+Submitting sample feedback.
+
+Persist demo data across navigation and refresh when the execution environment supports appropriate local persistence.
+
+Clearly distinguish demo behavior from verified backend behavior. Never label local-only messages as genuinely delivered to another device.
+
+Keep the application architecture ready for a real shared backend, so demo-only data handling can later be replaced without redesigning the entire interface.
+
+If a backend or connected service is available, use it. Implement real authentication, persistent shared data, backend authorization, and real-time messaging where the environment permits. Do not invent credentials, claim external services are connected when they are not, or silently substitute local simulation for real cross-device functionality.
+
+5. Visual design
+
+Use a polished academic editorial style for the public interface:
+
+White or neutral backgrounds.
+Strong typography.
+Portrait-oriented personnel entries.
+Generous white space.
+Subtle borders.
+Restrained colors.
+Clear information hierarchy.
+
+Use a modern, mobile-friendly messaging layout for the private interface.
+
+The public interface is desktop-first; the private interface is mobile-first. Both must remain usable on other screen sizes.
+
+Include keyboard accessibility, visible interaction states, readable contrast, accessible labels, and reduced-motion support.
+
+6. Personnel directory
+
+Display at least five fictional department members.
+
+Each profile must include:
+
+Portrait photograph.
+Current activity, if available; otherwise interests.
+Full name.
+Research topics.
+Academic background.
+Study year, where applicable.
+Languages and proficiency levels.
+Direct message button.
+
+Use fictional sample data and realistic portraits. Gracefully handle missing fields.
+
+Publishing or clearing an activity in the private workspace must update the public profile through the application's shared data model.
+
+Visitors must be able to browse without logging in and initiate a conversation with the selected person.
+
+7. Availability timeline
+
+Display a horizontal timeline below every personnel entry, spanning the complete entry width.
+
+Green/cyan: working and available.
+Red: reserved or occupied.
+Neutral grey: outside the shift or otherwise unavailable.
+
+Show shift start and end times. Position reservations proportionally according to actual start and end times.
+
+Support multiple reservations, empty shifts, fully reserved shifts, different shift lengths, adjacent reservations, overlaps, and partial intervals.
+
+Never imply availability outside working hours. Prevent overlapping reservations from creating misleading availability. Use accessible labels so status is not communicated through color alone.
+
+The timeline must use the same schedule data as the daily calendar.
+
+8. Daily calendar
+
+Create an interactive daily calendar with:
+
+Date selection and previous/next-day navigation.
+30-minute time intervals.
+Personnel portraits and names in the relevant blocks.
+Availability and reservation indicators.
+A personnel filter.
+Responsive layouts and clear empty states.
+
+Show all relevant personnel by default. Allow visitors to filter individual people.
+
+Use actual shifts and reservations to calculate availability. A block must not appear fully available if a reservation occupies only part of that interval.
+
+Selecting a person's portrait or name opens their profile.
+
+The calendar is for availability discovery, not instant booking. Do not create conflicting schedules or separate calendar data that disagrees with the directory timeline.
+
+9. Long-term service requests
+
+Create a public request form for services lasting between two months and twelve months.
+
+Support these categories:
+
+Language learning.
+Programming.
+Research assistance or collaboration.
+Academic support.
+Other, with a free-text description.
+
+Collect:
+
+Requester's name and email.
+Selected personnel member.
+Service category and description.
+Start and end dates.
+Preferred days and times.
+Requested hours per week.
+Scheduling flexibility.
+Optional goals and additional details.
+
+Validate required fields, date ranges, and the permitted duration. Do not implement payments or assume that services are paid or free.
+
+Submitting a request must create a request record in the application's active data store and show a genuine confirmation for the mode being used.
+
+Implement the following statuses:
+
+Pending.
+Accepted.
+Rejected.
+Cancelled.
+
+Provide a private request-management view with actions appropriate to the current user's permissions.
+
+The default approval model is personnel-led review with configurable administrative oversight.
+
+10. Long-term scheduling rules
+
+Keep the requested service period separate from confirmed working hours.
+
+A six-month request must not block every calendar interval during those six months.
+
+Pending requests do not create confirmed reservations.
+Accepted requests without agreed times must not generate invented time slots.
+Accepted requests with agreed recurring sessions create corresponding schedule entries.
+Confirmed sessions must appear consistently in the calendar and timeline.
+Conflicting confirmed reservations must be prevented.
+Rejected or cancelled requests must not continue blocking future time solely because they previously existed.
+
+Allow conflicts and alternative schedules to be reviewed or negotiated.
+
+Visitors must be able to follow up securely on their own requests without gaining access to personnel inboxes or other visitors' records.
+
+11. Authentication and private workspace
+
+Provide a personnel login screen and a dedicated presenter account in demo mode.
+
+The private workspace must include:
+
+Activity publishing
+
+Display a multiline input with this exact placeholder:
+
+"What are you doing today?"
+
+Include a Publish button. Allow publishing, editing, and clearing activities.
+
+Inbox
+
+Display conversations sorted by most recent activity. Show the other participant's portrait, name, latest-message preview, timestamp, and unread indicator.
+
+Individual chat
+
+Include a conversation header, message history, timestamps, sent/received message styling, multiline composer, Send button, and appropriate sending/error states.
+
+Keep conversation history when navigating away and returning. Update inbox previews and unread indicators when messages arrive.
+
+Messaging requirements
+
+In demo mode, messages may be simulated for interface testing, but the interface must clearly identify that mode.
+
+When a real backend is configured, messages must be persisted and delivered between separate devices through real-time subscriptions or an equivalent mechanism.
+
+Public visitors must not access private personnel inboxes, impersonate personnel, or read unrelated conversations.
+
+12. Feedback
+
+Create an interactive feedback form covering:
+
+General experience rating.
+Comments and suggestions.
+Directory.
+Availability timeline and calendar.
+Messaging.
+Long-term requests.
+
+Keep the form short and mobile-friendly.
+
+Store submissions in the active data store. Clearly distinguish demo feedback from feedback actually delivered to the project owner.
+
+13. Seed data and demo controls
+
+Include at least five fictional personnel members, with varied portraits, research interests, backgrounds, languages, activities, and schedules.
+
+Provide sample shifts illustrating:
+
+No reservations.
+One reservation.
+Multiple reservations.
+Fully reserved periods.
+Adjacent reservations.
+Different shift lengths.
+Partial 30-minute overlaps.
+Multiple people working simultaneously.
+
+Include sample conversation history and long-term requests in different statuses.
+
+Provide a clearly identified demo reset control for authorized demo users. It must only reset fictional demo data, never genuine user records.
+
+Make the application immediately useful without requiring me to create every sample record manually.
+
+14. Technical quality and security
+
+Use a coherent shared data model for personnel, activities, shifts, reservations, recurring commitments, conversations, messages, requests, and feedback.
+
+Use Flutter web where the execution environment supports it. If the available browser-building environment cannot execute Flutter directly, prioritize delivering the immediately runnable preview and clearly explain the framework limitation rather than pretending Flutter is running.
+
+When connecting a real backend, use proper authentication, persistent storage, backend-enforced authorization, secure visitor access, and real-time messaging.
+
+Do not expose privileged credentials in frontend code. Do not trust frontend route guards as the sole security mechanism.
+
+Support a GitHub-based workflow and document Vercel or other compatible deployment requirements.
+
+Avoid unnecessary infrastructure and production administration features.
+
+15. Implementation priorities
+
+Build and render the application in this order:
+
+Create the complete application shell, navigation, visual design, and fictional seed data.
+Implement the directory and availability timeline.
+Implement the daily calendar and date/person filters.
+Implement the long-term request form and request-management view.
+Implement the private activity page, inbox, and chat.
+Implement feedback and demo controls.
+Connect the available backend and real-time functionality.
+Verify responsive behavior, business rules, and core interactions.
+
+Do not stop after listing these steps. Execute them.
+
+Prioritize a complete, testable browser experience over lengthy explanations.
+
+16. Acceptance criteria
+
+The browser preview must allow me to:
+
+Browse at least five personnel profiles.
+Inspect working availability and reservations.
+Navigate the daily calendar in 30-minute intervals.
+Filter personnel and inspect their profiles.
+Publish a sample activity and see it reflected in the directory.
+Create a valid long-term request and see it in request management.
+Test request status changes.
+Open the inbox and individual chat.
+Compose and interact with messages.
+Submit feedback.
+Navigate between all interfaces without dead ends.
+Use the application on desktop and mobile layouts.
+Reset fictional demo data safely.
+
+Additionally, when a real backend is configured, verify that authentication, persistence, access controls, cross-device messaging, and shared scheduling actually work.
+
+Do not claim real cross-device delivery or production security based only on a local demo.
+
+17. Final response
+
+Your first priority is to create and launch the working application in the browser preview.
+
+After implementation, briefly report:
+
+How to open and test the running application.
+Which features are functional in demo mode.
+Which features are connected to a real backend and verified.
+Which external configuration remains necessary.
+Any significant limitations discovered during testing.
+
+Do not return another architecture proposal instead of the application.
+
+START BUILDING THE RUNNABLE MVP NOW.
 ```
