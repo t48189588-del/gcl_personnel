@@ -9,6 +9,8 @@ This is a webfirst platform to share with ANYONE in Kyutech Iizuka, about
 |date(yyyy/mm/dd)|who|description|
 |---|---|---|
 |2026/10/20|Aimi-san|Initial idea presentation.|
+|2026/10/23|Aimi-san|<ul><li>Add calendar view</li><li>Add request submission (from external students)</li></ul>|
+|2026/10/26|Aimi-san|<ul><li>Final review, ready for presentation to main staff</li><li>Presentation to main staff: Wed 28, 16:00</li></ul>|
 
 
 # AI prompt
